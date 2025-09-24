@@ -7,7 +7,7 @@ export class OrganizationObligationRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(data: Prisma.OrganizationObligationCreateInput): Promise<OrganizationObligation> {
-    if (!data.organization.connect?.id || !data.obligation.connect?.id || !data.start_date) {
+    if (!data.organization?.connect?.id || !data.obligation?.connect?.id || !data.start_date) {
       throw new Error('Required fields missing');
     }
     return this.prisma.organizationObligation.create({ data });

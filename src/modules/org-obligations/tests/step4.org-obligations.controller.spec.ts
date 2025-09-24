@@ -79,6 +79,14 @@ describe('Organization Obligations Controller (e2e)', () => {
     expect(res.body[0]).toMatchObject({ id: '1', obligation: { code: '2550M' } });
   });
 
+  it('GET /organizations/:id/obligations returns empty array when no obligations assigned', async () => {
+    const token = signPayload({ userId: 'u1', permissions: ['organization.read'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+    mockService.getObligationsByOrgId.mockResolvedValue([]);
+    const res = await request(app.getHttpServer()).get('/organizations/org1/obligations').set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
+  });
+
   it('PUT /organization-obligations/:id updates status (e.g., EXEMPT)', async () => {
     const token = signPayload({ userId: 'u1', permissions: ['organization.write'], isSuperAdmin: false }, process.env.JWT_SECRET!);
     const updatedObligation = { id: '1', organization_id: 'org1', obligation_id: 'obl1', start_date: new Date('2025-01-01'), end_date: null, status: 'EXEMPT' as const, notes: null, created_at: new Date(), updated_at: new Date() };
