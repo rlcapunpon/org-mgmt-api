@@ -29,3 +29,11 @@ Files changed: prisma/schema.prisma, src/modules/tax-obligations/repositories/ta
 Tests added: step3.tax-obligation-repo.spec.ts, step3.tax-obligations.controller.spec.ts
 Build status: OK
 Notes: Tax obligations master implemented with admin-only create. GET is public. All tests pass. Migration applied. Ready for Step 4.
+
+# CHECKPOINT - Step 4
+Date: 2025-09-24
+Summary: Implemented organization obligations (assignment + status). Added organization_obligations table schema with Status enum and relations, generated migration, created OrganizationObligationRepository with create, findByOrgId, update, findById methods, OrganizationObligationService with assign, getByOrgId, updateStatus, OrganizationObligationController with POST /organizations/:id/obligations, GET /organizations/:id/obligations, PUT /organization-obligations/:id endpoints, DTOs for validation. Wrote e2e tests for controller, implemented to make them pass.
+Files changed: prisma/schema.prisma, src/modules/org-obligations/repositories/organization-obligation.repository.ts, src/modules/org-obligations/services/organization-obligation.service.ts, src/modules/org-obligations/controllers/organization-obligation.controller.ts, src/modules/org-obligations/dto/assign-obligation.dto.ts, src/modules/org-obligations/org-obligations.module.ts, src/app.module.ts, src/modules/org-obligations/tests/step4.org-obligations.controller.spec.ts
+Tests added: step4.org-obligations.controller.spec.ts
+Build status: OK
+Notes: Organization obligations assignment and status management implemented. All tests pass. Migration applied. Ready for Step 5.

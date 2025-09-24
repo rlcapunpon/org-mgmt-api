@@ -34,6 +34,12 @@ enum Frequency {
   ONE_TIME
 }
 
+enum Status {
+  ACTIVE
+  INACTIVE
+  EXEMPT
+}
+
 model Organization {
   id                String   @id @default(cuid())
   name              String
@@ -46,6 +52,8 @@ model Organization {
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
   deleted_at        DateTime?
+
+  obligations       OrganizationObligation[]
 }
 
 model TaxObligation {
@@ -57,4 +65,25 @@ model TaxObligation {
   active     Boolean   @default(true)
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
+
+  organizations      OrganizationObligation[]
 }
+
+model OrganizationObligation {
+  id               String        @id @default(cuid())
+  organization_id  String
+  obligation_id    String
+  start_date       DateTime
+  end_date         DateTime?
+  status           Status        @default(ACTIVE)
+  notes            String?
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @updatedAt
+
+  organization     Organization  @relation(fields: [organization_id], references: [id])
+  obligation       TaxObligation @relation(fields: [obligation_id], references: [id])
+
+  @@unique([organization_id, obligation_id])
+}
+
+

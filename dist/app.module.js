@@ -12,13 +12,14 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const organizations_module_1 = require("./modules/organizations/organizations.module");
 const tax_obligations_module_1 = require("./modules/tax-obligations/tax-obligations.module");
+const org_obligations_module_1 = require("./modules/org-obligations/org-obligations.module");
 const auth_module_1 = require("./auth/auth.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [organizations_module_1.OrganizationsModule, tax_obligations_module_1.TaxObligationsModule, auth_module_1.AuthModule],
+        imports: [organizations_module_1.OrganizationsModule, tax_obligations_module_1.TaxObligationsModule, org_obligations_module_1.OrgObligationsModule, auth_module_1.AuthModule],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })
