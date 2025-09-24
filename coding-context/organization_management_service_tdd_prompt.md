@@ -480,6 +480,26 @@ src/
 
 ---
 
+### Step 6.7  - Making concise organization response
+
+**Goal:** Track the GET organization endpoint should only return important organization data. The ogranization operation data should be returned by a different GET endpoint
+
+**Failing tests to write first:**
+- update step6.7.organization-operation.spec.ts
+  - CRUD tests for organization operation endpoint different from GET organization endpoint
+  - Only user with correct read permission and update permission can get and update organization operation data
+- update other spec.ts files that use organization object 
+
+**Implementation tasks**
+- Change tests and code, the GET organization should not include organization operation data
+
+**Acceptance:** tests & build pass. Edge cases considered. Complete code coverage.
+
+**After finishing:** Update `CHECKPOINT.md`.
+
+
+---
+
 ### Step 7 — Integration Tests: full flows
 **Goal:** End-to-end tests covering typical flows (create org from OCR payload, assign obligations, compute schedules).
 

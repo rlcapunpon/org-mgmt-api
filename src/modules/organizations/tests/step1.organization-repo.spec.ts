@@ -58,22 +58,6 @@ describe('OrganizationRepository', () => {
         created_at: new Date(),
         updated_at: new Date(),
       },
-      operation: {
-        id: 'operation-uuid',
-        organization_id: 'uuid',
-        fy_start: new Date(),
-        fy_end: new Date(),
-        vat_reg_effectivity: new Date(),
-        registration_effectivity: new Date(),
-        payroll_cut_off: ['15/30'],
-        payment_cut_off: ['15/30'],
-        quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
-        has_foreign: false,
-        accounting_method: 'ACCRUAL',
-        last_update: new Date(),
-        created_at: new Date(),
-        updated_at: new Date(),
-      },
     };
     (prismaMock.organization.create as jest.Mock).mockResolvedValue(mockOrg);
 
@@ -118,7 +102,6 @@ describe('OrganizationRepository', () => {
       where: { id: 'non-existing' },
       include: {
         status: true,
-        operation: true,
       },
     });
   });
@@ -145,22 +128,6 @@ describe('OrganizationRepository', () => {
           created_at: new Date(),
           updated_at: new Date(),
         },
-        operation: {
-          id: 'operation-1',
-          organization_id: '1',
-          fy_start: new Date(),
-          fy_end: new Date(),
-          vat_reg_effectivity: new Date(),
-          registration_effectivity: new Date(),
-          payroll_cut_off: ['15/30'],
-          payment_cut_off: ['15/30'],
-          quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
-          has_foreign: false,
-          accounting_method: 'ACCRUAL',
-          last_update: new Date(),
-          created_at: new Date(),
-          updated_at: new Date(),
-        },
       },
     ];
     (prismaMock.organization.findMany as jest.Mock).mockResolvedValue(mockOrgs);
@@ -175,7 +142,6 @@ describe('OrganizationRepository', () => {
       },
       include: {
         status: true,
-        operation: true,
       },
     });
   });
@@ -202,22 +168,6 @@ describe('OrganizationRepository', () => {
         created_at: new Date(),
         updated_at: new Date(),
       },
-      operation: {
-        id: 'operation-1',
-        organization_id: '1',
-        fy_start: new Date(),
-        fy_end: new Date(),
-        vat_reg_effectivity: new Date(),
-        registration_effectivity: new Date(),
-        payroll_cut_off: ['15/30'],
-        payment_cut_off: ['15/30'],
-        quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
-        has_foreign: false,
-        accounting_method: 'ACCRUAL',
-        last_update: new Date(),
-        created_at: new Date(),
-        updated_at: new Date(),
-      },
     };
     (prismaMock.organization.update as jest.Mock).mockResolvedValue(mockUpdatedOrg);
 
@@ -232,15 +182,9 @@ describe('OrganizationRepository', () => {
             last_update: expect.any(Date),
           },
         },
-        operation: {
-          update: {
-            last_update: expect.any(Date),
-          },
-        },
       },
       include: {
         status: true,
-        operation: true,
       },
     });
   });

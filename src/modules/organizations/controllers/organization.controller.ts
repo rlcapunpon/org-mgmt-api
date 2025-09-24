@@ -2,6 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, NotF
 import { OrganizationService } from '../services/organization.service';
 import { CreateOrganizationDto } from '../dto/create-organization.dto';
 import { UpdateOrganizationDto } from '../dto/update-organization.dto';
+import { UpdateOrganizationOperationDto } from '../dto/update-organization-operation.dto';
 import { AuthGuard } from '../../../common/guards/auth.guard';
 import { PermissionsGuard } from '../../../common/guards/permissions.guard';
 import { RequiresPermission } from '../../../common/decorators/requires-permission.decorator';
@@ -43,5 +44,19 @@ export class OrganizationController {
   @RequiresPermission('resource:read')
   async list(@Query() query: { category?: string; tax_classification?: string }) {
     return this.service.list(query);
+  }
+
+  @Get(':id/operation')
+  @RequiresPermission('resource:read')
+  async getOperation(@Param('id') id: string) {
+    const operation = await this.service.getOperationByOrgId(id);
+    if (!operation) throw new NotFoundException();
+    return operation;
+  }
+
+  @Put(':id/operation')
+  @RequiresPermission('resource:update')
+  async updateOperation(@Param('id') id: string, @Body() dto: UpdateOrganizationOperationDto) {
+    return this.service.updateOperation(id, dto);
   }
 }

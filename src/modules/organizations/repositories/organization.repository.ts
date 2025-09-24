@@ -45,8 +45,22 @@ export class OrganizationRepository {
       where: { id },
       include: {
         status: true,
-        operation: true,
       },
+    });
+  }
+
+  async getByIdBasic(id: string): Promise<Organization | null> {
+    return this.prisma.organization.findUnique({
+      where: { id },
+      include: {
+        status: true,
+      },
+    });
+  }
+
+  async getOperationByOrgId(id: string) {
+    return this.prisma.organizationOperation.findUnique({
+      where: { organization_id: id },
     });
   }
 
@@ -60,7 +74,19 @@ export class OrganizationRepository {
             last_update: new Date(),
           },
         },
-        operation: {
+      },
+      include: {
+        status: true,
+      },
+    });
+  }
+
+  async updateBasic(id: string, data: Partial<Omit<Organization, 'id' | 'created_at' | 'updated_at'>>): Promise<Organization> {
+    return this.prisma.organization.update({
+      where: { id },
+      data: {
+        ...data,
+        status: {
           update: {
             last_update: new Date(),
           },
@@ -68,7 +94,16 @@ export class OrganizationRepository {
       },
       include: {
         status: true,
-        operation: true,
+      },
+    });
+  }
+
+  async updateOperation(id: string, data: any) {
+    return this.prisma.organizationOperation.update({
+      where: { organization_id: id },
+      data: {
+        ...data,
+        last_update: new Date(),
       },
     });
   }
@@ -87,7 +122,20 @@ export class OrganizationRepository {
       where,
       include: {
         status: true,
-        operation: true,
+      },
+    });
+  }
+
+  async listBasic(filters?: { category?: string; tax_classification?: string }): Promise<Organization[]> {
+    const where = {
+      deleted_at: null,
+      ...(filters?.category && { category: filters.category as any }),
+      ...(filters?.tax_classification && { tax_classification: filters.tax_classification as any }),
+    };
+    return this.prisma.organization.findMany({
+      where,
+      include: {
+        status: true,
       },
     });
   }

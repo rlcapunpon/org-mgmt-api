@@ -41,22 +41,6 @@ describe('Organization Status (Step 6.5)', () => {
                 created_at: now,
                 updated_at: now,
               },
-              operation: {
-                id: 'operation-1',
-                organization_id: '1',
-                fy_start: new Date('2025-01-01'),
-                fy_end: new Date('2025-12-31'),
-                vat_reg_effectivity: new Date('2025-01-01'),
-                registration_effectivity: new Date('2025-01-01'),
-                payroll_cut_off: ['15/30'],
-                payment_cut_off: ['15/30'],
-                quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
-                has_foreign: false,
-                accounting_method: 'ACCRUAL',
-                last_update: now,
-                created_at: now,
-                updated_at: now,
-              },
             });
           }),
           findMany: jest.fn().mockResolvedValue([
@@ -76,22 +60,6 @@ describe('Organization Status (Step 6.5)', () => {
                 id: 'status-1',
                 organization_id: '1',
                 status: 'PENDING',
-                last_update: new Date(),
-                created_at: new Date(),
-                updated_at: new Date(),
-              },
-              operation: {
-                id: 'operation-1',
-                organization_id: '1',
-                fy_start: new Date('2025-01-01'),
-                fy_end: new Date('2025-12-31'),
-                vat_reg_effectivity: new Date('2025-01-01'),
-                registration_effectivity: new Date('2025-01-01'),
-                payroll_cut_off: ['15/30'],
-                payment_cut_off: ['15/30'],
-                quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
-                has_foreign: false,
-                accounting_method: 'ACCRUAL',
                 last_update: new Date(),
                 created_at: new Date(),
                 updated_at: new Date(),
@@ -120,22 +88,6 @@ describe('Organization Status (Step 6.5)', () => {
                 created_at: new Date(),
                 updated_at: now,
               },
-              operation: {
-                id: 'operation-1',
-                organization_id: '1',
-                fy_start: new Date('2025-01-01'),
-                fy_end: new Date('2025-12-31'),
-                vat_reg_effectivity: new Date('2025-01-01'),
-                registration_effectivity: new Date('2025-01-01'),
-                payroll_cut_off: ['15/30'],
-                payment_cut_off: ['15/30'],
-                quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
-                has_foreign: false,
-                accounting_method: 'ACCRUAL',
-                last_update: now,
-                created_at: new Date(),
-                updated_at: now,
-              },
             });
           }),
           findUnique: jest.fn().mockImplementation((args) => {
@@ -158,22 +110,6 @@ describe('Organization Status (Step 6.5)', () => {
                 id: 'status-1',
                 organization_id: '1',
                 status: 'PENDING',
-                last_update: new Date(),
-                created_at: new Date(),
-                updated_at: new Date(),
-              },
-              operation: {
-                id: 'operation-1',
-                organization_id: '1',
-                fy_start: new Date('2025-01-01'),
-                fy_end: new Date('2025-12-31'),
-                vat_reg_effectivity: new Date('2025-01-01'),
-                registration_effectivity: new Date('2025-01-01'),
-                payroll_cut_off: ['15/30'],
-                payment_cut_off: ['15/30'],
-                quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
-                has_foreign: false,
-                accounting_method: 'ACCRUAL',
                 last_update: new Date(),
                 created_at: new Date(),
                 updated_at: new Date(),
@@ -287,22 +223,6 @@ describe('Organization Status (Step 6.5)', () => {
             status: 'PENDING',
             last_update: new Date(),
           },
-          operation: {
-            id: 'operation-1',
-            organization_id: '1',
-            fy_start: new Date('2025-01-01'),
-            fy_end: new Date('2025-12-31'),
-            vat_reg_effectivity: new Date('2025-01-01'),
-            registration_effectivity: new Date('2025-01-01'),
-            payroll_cut_off: ['15/30'],
-            payment_cut_off: ['15/30'],
-            quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
-            has_foreign: false,
-            accounting_method: 'ACCRUAL',
-            last_update: new Date(),
-            created_at: new Date(),
-            updated_at: new Date(),
-          },
         },
       ];
 
@@ -315,6 +235,7 @@ describe('Organization Status (Step 6.5)', () => {
       expect(res.body).toHaveLength(1);
       expect(res.body[0]).toHaveProperty('status');
       expect(res.body[0].status.status).toBe('PENDING');
+      expect(res.body[0]).not.toHaveProperty('operation');
     });
 
     it('should update organization status last_update when organization is updated', async () => {
@@ -541,7 +462,7 @@ describe('Organization Status (Step 6.5)', () => {
     it('should handle multiple organizations with different statuses in list', async () => {
       const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
 
-      // Mock multiple organizations with different statuses
+      // Mock multiple organizations without operation data
       const prismaService = app.get(PrismaService);
       (prismaService.organization.findMany as jest.Mock).mockResolvedValueOnce([
         {
@@ -560,22 +481,6 @@ describe('Organization Status (Step 6.5)', () => {
             id: 'status-1',
             organization_id: '1',
             status: 'PENDING',
-            last_update: new Date(),
-            created_at: new Date(),
-            updated_at: new Date(),
-          },
-          operation: {
-            id: 'operation-1',
-            organization_id: '1',
-            fy_start: new Date('2025-01-01'),
-            fy_end: new Date('2025-12-31'),
-            vat_reg_effectivity: new Date('2025-01-01'),
-            registration_effectivity: new Date('2025-01-01'),
-            payroll_cut_off: ['15/30'],
-            payment_cut_off: ['15/30'],
-            quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
-            has_foreign: false,
-            accounting_method: 'ACCRUAL',
             last_update: new Date(),
             created_at: new Date(),
             updated_at: new Date(),
@@ -601,22 +506,6 @@ describe('Organization Status (Step 6.5)', () => {
             created_at: new Date(),
             updated_at: new Date(),
           },
-          operation: {
-            id: 'operation-2',
-            organization_id: '2',
-            fy_start: new Date('2025-01-01'),
-            fy_end: new Date('2025-12-31'),
-            vat_reg_effectivity: new Date('2025-01-01'),
-            registration_effectivity: new Date('2025-01-01'),
-            payroll_cut_off: ['15/30'],
-            payment_cut_off: ['15/30'],
-            quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
-            has_foreign: false,
-            accounting_method: 'ACCRUAL',
-            last_update: new Date(),
-            created_at: new Date(),
-            updated_at: new Date(),
-          },
         },
       ]);
 
@@ -632,6 +521,8 @@ describe('Organization Status (Step 6.5)', () => {
       expect(res.body[1].status.organization_id).toBe(res.body[1].id);
       expect(res.body[0].status.status).toBe('PENDING');
       expect(res.body[1].status.status).toBe('PENDING');
+      expect(res.body[0]).not.toHaveProperty('operation');
+      expect(res.body[1]).not.toHaveProperty('operation');
     });
   });
 

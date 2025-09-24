@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrganizationRepository } from '../repositories/organization.repository';
 import { CreateOrganizationDto } from '../dto/create-organization.dto';
 import { UpdateOrganizationDto } from '../dto/update-organization.dto';
+import { UpdateOrganizationOperationDto } from '../dto/update-organization-operation.dto';
 import { Organization } from '../../../../generated/prisma';
 import { Prisma } from '../../../../generated/prisma';
 
@@ -14,12 +15,16 @@ export class OrganizationService {
   }
 
   async findById(id: string): Promise<Organization | null> {
+    return this.repo.getByIdBasic(id);
+  }
+
+  async findByIdWithOperation(id: string): Promise<Organization | null> {
     return this.repo.getById(id);
   }
 
   async update(id: string, data: UpdateOrganizationDto): Promise<Organization> {
     try {
-      return await this.repo.update(id, data);
+      return await this.repo.updateBasic(id, data);
     } catch (error) {
       if (error.code === 'P2025') { // Record not found
         throw new NotFoundException();
@@ -40,6 +45,14 @@ export class OrganizationService {
   }
 
   async list(filters: { category?: string; tax_classification?: string }): Promise<Organization[]> {
-    return this.repo.list(filters);
+    return this.repo.listBasic(filters);
+  }
+
+  async getOperationByOrgId(id: string) {
+    return this.repo.getOperationByOrgId(id);
+  }
+
+  async updateOperation(id: string, data: UpdateOrganizationOperationDto) {
+    return this.repo.updateOperation(id, data);
   }
 }
