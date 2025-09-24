@@ -95,6 +95,13 @@ describe('Organizations Controller (e2e)', () => {
     expect(res.status).toBe(204);
   });
 
+  it('DELETE /organizations/:id returns 404 for non-existing organization', async () => {
+    const token = signPayload({ userId: 'u1', permissions: ['organization.write'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+    mockService.softDelete.mockRejectedValue(new NotFoundException());
+    const res = await request(app.getHttpServer()).delete('/organizations/non-existing').set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(404);
+  });
+
   it('GET /organizations supports pagination and filters', async () => {
     const token = signPayload({ userId: 'u1', permissions: ['organization.read'], isSuperAdmin: false }, process.env.JWT_SECRET!);
     const mockOrgs = [

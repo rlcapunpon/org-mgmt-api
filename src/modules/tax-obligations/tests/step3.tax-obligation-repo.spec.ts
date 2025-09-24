@@ -72,4 +72,12 @@ describe('TaxObligationRepository', () => {
     expect(result).toEqual(mockObligations);
     expect(prismaMock.taxObligation.findMany).toHaveBeenCalledWith({ where: { active: true } });
   });
+
+  it('listActive should return empty array when no active obligations', async () => {
+    (prismaMock.taxObligation.findMany as jest.Mock).mockResolvedValue([]);
+
+    const result = await repository.listActive();
+    expect(result).toEqual([]);
+    expect(prismaMock.taxObligation.findMany).toHaveBeenCalledWith({ where: { active: true } });
+  });
 });

@@ -67,6 +67,13 @@ describe('TaxObligations Controller (e2e)', () => {
     expect(res.body[0]).toMatchObject({ id: '1', code: '2550M', name: 'Monthly VAT' });
   });
 
+  it('GET /tax-obligations returns empty array when no active obligations', async () => {
+    mockService.listActive.mockResolvedValue([]);
+    const res = await request(app.getHttpServer()).get('/tax-obligations');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
+  });
+
   it('superAdmin can create tax obligations without specific permissions', async () => {
     const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: true }, process.env.JWT_SECRET!);
     const payload = { code: '1701', name: 'Annual Income Tax', frequency: 'ANNUAL', due_rule: { month: 4, day: 15 } };
