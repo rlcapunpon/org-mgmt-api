@@ -394,7 +394,11 @@ src/
 ---
 
 ### Step 6 — Auth & RBAC verification
-**Goal:** Implement JWT verification + permission guard. Support both local-claim checks and optional RBAC API double-check.
+**Context:** 
+- There is an existing RBAC API, read RESOURCE_ACCESS_FLOW.md to understand how we can check if a user has permission to access the organization
+- Check the ORGANIZATION_PERMSSION_MAPPING.md to check the permission mapping used by the existing RBAC API
+
+**Goal:** Implement JWT verification + permission guard. Support both local-claim checks and RBAC API double-check.
 
 **Failing tests to write first:**
 - `auth.spec.ts`
@@ -402,13 +406,13 @@ src/
   - Expired JWT returns `401`.
   - JWT without required permission returns `403`.
   - When `isSuperAdmin: true` or `permissions: ['*']` allow all actions.
-  - When `RBAC_CHECK_REALTIME=true`, service makes a request to `RBAC_API_URL` `/check` and honors allow/deny. Use nock to mock responses.
-
+  
 **Implementation tasks:**
 - Add `AuthGuard` that uses `jsonwebtoken` and `JWT_SECRET` to verify tokens (HS256).
 - Implement `PermissionsGuard` that validates required permission for an endpoint.
 - Add decorator `@RequiresPermission('organization.read')` to controllers to express required permission. Permission checks should accept org-scoped permissions (e.g., `organization.read:orgId`) or wildcard `*`.
-- Support a config toggle `RBAC_CHECK_REALTIME` to call the RBAC API to confirm permission on sensitive operations. Mock RBAC calls in tests.
+- Call the RBAC API to confirm permission on sensitive operations. Mock RBAC calls in tests.
+- Update the existing test for accessing organization (Step 2 CRUD endpoints) to consider the permissions needed then make the tests pass by updating necessary implementations. (Test-Driven-Development)
 
 **Acceptance:** tests & build pass.
 
