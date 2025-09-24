@@ -1,18 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrganizationRepository } from '../repositories/organization.repository';
-import { PrismaClient } from '../../../../generated/prisma';
+import { PrismaService } from '../../../database/prisma.service';
 
 describe('OrganizationRepository', () => {
   let repository: OrganizationRepository;
-  let prismaMock: jest.Mocked<PrismaClient>;
+  let prismaMock: jest.Mocked<PrismaService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         OrganizationRepository,
         {
-          provide: PrismaClient,
+          provide: PrismaService,
           useValue: {
+            $connect: jest.fn(),
+            $disconnect: jest.fn(),
             organization: {
               create: jest.fn(),
               findUnique: jest.fn(),
@@ -25,7 +27,7 @@ describe('OrganizationRepository', () => {
     }).compile();
 
     repository = module.get<OrganizationRepository>(OrganizationRepository);
-    prismaMock = module.get(PrismaClient);
+    prismaMock = module.get(PrismaService);
   });
 
   it('createOrganization should fail when required fields missing', async () => {
@@ -49,7 +51,7 @@ describe('OrganizationRepository', () => {
       updated_at: new Date(),
       deleted_at: null,
     };
-    prismaMock.organization.create.mockResolvedValue(mockOrg);
+    (prismaMock.organization.create as jest.Mock).mockResolvedValue(mockOrg);
 
     const result = await repository.create(data);
     expect(result).toEqual(mockOrg);
@@ -57,7 +59,7 @@ describe('OrganizationRepository', () => {
   });
 
   it('getOrganizationById should return null for non-existing id', async () => {
-    prismaMock.organization.findUnique.mockResolvedValue(null);
+    (prismaMock.organization.findUnique as jest.Mock).mockResolvedValue(null);
 
     const result = await repository.getById('non-existing');
     expect(result).toBeNull();
@@ -80,7 +82,7 @@ describe('OrganizationRepository', () => {
         deleted_at: null,
       },
     ];
-    prismaMock.organization.findMany.mockResolvedValue(mockOrgs);
+    (prismaMock.organization.findMany as jest.Mock).mockResolvedValue(mockOrgs);
 
     const result = await repository.list({ category: 'NON_INDIVIDUAL', tax_classification: 'VAT' });
     expect(result).toEqual(mockOrgs);

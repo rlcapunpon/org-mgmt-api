@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient, Organization } from '../../../../generated/prisma';
+import { PrismaService } from '../../../database/prisma.service';
+import { Organization } from '../../../../generated/prisma';
 
 @Injectable()
 export class OrganizationRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private prisma: PrismaService) {}
 
   async create(data: Omit<Organization, 'id' | 'created_at' | 'updated_at'>): Promise<Organization> {
     if (!data.name || !data.category || !data.tax_classification) {

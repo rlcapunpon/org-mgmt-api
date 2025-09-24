@@ -13,3 +13,11 @@ Files changed: prisma/schema.prisma, src/modules/organizations/repositories/orga
 Tests added: step1.organization-repo.spec.ts
 Build status: OK
 Notes: Repository layer implemented with mocks for unit tests. No migration run yet as tests don't require real DB.
+
+# CHECKPOINT - Step 2
+Date: 2025-09-24
+Summary: Implemented CRUD API endpoints for organizations with JWT authentication and RBAC. Added auth module with JWT strategy, custom guards for auth and permissions, decorators for permission checks. Created DTOs for validation, service layer, controller with all CRUD operations. Wrote failing e2e tests with mocks, then implemented to make them pass.
+Files changed: src/database/prisma.service.ts, src/database/prisma.module.ts, src/auth/auth.module.ts, src/common/guards/auth.guard.ts, src/common/guards/permissions.guard.ts, src/common/decorators/requires-permission.decorator.ts, src/modules/organizations/dto/create-organization.dto.ts, src/modules/organizations/dto/update-organization.dto.ts, src/modules/organizations/services/organization.service.ts, src/modules/organizations/controllers/organization.controller.ts, src/modules/organizations/organizations.module.ts, src/app.module.ts, src/main.ts, src/test-utils/token.ts, src/modules/organizations/tests/step2.organizations.controller.spec.ts
+Tests added: step2.organizations.controller.spec.ts
+Build status: OK
+Notes: Full REST API implemented with auth. All tests pass using mocks to avoid DB dependencies. Ready for Step 3.
