@@ -555,6 +555,7 @@ src/
 **Context:**
 - We have a file: tax-obligations-flow/obligation-flow-self_employed-sole_proprietor-freelancer.txt that contains details about tax obligations, schedules, and flow. 
 - Sub-Categories: Self-Employed, Sole Proprietor, and Freelancer have similar tax obligations
+- For now we are focusing on the tax obligations
 
 **Goal:** Seed the database for tax obligations and conditions for Category INDIVIDUAL > Sub-Category: Self-Employed / Sole Proprietor / Freelancer that can be used later for tax obligation schedule creation.
 

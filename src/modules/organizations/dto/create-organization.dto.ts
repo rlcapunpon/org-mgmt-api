@@ -16,9 +16,8 @@ export class CreateOrganizationDto {
   category: 'INDIVIDUAL' | 'NON_INDIVIDUAL';
 
   @IsOptional()
-  @IsString()
-  @Transform(({ value }) => value ?? null)
-  subcategory: string | null;
+  @IsEnum(['SELF_EMPLOYED', 'SOLE_PROPRIETOR', 'FREELANCER', 'CORPORATION', 'PARTNERSHIP', 'OTHERS'])
+  subcategory?: 'SELF_EMPLOYED' | 'SOLE_PROPRIETOR' | 'FREELANCER' | 'CORPORATION' | 'PARTNERSHIP' | 'OTHERS';
 
   @IsNotEmpty()
   @IsEnum(['VAT', 'NON_VAT'])

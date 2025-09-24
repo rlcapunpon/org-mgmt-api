@@ -19,6 +19,15 @@ enum Category {
   NON_INDIVIDUAL
 }
 
+enum SubCategory {
+  SELF_EMPLOYED
+  SOLE_PROPRIETOR
+  FREELANCER
+  CORPORATION
+  PARTNERSHIP
+  OTHERS
+}
+
 enum TaxClassification {
   VAT
   NON_VAT
@@ -55,7 +64,7 @@ model Organization {
   name              String
   tin               String?
   category          Category
-  subcategory       String?
+  subcategory       SubCategory?
   tax_classification TaxClassification
   registration_date DateTime?
   address           String?
@@ -70,7 +79,7 @@ model Organization {
 
 model TaxObligation {
   id         String    @id @default(cuid())
-  code       String
+  code       String    @unique
   name       String
   frequency  Frequency
   due_rule   Json

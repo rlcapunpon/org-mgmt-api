@@ -61,3 +61,11 @@ Files changed: prisma/schema.prisma, src/modules/organizations/dto/create-organi
 Tests added: Updated existing tests
 Build status: OK
 Notes: Schema updated and all tests pass. TaxClassification now only supports VAT and NON_VAT. OrganizationOperation includes new boolean fields for employee and withholding agent status. Prisma client regenerated. Ready for next steps.
+
+# CHECKPOINT - Step 7.2
+Date: 2025-09-24
+Summary: Created SubCategory enum for organizations and seeded tax obligations for INDIVIDUAL > Self-Employed/Sole Proprietor/Freelancer. Added SubCategory enum with values SELF_EMPLOYED, SOLE_PROPRIETOR, FREELANCER, CORPORATION, PARTNERSHIP, OTHERS. Updated Organization model to use SubCategory enum instead of string. Created comprehensive seeding script for tax obligations including income tax (1701Q/1701), business taxes (2551Q for non-VAT, 2550Q/SLSP for VAT), withholding taxes (compensation, expanded, final), and other obligations. Added unique constraint on TaxObligation.code field. Updated DTOs, services, and tests to handle the new enum. Added seed script to package.json.
+Files changed: prisma/schema.prisma, prisma/seed.ts, package.json, src/modules/organizations/dto/create-organization.dto.ts, src/modules/organizations/dto/update-organization.dto.ts, src/modules/organizations/services/organization.service.ts
+Tests added: Updated existing tests
+Build status: OK
+Notes: SubCategory enum implemented and tax obligations seeded for individual taxpayers. All tests pass and build succeeds. Database seeding script ready for INDIVIDUAL category organizations.

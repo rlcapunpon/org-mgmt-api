@@ -15,8 +15,8 @@ export class UpdateOrganizationDto {
   category?: 'INDIVIDUAL' | 'NON_INDIVIDUAL';
 
   @IsOptional()
-  @IsString()
-  subcategory?: string;
+  @IsEnum(['SELF_EMPLOYED', 'SOLE_PROPRIETOR', 'FREELANCER', 'CORPORATION', 'PARTNERSHIP', 'OTHERS'])
+  subcategory?: 'SELF_EMPLOYED' | 'SOLE_PROPRIETOR' | 'FREELANCER' | 'CORPORATION' | 'PARTNERSHIP' | 'OTHERS';
 
   @IsOptional()
   @IsEnum(['VAT', 'NON_VAT'])

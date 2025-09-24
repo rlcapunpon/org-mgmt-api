@@ -11,7 +11,12 @@ export class OrganizationService {
   constructor(private repo: OrganizationRepository) {}
 
   async create(data: CreateOrganizationDto): Promise<Organization> {
-    return this.repo.create(data);
+    // Transform undefined subcategory to null for database compatibility
+    const transformedData = {
+      ...data,
+      subcategory: data.subcategory ?? null,
+    };
+    return this.repo.create(transformedData);
   }
 
   async findById(id: string): Promise<Organization | null> {
@@ -24,7 +29,12 @@ export class OrganizationService {
 
   async update(id: string, data: UpdateOrganizationDto): Promise<Organization> {
     try {
-      return await this.repo.updateBasic(id, data);
+      // Transform undefined subcategory to null for database compatibility
+      const transformedData = {
+        ...data,
+        subcategory: data.subcategory ?? null,
+      };
+      return await this.repo.updateBasic(id, transformedData);
     } catch (error) {
       if (error.code === 'P2025') { // Record not found
         throw new NotFoundException();
