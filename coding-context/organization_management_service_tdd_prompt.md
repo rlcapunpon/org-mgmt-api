@@ -445,6 +445,39 @@ src/
 
 **After finishing:** Update `CHECKPOINT.md`.
 
+
+---
+
+### Step 6.6  - Organization Business Operations
+
+**Goal:** Track the organization operations data of an organization in a different table to be able to use it in tax obligation scheduling in the future.
+
+**Failing tests to write first:**
+- step6.6.organization-operation.spec.ts
+  - CRUD tests for organization operation
+  - Only user with correct read permission and update permission can get organization operation data
+
+**Implementation tasks**
+- create a new table in the schema.prisma
+- regenerate the schema with the new table
+- when a new organization is created, organization operation is atuomatically created
+- Organization operation details should have but are not limited to:
+   > organization_id
+   > fy_start - date
+   > fy_end  - date
+   > vat_reg_effectivity - date
+   > registration_effectivity - date
+   > payroll_cut_off - string array of mm/dd nullable
+   > payment_cut_off - string array of mm/dd nullable
+   > quarter_closing - string array of mm/dd nullable
+   > has_foreign - boolean default false
+   > accounting_method  string (cash, accrual, other) nullable
+   > last_update
+
+**Acceptance:** tests & build pass. Edge cases considered. Complete code coverage.
+
+**After finishing:** Update `CHECKPOINT.md`.
+
 ---
 
 ### Step 7 — Integration Tests: full flows

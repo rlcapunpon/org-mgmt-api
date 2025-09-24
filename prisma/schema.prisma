@@ -47,6 +47,11 @@ enum ScheduleStatus {
   EXEMPT
 }
 
+enum AccountingMethod {
+  ACCRUAL
+  CASH
+}
+
 model Organization {
   id                String   @id @default(cuid())
   name              String
@@ -62,6 +67,7 @@ model Organization {
 
   obligations       OrganizationObligation[]
   status            OrganizationStatus?
+  operation         OrganizationOperation?
 }
 
 model TaxObligation {
@@ -118,6 +124,25 @@ model OrganizationStatus {
   updated_at      DateTime @updatedAt
 
   organization    Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+}
+
+model OrganizationOperation {
+  id                        String    @id @default(cuid())
+  organization_id           String    @unique
+  fy_start                  DateTime
+  fy_end                    DateTime
+  vat_reg_effectivity       DateTime
+  registration_effectivity  DateTime
+  payroll_cut_off           String[]
+  payment_cut_off           String[]
+  quarter_closing           String[]
+  has_foreign               Boolean   @default(false)
+  accounting_method         AccountingMethod @default(ACCRUAL)
+  last_update               DateTime  @default(now())
+  created_at                DateTime  @default(now())
+  updated_at                DateTime  @updatedAt
+
+  organization              Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
 }
 
 

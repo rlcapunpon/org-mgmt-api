@@ -7,7 +7,7 @@ import { OrganizationService } from '../../modules/organizations/services/organi
 import { Category, TaxClassification } from '../../../generated/prisma';
 import { PrismaService } from '../../database/prisma.service';
 
-describe('Organization Status (Step 6.5)', () => {
+describe('Organization Business Operations (Step 6.6)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -187,6 +187,13 @@ describe('Organization Status (Step 6.5)', () => {
           update: jest.fn(),
           findUnique: jest.fn(),
         },
+        organizationOperation: {
+          create: jest.fn(),
+          findMany: jest.fn(),
+          update: jest.fn(),
+          findUnique: jest.fn(),
+          upsert: jest.fn(),
+        },
       })
       .compile();
 
@@ -198,161 +205,77 @@ describe('Organization Status (Step 6.5)', () => {
     await app.close();
   });
 
-  describe('Organization Status CRUD', () => {
-    it('should create organization status automatically when organization is created', async () => {
+  describe('Organization Operation CRUD', () => {
+    it('should create organization operation automatically when organization is created', async () => {
       const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
       const payload = { name: 'Test Org', category: 'NON_INDIVIDUAL', tax_classification: 'VAT' };
-      const mockOrg = {
-        id: '1',
-        name: 'Test Org',
-        category: Category.NON_INDIVIDUAL,
-        tax_classification: TaxClassification.VAT,
-        tin: null,
-        subcategory: null,
-        registration_date: null,
-        address: null,
-        created_at: new Date(),
-        updated_at: new Date(),
-        deleted_at: null,
-        status: {
-          id: 'status-1',
-          organization_id: '1',
-          status: 'PENDING',
-          last_update: new Date(),
-        },
-      };
 
-      // mockService.create.mockResolvedValue(mockOrg);
       const res = await request(app.getHttpServer())
         .post('/organizations')
         .set('Authorization', `Bearer ${token}`)
         .send(payload);
 
       expect(res.status).toBe(201);
-      expect(res.body).toHaveProperty('status');
-      expect(res.body.status).toHaveProperty('status', 'PENDING');
-      expect(res.body.status).toHaveProperty('organization_id', res.body.id);
+      expect(res.body).toHaveProperty('operation');
+      expect(res.body.operation).toHaveProperty('fy_start');
+      expect(res.body.operation).toHaveProperty('fy_end');
+      expect(res.body.operation).toHaveProperty('vat_reg_effectivity');
+      expect(res.body.operation).toHaveProperty('registration_effectivity');
+      expect(res.body.operation).toHaveProperty('payroll_cut_off');
+      expect(res.body.operation).toHaveProperty('payment_cut_off');
+      expect(res.body.operation).toHaveProperty('quarter_closing');
+      expect(res.body.operation).toHaveProperty('has_foreign', false);
+      expect(res.body.operation).toHaveProperty('accounting_method');
+      expect(res.body.operation).toHaveProperty('organization_id', res.body.id);
     });
 
-    it('should return organization with status when getting organization by id', async () => {
+    it('should return organization with operation when getting organization by id', async () => {
       const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-      const mockOrg = {
-        id: '1',
-        name: 'Test Org',
-        category: Category.NON_INDIVIDUAL,
-        tax_classification: TaxClassification.VAT,
-        tin: null,
-        subcategory: null,
-        registration_date: null,
-        address: null,
-        created_at: new Date(),
-        updated_at: new Date(),
-        deleted_at: null,
-        status: {
-          id: 'status-1',
-          organization_id: '1',
-          status: 'PENDING',
-          last_update: new Date(),
-        },
-      };
 
-      // mockService.findById.mockResolvedValue(mockOrg);
       const res = await request(app.getHttpServer())
         .get('/organizations/1')
         .set('Authorization', `Bearer ${token}`);
 
       expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty('status');
-      expect(res.body.status.status).toBe('PENDING');
+      expect(res.body).toHaveProperty('operation');
+      expect(res.body.operation).toHaveProperty('fy_start');
+      expect(res.body.operation).toHaveProperty('fy_end');
+      expect(res.body.operation).toHaveProperty('payroll_cut_off');
+      expect(res.body.operation).toHaveProperty('quarter_closing');
+      expect(Array.isArray(res.body.operation.quarter_closing)).toBe(true);
+      expect(res.body.operation.quarter_closing).toHaveLength(4);
     });
 
-    it('should return organizations with status when listing organizations', async () => {
+    it('should return organizations with operation when listing organizations', async () => {
       const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-      const mockOrgs = [
-        {
-          id: '1',
-          name: 'Test Org',
-          category: Category.NON_INDIVIDUAL,
-          tax_classification: TaxClassification.VAT,
-          tin: null,
-          subcategory: null,
-          registration_date: null,
-          address: null,
-          created_at: new Date(),
-          updated_at: new Date(),
-          deleted_at: null,
-          status: {
-            id: 'status-1',
-            organization_id: '1',
-            status: 'PENDING',
-            last_update: new Date(),
-          },
-          operation: {
-            id: 'operation-1',
-            organization_id: '1',
-            fy_start: new Date('2025-01-01'),
-            fy_end: new Date('2025-12-31'),
-            vat_reg_effectivity: new Date('2025-01-01'),
-            registration_effectivity: new Date('2025-01-01'),
-            payroll_cut_off: ['15/30'],
-            payment_cut_off: ['15/30'],
-            quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
-            has_foreign: false,
-            accounting_method: 'ACCRUAL',
-            last_update: new Date(),
-            created_at: new Date(),
-            updated_at: new Date(),
-          },
-        },
-      ];
 
-      // mockService.list.mockResolvedValue(mockOrgs);
       const res = await request(app.getHttpServer())
         .get('/organizations')
         .set('Authorization', `Bearer ${token}`);
 
       expect(res.status).toBe(200);
       expect(res.body).toHaveLength(1);
-      expect(res.body[0]).toHaveProperty('status');
-      expect(res.body[0].status.status).toBe('PENDING');
+      expect(res.body[0]).toHaveProperty('operation');
+      expect(res.body[0].operation).toHaveProperty('has_foreign', false);
+      expect(res.body[0].operation).toHaveProperty('accounting_method', 'ACCRUAL');
     });
 
-    it('should update organization status last_update when organization is updated', async () => {
+    it('should update organization operation last_update when organization is updated', async () => {
       const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-      const updatedOrg = {
-        id: '1',
-        name: 'Updated Org',
-        category: Category.NON_INDIVIDUAL,
-        tax_classification: TaxClassification.VAT,
-        tin: null,
-        subcategory: null,
-        registration_date: null,
-        address: null,
-        created_at: new Date(),
-        updated_at: new Date(),
-        deleted_at: null,
-        status: {
-          id: 'status-1',
-          organization_id: '1',
-          status: 'PENDING',
-          last_update: new Date(), // Should be updated
-        },
-      };
 
-      // mockService.update.mockResolvedValue(updatedOrg);
       const res = await request(app.getHttpServer())
         .put('/organizations/1')
         .set('Authorization', `Bearer ${token}`)
         .send({ name: 'Updated Org' });
 
       expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty('status');
-      expect(res.body.status).toHaveProperty('last_update');
+      expect(res.body).toHaveProperty('operation');
+      expect(res.body.operation).toHaveProperty('last_update');
     });
   });
 
-  describe('Organization Status Permissions', () => {
-    it('should deny access to organization status without proper read permission', async () => {
+  describe('Organization Operation Permissions', () => {
+    it('should deny access to organization operation without proper read permission', async () => {
       const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
       const res = await request(app.getHttpServer())
         .get('/organizations/1')
@@ -361,40 +284,20 @@ describe('Organization Status (Step 6.5)', () => {
       expect(res.status).toBe(403);
     });
 
-    it('should allow super admin to access organization status', async () => {
+    it('should allow super admin to access organization operation', async () => {
       const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: true, role: 'Super Admin' }, process.env.JWT_SECRET!);
-      const mockOrg = {
-        id: '1',
-        name: 'Test Org',
-        category: Category.NON_INDIVIDUAL,
-        tax_classification: TaxClassification.VAT,
-        tin: null,
-        subcategory: null,
-        registration_date: null,
-        address: null,
-        created_at: new Date(),
-        updated_at: new Date(),
-        deleted_at: null,
-        status: {
-          id: 'status-1',
-          organization_id: '1',
-          status: 'PENDING',
-          last_update: new Date(),
-        },
-      };
 
-      // mockService.findById.mockResolvedValue(mockOrg);
       const res = await request(app.getHttpServer())
         .get('/organizations/1')
         .set('Authorization', `Bearer ${token}`);
 
       expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty('status');
+      expect(res.body).toHaveProperty('operation');
     });
   });
 
-  describe('Organization Status Edge Cases', () => {
-    it('should create status with PENDING for INDIVIDUAL category organizations', async () => {
+  describe('Organization Operation Edge Cases', () => {
+    it('should create operation with default values for INDIVIDUAL category organizations', async () => {
       const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
       const payload = { name: 'Individual Org', category: 'INDIVIDUAL', tax_classification: 'NON_VAT' };
 
@@ -404,128 +307,12 @@ describe('Organization Status (Step 6.5)', () => {
         .send(payload);
 
       expect(res.status).toBe(201);
-      expect(res.body).toHaveProperty('status');
-      expect(res.body.status.status).toBe('PENDING');
+      expect(res.body).toHaveProperty('operation');
+      expect(res.body.operation).toHaveProperty('has_foreign', false);
       expect(res.body.category).toBe('INDIVIDUAL');
     });
 
-    it('should return 404 when getting status for non-existent organization', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-
-      // Mock findUnique to return null for non-existent organization
-      const prismaService = app.get(PrismaService);
-      (prismaService.organization.findUnique as jest.Mock).mockResolvedValueOnce(null);
-
-      const res = await request(app.getHttpServer())
-        .get('/organizations/non-existent-id')
-        .set('Authorization', `Bearer ${token}`);
-
-      expect(res.status).toBe(404);
-    });
-
-    it('should maintain status consistency across multiple organization updates', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-
-      // First update
-      const res1 = await request(app.getHttpServer())
-        .put('/organizations/1')
-        .set('Authorization', `Bearer ${token}`)
-        .send({ name: 'Updated Name 1' });
-
-      expect(res1.status).toBe(200);
-      expect(res1.body).toHaveProperty('status');
-      const firstUpdateTime = new Date(res1.body.status.last_update);
-
-      // Wait a bit to ensure timestamp difference
-      await new Promise(resolve => setTimeout(resolve, 10));
-
-      // Second update
-      const res2 = await request(app.getHttpServer())
-        .put('/organizations/1')
-        .set('Authorization', `Bearer ${token}`)
-        .send({ address: 'New Address' });
-
-      expect(res2.status).toBe(200);
-      expect(res2.body).toHaveProperty('status');
-      const secondUpdateTime = new Date(res2.body.status.last_update);
-
-      // Second update should have a later timestamp
-      expect(secondUpdateTime.getTime()).toBeGreaterThanOrEqual(firstUpdateTime.getTime());
-    });
-
-    it('should include status in filtered organization lists', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-
-      const res = await request(app.getHttpServer())
-        .get('/organizations?category=NON_INDIVIDUAL')
-        .set('Authorization', `Bearer ${token}`);
-
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveLength(1);
-      expect(res.body[0]).toHaveProperty('status');
-      expect(res.body[0].status.status).toBe('PENDING');
-      expect(res.body[0].category).toBe('NON_INDIVIDUAL');
-    });
-
-    it('should include status in organization lists with tax classification filter', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-
-      const res = await request(app.getHttpServer())
-        .get('/organizations?tax_classification=VAT')
-        .set('Authorization', `Bearer ${token}`);
-
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveLength(1);
-      expect(res.body[0]).toHaveProperty('status');
-      expect(res.body[0].status.status).toBe('PENDING');
-      expect(res.body[0].tax_classification).toBe('VAT');
-    });
-
-    it('should create status with proper timestamps on organization creation', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-      const payload = { name: 'Timestamp Test Org', category: 'INDIVIDUAL', tax_classification: 'VAT' };
-      const beforeCreate = new Date();
-
-      const res = await request(app.getHttpServer())
-        .post('/organizations')
-        .set('Authorization', `Bearer ${token}`)
-        .send(payload);
-
-      const afterCreate = new Date();
-
-      expect(res.status).toBe(201);
-      expect(res.body).toHaveProperty('status');
-      expect(res.body.status).toHaveProperty('created_at');
-      expect(res.body.status).toHaveProperty('updated_at');
-      expect(res.body.status).toHaveProperty('last_update');
-
-      const statusCreatedAt = new Date(res.body.status.created_at);
-      const statusUpdatedAt = new Date(res.body.status.updated_at);
-      const statusLastUpdate = new Date(res.body.status.last_update);
-
-      // Timestamps should be reasonable (within test execution time)
-      expect(statusCreatedAt.getTime()).toBeGreaterThanOrEqual(beforeCreate.getTime());
-      expect(statusCreatedAt.getTime()).toBeLessThanOrEqual(afterCreate.getTime());
-      expect(statusUpdatedAt.getTime()).toBeGreaterThanOrEqual(beforeCreate.getTime());
-      expect(statusLastUpdate.getTime()).toBeGreaterThanOrEqual(beforeCreate.getTime());
-    });
-
-    it('should handle empty organization list with status structure', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-
-      // Mock empty result
-      const prismaService = app.get(PrismaService);
-      (prismaService.organization.findMany as jest.Mock).mockResolvedValueOnce([]);
-
-      const res = await request(app.getHttpServer())
-        .get('/organizations?category=NON_INDIVIDUAL&tax_classification=OTHERS')
-        .set('Authorization', `Bearer ${token}`);
-
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveLength(0);
-    });
-
-    it('should maintain status organization_id relationship', async () => {
+    it('should handle operation data with nullable fields', async () => {
       const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
 
       const res = await request(app.getHttpServer())
@@ -533,15 +320,30 @@ describe('Organization Status (Step 6.5)', () => {
         .set('Authorization', `Bearer ${token}`);
 
       expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty('status');
-      expect(res.body.status).toHaveProperty('organization_id', '1');
-      expect(res.body.id).toBe(res.body.status.organization_id);
+      expect(res.body).toHaveProperty('operation');
+      // These fields can be nullable
+      expect(res.body.operation).toHaveProperty('payroll_cut_off');
+      expect(res.body.operation).toHaveProperty('payment_cut_off');
+      expect(res.body.operation).toHaveProperty('accounting_method');
     });
 
-    it('should handle multiple organizations with different statuses in list', async () => {
+    it('should maintain operation organization_id relationship', async () => {
       const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
 
-      // Mock multiple organizations with different statuses
+      const res = await request(app.getHttpServer())
+        .get('/organizations/1')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty('operation');
+      expect(res.body.operation).toHaveProperty('organization_id', '1');
+      expect(res.body.id).toBe(res.body.operation.organization_id);
+    });
+
+    it('should handle multiple organizations with different operation data in list', async () => {
+      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+
+      // Mock multiple organizations with different operations
       const prismaService = app.get(PrismaService);
       (prismaService.organization.findMany as jest.Mock).mockResolvedValueOnce([
         {
@@ -575,7 +377,7 @@ describe('Organization Status (Step 6.5)', () => {
             payment_cut_off: ['15/30'],
             quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
             has_foreign: false,
-            accounting_method: 'ACCRUAL',
+            accounting_method: 'CASH',
             last_update: new Date(),
             created_at: new Date(),
             updated_at: new Date(),
@@ -604,14 +406,14 @@ describe('Organization Status (Step 6.5)', () => {
           operation: {
             id: 'operation-2',
             organization_id: '2',
-            fy_start: new Date('2025-01-01'),
-            fy_end: new Date('2025-12-31'),
-            vat_reg_effectivity: new Date('2025-01-01'),
-            registration_effectivity: new Date('2025-01-01'),
-            payroll_cut_off: ['15/30'],
-            payment_cut_off: ['15/30'],
-            quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
-            has_foreign: false,
+            fy_start: new Date('2025-04-01'),
+            fy_end: new Date('2026-03-31'),
+            vat_reg_effectivity: new Date('2025-04-01'),
+            registration_effectivity: new Date('2025-04-01'),
+            payroll_cut_off: ['25/10'],
+            payment_cut_off: ['25/10'],
+            quarter_closing: ['06/30', '09/30', '12/31', '03/31'],
+            has_foreign: true,
             accounting_method: 'ACCRUAL',
             last_update: new Date(),
             created_at: new Date(),
@@ -626,17 +428,19 @@ describe('Organization Status (Step 6.5)', () => {
 
       expect(res.status).toBe(200);
       expect(res.body).toHaveLength(2);
-      expect(res.body[0]).toHaveProperty('status');
-      expect(res.body[1]).toHaveProperty('status');
-      expect(res.body[0].status.organization_id).toBe(res.body[0].id);
-      expect(res.body[1].status.organization_id).toBe(res.body[1].id);
-      expect(res.body[0].status.status).toBe('PENDING');
-      expect(res.body[1].status.status).toBe('PENDING');
+      expect(res.body[0]).toHaveProperty('operation');
+      expect(res.body[1]).toHaveProperty('operation');
+      expect(res.body[0].operation.organization_id).toBe(res.body[0].id);
+      expect(res.body[1].operation.organization_id).toBe(res.body[1].id);
+      expect(res.body[0].operation.accounting_method).toBe('CASH');
+      expect(res.body[1].operation.accounting_method).toBe('ACCRUAL');
+      expect(res.body[0].operation.has_foreign).toBe(false);
+      expect(res.body[1].operation.has_foreign).toBe(true);
     });
   });
 
-  describe('Organization Status Error Handling', () => {
-    it('should handle database errors during organization creation with status', async () => {
+  describe('Organization Operation Error Handling', () => {
+    it('should handle database errors during organization creation with operation', async () => {
       const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
       const payload = { name: 'Error Test Org', category: 'INDIVIDUAL', tax_classification: 'VAT' };
 
@@ -652,7 +456,7 @@ describe('Organization Status (Step 6.5)', () => {
       expect(res.status).toBe(500);
     });
 
-    it('should handle database errors during organization update with status', async () => {
+    it('should handle database errors during organization update with operation', async () => {
       const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
 
       // Mock database error

@@ -19,9 +19,23 @@ export class OrganizationRepository {
             status: 'PENDING',
           },
         },
+        operation: {
+          create: {
+            fy_start: new Date(new Date().getFullYear(), 0, 1), // January 1st of current year
+            fy_end: new Date(new Date().getFullYear(), 11, 31), // December 31st of current year
+            vat_reg_effectivity: new Date(new Date().getFullYear(), 0, 1),
+            registration_effectivity: new Date(new Date().getFullYear(), 0, 1),
+            payroll_cut_off: ['15/30'],
+            payment_cut_off: ['15/30'],
+            quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
+            has_foreign: false,
+            accounting_method: 'ACCRUAL',
+          },
+        },
       },
       include: {
         status: true,
+        operation: true,
       },
     });
   }
@@ -31,6 +45,7 @@ export class OrganizationRepository {
       where: { id },
       include: {
         status: true,
+        operation: true,
       },
     });
   }
@@ -45,9 +60,15 @@ export class OrganizationRepository {
             last_update: new Date(),
           },
         },
+        operation: {
+          update: {
+            last_update: new Date(),
+          },
+        },
       },
       include: {
         status: true,
+        operation: true,
       },
     });
   }
@@ -66,6 +87,7 @@ export class OrganizationRepository {
       where,
       include: {
         status: true,
+        operation: true,
       },
     });
   }
