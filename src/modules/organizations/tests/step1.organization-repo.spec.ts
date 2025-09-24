@@ -50,12 +50,33 @@ describe('OrganizationRepository', () => {
       created_at: new Date(),
       updated_at: new Date(),
       deleted_at: null,
+      status: {
+        id: 'status-uuid',
+        organization_id: 'uuid',
+        status: 'PENDING',
+        last_update: new Date(),
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
     };
     (prismaMock.organization.create as jest.Mock).mockResolvedValue(mockOrg);
 
     const result = await repository.create(data);
     expect(result).toEqual(mockOrg);
-    expect(prismaMock.organization.create).toHaveBeenCalledWith({ data: { ...data, deleted_at: null } });
+    expect(prismaMock.organization.create).toHaveBeenCalledWith({
+      data: {
+        ...data,
+        deleted_at: null,
+        status: {
+          create: {
+            status: 'PENDING',
+          },
+        },
+      },
+      include: {
+        status: true,
+      },
+    });
   });
 
   it('getOrganizationById should return null for non-existing id', async () => {
@@ -63,7 +84,12 @@ describe('OrganizationRepository', () => {
 
     const result = await repository.getById('non-existing');
     expect(result).toBeNull();
-    expect(prismaMock.organization.findUnique).toHaveBeenCalledWith({ where: { id: 'non-existing' } });
+    expect(prismaMock.organization.findUnique).toHaveBeenCalledWith({
+      where: { id: 'non-existing' },
+      include: {
+        status: true,
+      },
+    });
   });
 
   it('listOrganizations supports filters category, tax_classification', async () => {
@@ -80,6 +106,14 @@ describe('OrganizationRepository', () => {
         created_at: new Date(),
         updated_at: new Date(),
         deleted_at: null,
+        status: {
+          id: 'status-1',
+          organization_id: '1',
+          status: 'PENDING',
+          last_update: new Date(),
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
       },
     ];
     (prismaMock.organization.findMany as jest.Mock).mockResolvedValue(mockOrgs);
@@ -91,6 +125,9 @@ describe('OrganizationRepository', () => {
         deleted_at: null,
         category: 'NON_INDIVIDUAL',
         tax_classification: 'VAT',
+      },
+      include: {
+        status: true,
       },
     });
   });
@@ -109,12 +146,33 @@ describe('OrganizationRepository', () => {
       created_at: new Date(),
       updated_at: new Date(),
       deleted_at: null,
+      status: {
+        id: 'status-1',
+        organization_id: '1',
+        status: 'PENDING',
+        last_update: new Date(),
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
     };
     (prismaMock.organization.update as jest.Mock).mockResolvedValue(mockUpdatedOrg);
 
     const result = await repository.update('1', updateData);
     expect(result).toEqual(mockUpdatedOrg);
-    expect(prismaMock.organization.update).toHaveBeenCalledWith({ where: { id: '1' }, data: updateData });
+    expect(prismaMock.organization.update).toHaveBeenCalledWith({
+      where: { id: '1' },
+      data: {
+        ...updateData,
+        status: {
+          update: {
+            last_update: expect.any(Date),
+          },
+        },
+      },
+      include: {
+        status: true,
+      },
+    });
   });
 
   it('softDelete should set deleted_at and return updated record', async () => {

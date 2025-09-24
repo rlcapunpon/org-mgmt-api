@@ -61,6 +61,7 @@ model Organization {
   deleted_at        DateTime?
 
   obligations       OrganizationObligation[]
+  status            OrganizationStatus?
 }
 
 model TaxObligation {
@@ -106,6 +107,17 @@ model ObligationSchedule {
   updated_at          DateTime       @updatedAt
 
   org_obligation      OrganizationObligation @relation(fields: [org_obligation_id], references: [id])
+}
+
+model OrganizationStatus {
+  id              String   @id @default(cuid())
+  organization_id String   @unique
+  status          String   @default("PENDING")
+  last_update     DateTime @default(now())
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  organization    Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
 }
 
 

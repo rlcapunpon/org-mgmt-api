@@ -420,6 +420,33 @@ src/
 
 ---
 
+### Step 6.5  - Organization Status
+
+**Goal: ** Track the status of an organization in a different table and return the status together in the response of endpoints that get organization details.
+
+**Failing tests to write first:**
+- step6.5.organization-status.spec.ts
+  - CRUD tests for organization status
+  - Only user with correct read permission can get organization-status
+  - Existing endpoints should return organization status
+
+**Implementation tasks**
+- create a new table in the schema.prisma
+- regenerate the schema with the new table
+- when a new organization is created, organization status is atuomatically created, with default status pending
+- Organization status details should have but are not limited to:
+   > organization_id
+   > status
+   > last_update
+- integrate the organization status to the existing organization CRUD endpoints
+
+
+**Acceptance:** tests & build pass. Edge cases considered. Complete code coverage.
+
+**After finishing:** Update `CHECKPOINT.md`.
+
+---
+
 ### Step 7 — Integration Tests: full flows
 **Goal:** End-to-end tests covering typical flows (create org from OCR payload, assign obligations, compute schedules).
 
