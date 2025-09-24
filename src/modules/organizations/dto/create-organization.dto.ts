@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsEnum, IsOptional, IsString, IsDateString } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { Category, SubCategory, TaxClassification } from '../../../../generated/prisma';
 
 export class CreateOrganizationDto {
   @IsNotEmpty()
@@ -12,16 +13,16 @@ export class CreateOrganizationDto {
   tin: string | null;
 
   @IsNotEmpty()
-  @IsEnum(['INDIVIDUAL', 'NON_INDIVIDUAL'])
-  category: 'INDIVIDUAL' | 'NON_INDIVIDUAL';
+  @IsEnum(Category)
+  category: Category;
 
   @IsOptional()
-  @IsEnum(['SELF_EMPLOYED', 'SOLE_PROPRIETOR', 'FREELANCER', 'CORPORATION', 'PARTNERSHIP', 'OTHERS'])
-  subcategory?: 'SELF_EMPLOYED' | 'SOLE_PROPRIETOR' | 'FREELANCER' | 'CORPORATION' | 'PARTNERSHIP' | 'OTHERS';
+  @IsEnum(SubCategory)
+  subcategory?: SubCategory;
 
   @IsNotEmpty()
-  @IsEnum(['VAT', 'NON_VAT'])
-  tax_classification: 'VAT' | 'NON_VAT';
+  @IsEnum(TaxClassification)
+  tax_classification: TaxClassification;
 
   @IsOptional()
   @Transform(({ value }) => value ? new Date(value) : null)
