@@ -44,13 +44,13 @@ describe('Schedules Controller (e2e)', () => {
   });
 
   it('GET /organizations/:id/schedules with JWT but lacking permission -> 403', async () => {
-    const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false }, process.env.JWT_SECRET!);
+    const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
     const res = await request(app.getHttpServer()).get('/organizations/1/schedules').set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(403);
   });
 
   it('GET /organizations/:id/schedules returns schedules when authorized', async () => {
-    const token = signPayload({ userId: 'u1', permissions: ['organization.read:org1'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+    const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
     const mockObligations = [
       {
         id: 'obl1',
@@ -103,7 +103,7 @@ describe('Schedules Controller (e2e)', () => {
   });
 
   it('GET /organizations/:id/schedules uses default dates when not provided', async () => {
-    const token = signPayload({ userId: 'u1', permissions: ['organization.read:org1'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+    const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
     mockRepository.getOrganizationObligationsWithTaxObligations.mockResolvedValue([]);
     mockService.generateSchedulesForObligation.mockReturnValue([]);
 
@@ -116,7 +116,7 @@ describe('Schedules Controller (e2e)', () => {
   });
 
   it('superAdmin can access schedules endpoint without specific permissions', async () => {
-    const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: true }, process.env.JWT_SECRET!);
+    const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: true, role: 'Super Admin' }, process.env.JWT_SECRET!);
     mockRepository.getOrganizationObligationsWithTaxObligations.mockResolvedValue([]);
     mockService.generateSchedulesForObligation.mockReturnValue([]);
 

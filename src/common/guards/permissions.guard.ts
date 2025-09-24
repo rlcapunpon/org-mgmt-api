@@ -11,11 +11,11 @@ export class PermissionsGuard implements CanActivate {
     if (!requiredPermission) return true;
 
     const request = context.switchToHttp().getRequest();
-    const user = request.user as { permissions?: string[]; isSuperAdmin?: boolean };
+    const user = request.user as { permissions?: string[]; isSuperAdmin?: boolean; role?: string };
     if (!user) return false;
 
-    // Super admin bypass
-    if (user.isSuperAdmin || user.permissions?.includes('*')) return true;
+    // Super admin bypass - support both isSuperAdmin boolean and role string
+    if (user.isSuperAdmin || user.role === 'Super Admin' || user.permissions?.includes('*')) return true;
 
     // Get the actual permission to check (may include org ID)
     const permissionToCheck = this.resolvePermission(requiredPermission, request);

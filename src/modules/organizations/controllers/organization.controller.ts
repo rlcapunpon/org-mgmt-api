@@ -12,14 +12,14 @@ export class OrganizationController {
   constructor(private service: OrganizationService) {}
 
   @Post()
-  @RequiresPermission('organization.create')
+  @RequiresPermission('resource:create')
   async create(@Body() dto: CreateOrganizationDto) {
     const org = await this.service.create(dto);
     return org;
   }
 
   @Get(':id')
-  @RequiresPermission('organization.read:id')
+  @RequiresPermission('resource:read')
   async findById(@Param('id') id: string) {
     const org = await this.service.findById(id);
     if (!org) throw new NotFoundException();
@@ -27,20 +27,20 @@ export class OrganizationController {
   }
 
   @Put(':id')
-  @RequiresPermission('organization.write:id')
+  @RequiresPermission('resource:update')
   async update(@Param('id') id: string, @Body() dto: UpdateOrganizationDto) {
     return this.service.update(id, dto);
   }
 
   @Delete(':id')
-  @RequiresPermission('organization.write:id')
+  @RequiresPermission('resource:delete')
   @HttpCode(204)
   async delete(@Param('id') id: string) {
     return this.service.softDelete(id);
   }
 
   @Get()
-  @RequiresPermission('organization.read')
+  @RequiresPermission('resource:read')
   async list(@Query() query: { category?: string; tax_classification?: string }) {
     return this.service.list(query);
   }

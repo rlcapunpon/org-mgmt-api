@@ -11,7 +11,7 @@ export class TaxObligationController {
 
   @Post()
   @UseGuards(AuthGuard, PermissionsGuard)
-  @RequiresPermission('tax-obligation.create')
+  @RequiresPermission('tax:configure')
   async create(@Body() dto: CreateTaxObligationDto) {
     const obligation = await this.service.create(dto);
     return obligation;

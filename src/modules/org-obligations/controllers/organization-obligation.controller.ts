@@ -11,7 +11,7 @@ export class OrganizationObligationController {
   constructor(private service: OrganizationObligationService) {}
 
   @Post('organizations/:orgId/obligations')
-  @RequiresPermission('organization.write:orgId')
+  @RequiresPermission('resource:create')
   async assignObligation(@Param('orgId') orgId: string, @Body() dto: AssignObligationDto) {
     const data = {
       start_date: new Date(dto.start_date),
@@ -25,13 +25,13 @@ export class OrganizationObligationController {
   }
 
   @Get('organizations/:orgId/obligations')
-  @RequiresPermission('organization.read:orgId')
+  @RequiresPermission('resource:read')
   async getObligationsByOrgId(@Param('orgId') orgId: string) {
     return this.service.getObligationsByOrgId(orgId);
   }
 
   @Put('organization-obligations/:id')
-  @RequiresPermission('organization.write')
+  @RequiresPermission('resource:update')
   async updateStatus(@Param('id') id: string, @Body() dto: UpdateObligationStatusDto) {
     return this.service.updateStatus(id, dto.status);
   }

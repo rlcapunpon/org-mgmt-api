@@ -41,13 +41,13 @@ describe('TaxObligations Controller (e2e)', () => {
   });
 
   it('POST /tax-obligations with JWT but lacking permission -> 403', async () => {
-    const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false }, process.env.JWT_SECRET!);
+    const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
     const res = await request(app.getHttpServer()).post('/tax-obligations').set('Authorization', `Bearer ${token}`).send({ code: '2550M', name: 'Monthly VAT', frequency: 'MONTHLY', due_rule: { day: 20 } });
     expect(res.status).toBe(403);
   });
 
   it('Admin user can POST /tax-obligations to create a new obligation', async () => {
-    const token = signPayload({ userId: 'u1', permissions: ['tax-obligation.create'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+    const token = signPayload({ userId: 'u1', permissions: ['tax:configure'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
     const payload = { code: '2550M', name: 'Monthly VAT', frequency: 'MONTHLY', due_rule: { day: 20 } };
     const mockObligation = { id: '1', code: '2550M', name: 'Monthly VAT', frequency: 'MONTHLY' as const, due_rule: { day: 20 }, active: true, created_at: new Date(), updated_at: new Date() };
     mockService.create.mockResolvedValue(mockObligation);
@@ -75,7 +75,7 @@ describe('TaxObligations Controller (e2e)', () => {
   });
 
   it('superAdmin can create tax obligations without specific permissions', async () => {
-    const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: true }, process.env.JWT_SECRET!);
+    const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: true, role: 'Super Admin' }, process.env.JWT_SECRET!);
     const payload = { code: '1701', name: 'Annual Income Tax', frequency: 'ANNUAL', due_rule: { month: 4, day: 15 } };
     const mockObligation = { id: '2', code: '1701', name: 'Annual Income Tax', frequency: 'ANNUAL' as const, due_rule: { month: 4, day: 15 }, active: true, created_at: new Date(), updated_at: new Date() };
     mockService.create.mockResolvedValue(mockObligation);

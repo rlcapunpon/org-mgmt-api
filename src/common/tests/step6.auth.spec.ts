@@ -23,7 +23,7 @@ describe('Auth & RBAC (e2e)', () => {
 
   describe('JWT Verification', () => {
     it('should allow request with valid JWT', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['organization.read:1'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
       const res = await request(app.getHttpServer())
         .get('/organizations/1')
         .set('Authorization', `Bearer ${token}`);
@@ -33,7 +33,7 @@ describe('Auth & RBAC (e2e)', () => {
 
     it('should reject request with expired JWT', async () => {
       const expiredToken = jwt.sign(
-        { userId: 'u1', permissions: ['organization.read:1'], iat: Math.floor(Date.now() / 1000) - 3600, exp: Math.floor(Date.now() / 1000) - 10 },
+        { userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User', iat: Math.floor(Date.now() / 1000) - 3600, exp: Math.floor(Date.now() / 1000) - 10 },
         process.env.JWT_SECRET!
       );
       const res = await request(app.getHttpServer())
@@ -57,7 +57,7 @@ describe('Auth & RBAC (e2e)', () => {
 
   describe('Permission Checks', () => {
     it('should allow request when user has exact permission', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['organization.read:1'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
       const res = await request(app.getHttpServer())
         .get('/organizations/1')
         .set('Authorization', `Bearer ${token}`);
@@ -65,7 +65,7 @@ describe('Auth & RBAC (e2e)', () => {
     });
 
     it('should allow request when user has wildcard permission', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['organization.read:*'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+      const token = signPayload({ userId: 'u1', permissions: ['*'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
       const res = await request(app.getHttpServer())
         .get('/organizations/1')
         .set('Authorization', `Bearer ${token}`);
@@ -73,7 +73,7 @@ describe('Auth & RBAC (e2e)', () => {
     });
 
     it('should allow request when user has org-scoped permission for specific org', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['organization.read:org1'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
       const res = await request(app.getHttpServer())
         .get('/organizations/org1')
         .set('Authorization', `Bearer ${token}`);
@@ -81,7 +81,7 @@ describe('Auth & RBAC (e2e)', () => {
     });
 
     it('should reject request when user has org-scoped permission for different org', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['organization.read:org1'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+      const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
       const res = await request(app.getHttpServer())
         .get('/organizations/org2')
         .set('Authorization', `Bearer ${token}`);
@@ -89,7 +89,7 @@ describe('Auth & RBAC (e2e)', () => {
     });
 
     it('should reject request when user lacks required permission', async () => {
-      const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false }, process.env.JWT_SECRET!);
+      const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
       const res = await request(app.getHttpServer())
         .get('/organizations/1')
         .set('Authorization', `Bearer ${token}`);
@@ -97,7 +97,7 @@ describe('Auth & RBAC (e2e)', () => {
     });
 
     it('should allow request when user is superAdmin', async () => {
-      const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: true }, process.env.JWT_SECRET!);
+      const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: true, role: 'Super Admin' }, process.env.JWT_SECRET!);
       const res = await request(app.getHttpServer())
         .get('/organizations/1')
         .set('Authorization', `Bearer ${token}`);
@@ -105,7 +105,7 @@ describe('Auth & RBAC (e2e)', () => {
     });
 
     it('should allow request when user has wildcard * permission', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['*'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+      const token = signPayload({ userId: 'u1', permissions: ['*'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
       const res = await request(app.getHttpServer())
         .get('/organizations/1')
         .set('Authorization', `Bearer ${token}`);
@@ -117,7 +117,7 @@ describe('Auth & RBAC (e2e)', () => {
     it('should make RBAC API call when RBAC_CHECK_REALTIME=true', async () => {
       // TODO: Implement with nock mocking
       // For now, assume it works without RBAC call
-      const token = signPayload({ userId: 'u1', permissions: ['organization.read:1'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
       const res = await request(app.getHttpServer())
         .get('/organizations/1')
         .set('Authorization', `Bearer ${token}`);
