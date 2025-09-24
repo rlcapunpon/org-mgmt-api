@@ -11,7 +11,7 @@ export class OrganizationObligationController {
   constructor(private service: OrganizationObligationService) {}
 
   @Post('organizations/:orgId/obligations')
-  @RequiresPermission('organization.write')
+  @RequiresPermission('organization.write:orgId')
   async assignObligation(@Param('orgId') orgId: string, @Body() dto: AssignObligationDto) {
     const data = {
       start_date: new Date(dto.start_date),
@@ -25,7 +25,7 @@ export class OrganizationObligationController {
   }
 
   @Get('organizations/:orgId/obligations')
-  @RequiresPermission('organization.read')
+  @RequiresPermission('organization.read:orgId')
   async getObligationsByOrgId(@Param('orgId') orgId: string) {
     return this.service.getObligationsByOrgId(orgId);
   }

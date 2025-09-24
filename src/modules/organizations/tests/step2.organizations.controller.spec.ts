@@ -65,7 +65,7 @@ describe('Organizations Controller (e2e)', () => {
   });
 
   it('GET /organizations/:id returns 200 with org data when authorized', async () => {
-    const token = signPayload({ userId: 'u1', permissions: ['organization.read'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+    const token = signPayload({ userId: 'u1', permissions: ['organization.read:1'], isSuperAdmin: false }, process.env.JWT_SECRET!);
     const mockOrg = { id: '1', name: 'Test Org', category: Category.NON_INDIVIDUAL, tax_classification: TaxClassification.VAT, tin: null, subcategory: null, registration_date: null, address: null, created_at: new Date(), updated_at: new Date(), deleted_at: null };
     mockService.findById.mockResolvedValue(mockOrg);
     const res = await request(app.getHttpServer()).get('/organizations/1').set('Authorization', `Bearer ${token}`);
@@ -80,7 +80,7 @@ describe('Organizations Controller (e2e)', () => {
   });
 
   it('PUT /organizations/:id updates allowed fields; forbidden for unauthorized users', async () => {
-    const token = signPayload({ userId: 'u1', permissions: ['organization.write'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+    const token = signPayload({ userId: 'u1', permissions: ['organization.write:1'], isSuperAdmin: false }, process.env.JWT_SECRET!);
     const updatedOrg = { id: '1', name: 'Updated Org', category: Category.NON_INDIVIDUAL, tax_classification: TaxClassification.VAT, tin: null, subcategory: null, registration_date: null, address: null, created_at: new Date(), updated_at: new Date(), deleted_at: null };
     mockService.update.mockResolvedValue(updatedOrg);
     const res = await request(app.getHttpServer()).put('/organizations/1').set('Authorization', `Bearer ${token}`).send({ name: 'Updated Org' });
@@ -89,14 +89,14 @@ describe('Organizations Controller (e2e)', () => {
   });
 
   it('DELETE /organizations/:id sets deleted_at and returns 204', async () => {
-    const token = signPayload({ userId: 'u1', permissions: ['organization.write'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+    const token = signPayload({ userId: 'u1', permissions: ['organization.write:1'], isSuperAdmin: false }, process.env.JWT_SECRET!);
     mockService.softDelete.mockResolvedValue(undefined);
     const res = await request(app.getHttpServer()).delete('/organizations/1').set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(204);
   });
 
   it('DELETE /organizations/:id returns 404 for non-existing organization', async () => {
-    const token = signPayload({ userId: 'u1', permissions: ['organization.write'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+    const token = signPayload({ userId: 'u1', permissions: ['organization.write:non-existing'], isSuperAdmin: false }, process.env.JWT_SECRET!);
     mockService.softDelete.mockRejectedValue(new NotFoundException());
     const res = await request(app.getHttpServer()).delete('/organizations/non-existing').set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(404);
@@ -115,14 +115,14 @@ describe('Organizations Controller (e2e)', () => {
   });
 
   it('GET /organizations/:id returns 404 for non-existing organization', async () => {
-    const token = signPayload({ userId: 'u1', permissions: ['organization.read'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+    const token = signPayload({ userId: 'u1', permissions: ['organization.read:non-existing'], isSuperAdmin: false }, process.env.JWT_SECRET!);
     mockService.findById.mockResolvedValue(null);
     const res = await request(app.getHttpServer()).get('/organizations/non-existing').set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(404);
   });
 
   it('PUT /organizations/:id returns 404 for non-existing organization', async () => {
-    const token = signPayload({ userId: 'u1', permissions: ['organization.write'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+    const token = signPayload({ userId: 'u1', permissions: ['organization.write:non-existing'], isSuperAdmin: false }, process.env.JWT_SECRET!);
     mockService.update.mockRejectedValue(new NotFoundException());
     const res = await request(app.getHttpServer()).put('/organizations/non-existing').set('Authorization', `Bearer ${token}`).send({ name: 'Updated' });
     expect(res.status).toBe(404);

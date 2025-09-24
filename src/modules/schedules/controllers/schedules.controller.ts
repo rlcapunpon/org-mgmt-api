@@ -16,7 +16,7 @@ export class SchedulesController {
   ) {}
 
   @Get(':id/schedules')
-  @RequiresPermission('organization.read')
+  @RequiresPermission('organization.read:id')
   async getSchedules(
     @Param('id') organizationId: string,
     @Query() query: GetSchedulesQueryDto,

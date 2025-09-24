@@ -19,7 +19,7 @@ export class OrganizationController {
   }
 
   @Get(':id')
-  @RequiresPermission('organization.read')
+  @RequiresPermission('organization.read:id')
   async findById(@Param('id') id: string) {
     const org = await this.service.findById(id);
     if (!org) throw new NotFoundException();
@@ -27,13 +27,13 @@ export class OrganizationController {
   }
 
   @Put(':id')
-  @RequiresPermission('organization.write')
+  @RequiresPermission('organization.write:id')
   async update(@Param('id') id: string, @Body() dto: UpdateOrganizationDto) {
     return this.service.update(id, dto);
   }
 
   @Delete(':id')
-  @RequiresPermission('organization.write')
+  @RequiresPermission('organization.write:id')
   @HttpCode(204)
   async delete(@Param('id') id: string) {
     return this.service.softDelete(id);

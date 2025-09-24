@@ -395,7 +395,7 @@ src/
 
 ### Step 6 — Auth & RBAC verification
 **Context:** 
-- There is an existing RBAC API, read RESOURCE_ACCESS_FLOW.md to understand how we can check if a user has permission to access the organization
+- There is an existing RBAC API that issues permissions to users, read RESOURCE_ACCESS_FLOW.md to understand how we can check if a user has permission to access the organization
 - Check the ORGANIZATION_PERMSSION_MAPPING.md to check the permission mapping used by the existing RBAC API
 
 **Goal:** Implement JWT verification + permission guard. Support both local-claim checks and RBAC API double-check.
@@ -408,7 +408,7 @@ src/
   - When `isSuperAdmin: true` or `permissions: ['*']` allow all actions.
   
 **Implementation tasks:**
-- Add `AuthGuard` that uses `jsonwebtoken` and `JWT_SECRET` to verify tokens (HS256).
+- Add `AuthGuard` that uses `jsonwebtoken` and `JWT_SECRET` to verify tokens (HS256). Check the jwt_from_rbac_api.txt as reference on what JWT is being issued by the RBAC API to the client.
 - Implement `PermissionsGuard` that validates required permission for an endpoint.
 - Add decorator `@RequiresPermission('organization.read')` to controllers to express required permission. Permission checks should accept org-scoped permissions (e.g., `organization.read:orgId`) or wildcard `*`.
 - Call the RBAC API to confirm permission on sensitive operations. Mock RBAC calls in tests.

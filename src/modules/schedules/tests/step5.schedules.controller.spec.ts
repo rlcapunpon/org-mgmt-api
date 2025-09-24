@@ -50,7 +50,7 @@ describe('Schedules Controller (e2e)', () => {
   });
 
   it('GET /organizations/:id/schedules returns schedules when authorized', async () => {
-    const token = signPayload({ userId: 'u1', permissions: ['organization.read'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+    const token = signPayload({ userId: 'u1', permissions: ['organization.read:org1'], isSuperAdmin: false }, process.env.JWT_SECRET!);
     const mockObligations = [
       {
         id: 'obl1',
@@ -103,7 +103,7 @@ describe('Schedules Controller (e2e)', () => {
   });
 
   it('GET /organizations/:id/schedules uses default dates when not provided', async () => {
-    const token = signPayload({ userId: 'u1', permissions: ['organization.read'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+    const token = signPayload({ userId: 'u1', permissions: ['organization.read:org1'], isSuperAdmin: false }, process.env.JWT_SECRET!);
     mockRepository.getOrganizationObligationsWithTaxObligations.mockResolvedValue([]);
     mockService.generateSchedulesForObligation.mockReturnValue([]);
 

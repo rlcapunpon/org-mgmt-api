@@ -37,3 +37,19 @@ Files changed: prisma/schema.prisma, src/modules/org-obligations/repositories/or
 Tests added: step4.org-obligations.controller.spec.ts
 Build status: OK
 Notes: Organization obligations assignment and status management implemented. All tests pass. Migration applied. Ready for Step 5.
+
+# CHECKPOINT - Step 5
+Date: 2025-09-24
+Summary: Implemented obligation schedule generator. Added schedule generation logic with due date calculation based on obligation frequency and due rules. Created controller endpoint GET /organizations/:id/schedules with date range filtering. Wrote failing unit tests for schedule generation, then implemented to make them pass. Added e2e tests for the schedules endpoint.
+Files changed: src/modules/schedules/services/schedules.service.ts, src/modules/schedules/controllers/schedules.controller.ts, src/modules/schedules/dto/get-schedules-query.dto.ts, src/modules/schedules/tests/step5.schedules.service.spec.ts, src/modules/schedules/tests/step5.schedules.controller.spec.ts
+Tests added: step5.schedules.service.spec.ts, step5.schedules.controller.spec.ts
+Build status: OK
+Notes: Obligation schedule generator implemented with monthly/quarterly/annual support. All tests pass. Migration applied. Project complete for basic functionality.
+
+# CHECKPOINT - Step 6
+Date: 2025-09-24
+Summary: Implemented comprehensive JWT verification and permission guard system. Added AuthGuard for HS256 JWT validation, enhanced PermissionsGuard with org-scoped permission support (e.g., organization.read:orgId), wildcard matching, and superAdmin bypass. Updated all controllers to use org-scoped permissions for organization-scoped endpoints. Created failing auth tests first, then implemented to make them pass. Updated existing controller tests to use correct org-scoped permissions in JWT tokens.
+Files changed: src/common/tests/step6.auth.spec.ts, src/common/guards/permissions.guard.ts, src/common/decorators/requires-permission.decorator.ts, src/modules/organizations/controllers/organization.controller.ts, src/modules/schedules/controllers/schedules.controller.ts, src/modules/org-obligations/controllers/organization-obligation.controller.ts, src/modules/organizations/tests/step2.organizations.controller.spec.ts, src/modules/schedules/tests/step5.schedules.controller.spec.ts, src/modules/org-obligations/tests/step4.org-obligations.controller.spec.ts
+Tests added: step6.auth.spec.ts
+Build status: OK
+Notes: Auth system fully implemented with JWT verification, permission checks, org-scoped permissions, wildcards, and superAdmin bypass. All tests pass. RBAC API integration placeholder implemented. Ready for Step 7.
