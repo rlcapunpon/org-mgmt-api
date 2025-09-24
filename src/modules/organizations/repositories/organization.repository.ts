@@ -6,11 +6,11 @@ import { Organization } from '../../../../generated/prisma';
 export class OrganizationRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Omit<Organization, 'id' | 'created_at' | 'updated_at'>): Promise<Organization> {
+  async create(data: Omit<Organization, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>): Promise<Organization> {
     if (!data.name || !data.category || !data.tax_classification) {
       throw new Error('Required fields missing');
     }
-    return this.prisma.organization.create({ data });
+    return this.prisma.organization.create({ data: { ...data, deleted_at: null } });
   }
 
   async getById(id: string): Promise<Organization | null> {

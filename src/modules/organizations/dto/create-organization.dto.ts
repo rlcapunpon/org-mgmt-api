@@ -8,7 +8,8 @@ export class CreateOrganizationDto {
 
   @IsOptional()
   @IsString()
-  tin?: string;
+  @Transform(({ value }) => value ?? null)
+  tin: string | null;
 
   @IsNotEmpty()
   @IsEnum(['INDIVIDUAL', 'NON_INDIVIDUAL'])
@@ -16,7 +17,8 @@ export class CreateOrganizationDto {
 
   @IsOptional()
   @IsString()
-  subcategory?: string;
+  @Transform(({ value }) => value ?? null)
+  subcategory: string | null;
 
   @IsNotEmpty()
   @IsEnum(['VAT', 'NON_VAT', 'WITHHOLDING', 'MIXED', 'OTHERS'])
@@ -24,9 +26,10 @@ export class CreateOrganizationDto {
 
   @IsOptional()
   @Transform(({ value }) => value ? new Date(value) : null)
-  registration_date?: Date;
+  registration_date: Date | null;
 
   @IsOptional()
   @IsString()
-  address?: string;
+  @Transform(({ value }) => value ?? null)
+  address: string | null;
 }

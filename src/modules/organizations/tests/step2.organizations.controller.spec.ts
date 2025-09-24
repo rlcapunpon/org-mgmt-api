@@ -6,6 +6,7 @@ import { signPayload } from '../../../test-utils/token';
 import { OrganizationService } from '../services/organization.service';
 import { PrismaService } from '../../../database/prisma.service';
 import { Category, TaxClassification } from '../../../../generated/prisma';
+import { NotFoundException } from '@nestjs/common';
 
 describe('Organizations Controller (e2e)', () => {
   let app: INestApplication;
@@ -104,5 +105,33 @@ describe('Organizations Controller (e2e)', () => {
     expect(res.status).toBe(200);
     expect(res.body).toHaveLength(1);
     expect(res.body[0]).toMatchObject({ id: '1', name: 'Org1', category: 'NON_INDIVIDUAL', tax_classification: 'VAT' });
+  });
+
+  it('GET /organizations/:id returns 404 for non-existing organization', async () => {
+    const token = signPayload({ userId: 'u1', permissions: ['organization.read'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+    mockService.findById.mockResolvedValue(null);
+    const res = await request(app.getHttpServer()).get('/organizations/non-existing').set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(404);
+  });
+
+  it('PUT /organizations/:id returns 404 for non-existing organization', async () => {
+    const token = signPayload({ userId: 'u1', permissions: ['organization.write'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+    mockService.update.mockRejectedValue(new NotFoundException());
+    const res = await request(app.getHttpServer()).put('/organizations/non-existing').set('Authorization', `Bearer ${token}`).send({ name: 'Updated' });
+    expect(res.status).toBe(404);
+  });
+
+  it('superAdmin can access endpoints without specific permissions', async () => {
+    const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: true }, process.env.JWT_SECRET!);
+    const mockOrg = { id: '1', name: 'Test Org', category: Category.NON_INDIVIDUAL, tax_classification: TaxClassification.VAT, tin: null, subcategory: null, registration_date: null, address: null, created_at: new Date(), updated_at: new Date(), deleted_at: null };
+    mockService.findById.mockResolvedValue(mockOrg);
+    const res = await request(app.getHttpServer()).get('/organizations/1').set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({ id: '1', name: 'Test Org' });
+  });
+
+  it('POST /organizations with malformed JWT returns 401', async () => {
+    const res = await request(app.getHttpServer()).post('/organizations').set('Authorization', 'Bearer invalid.jwt.token').send({ name: 'Test', category: 'NON_INDIVIDUAL', tax_classification: 'VAT' });
+    expect(res.status).toBe(401);
   });
 });

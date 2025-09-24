@@ -27,6 +27,13 @@ enum TaxClassification {
   OTHERS
 }
 
+enum Frequency {
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+  ONE_TIME
+}
+
 model Organization {
   id                String   @id @default(cuid())
   name              String
@@ -39,4 +46,15 @@ model Organization {
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
   deleted_at        DateTime?
+}
+
+model TaxObligation {
+  id         String    @id @default(cuid())
+  code       String
+  name       String
+  frequency  Frequency
+  due_rule   Json
+  active     Boolean   @default(true)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
 }

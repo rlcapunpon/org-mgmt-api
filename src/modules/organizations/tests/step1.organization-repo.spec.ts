@@ -55,7 +55,7 @@ describe('OrganizationRepository', () => {
 
     const result = await repository.create(data);
     expect(result).toEqual(mockOrg);
-    expect(prismaMock.organization.create).toHaveBeenCalledWith({ data });
+    expect(prismaMock.organization.create).toHaveBeenCalledWith({ data: { ...data, deleted_at: null } });
   });
 
   it('getOrganizationById should return null for non-existing id', async () => {
@@ -93,5 +93,48 @@ describe('OrganizationRepository', () => {
         tax_classification: 'VAT',
       },
     });
+  });
+
+  it('update should update organization and return updated record', async () => {
+    const updateData = { name: 'Updated Name' };
+    const mockUpdatedOrg = {
+      id: '1',
+      name: 'Updated Name',
+      category: 'NON_INDIVIDUAL' as const,
+      tax_classification: 'VAT' as const,
+      tin: null,
+      subcategory: null,
+      registration_date: null,
+      address: null,
+      created_at: new Date(),
+      updated_at: new Date(),
+      deleted_at: null,
+    };
+    (prismaMock.organization.update as jest.Mock).mockResolvedValue(mockUpdatedOrg);
+
+    const result = await repository.update('1', updateData);
+    expect(result).toEqual(mockUpdatedOrg);
+    expect(prismaMock.organization.update).toHaveBeenCalledWith({ where: { id: '1' }, data: updateData });
+  });
+
+  it('softDelete should set deleted_at and return updated record', async () => {
+    const mockDeletedOrg = {
+      id: '1',
+      name: 'Test Org',
+      category: 'NON_INDIVIDUAL' as const,
+      tax_classification: 'VAT' as const,
+      tin: null,
+      subcategory: null,
+      registration_date: null,
+      address: null,
+      created_at: new Date(),
+      updated_at: new Date(),
+      deleted_at: new Date(),
+    };
+    (prismaMock.organization.update as jest.Mock).mockResolvedValue(mockDeletedOrg);
+
+    const result = await repository.softDelete('1');
+    expect(result).toEqual(mockDeletedOrg);
+    expect(prismaMock.organization.update).toHaveBeenCalledWith({ where: { id: '1' }, data: { deleted_at: expect.any(Date) } });
   });
 });

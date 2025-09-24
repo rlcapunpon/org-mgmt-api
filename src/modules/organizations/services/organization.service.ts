@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrganizationRepository } from '../repositories/organization.repository';
 import { CreateOrganizationDto } from '../dto/create-organization.dto';
 import { UpdateOrganizationDto } from '../dto/update-organization.dto';
 import { Organization } from '../../../../generated/prisma';
+import { Prisma } from '../../../../generated/prisma';
 
 @Injectable()
 export class OrganizationService {
@@ -17,11 +18,25 @@ export class OrganizationService {
   }
 
   async update(id: string, data: UpdateOrganizationDto): Promise<Organization> {
-    return this.repo.update(id, data);
+    try {
+      return await this.repo.update(id, data);
+    } catch (error) {
+      if (error.code === 'P2025') { // Record not found
+        throw new NotFoundException();
+      }
+      throw error;
+    }
   }
 
   async softDelete(id: string): Promise<void> {
-    await this.repo.softDelete(id);
+    try {
+      await this.repo.softDelete(id);
+    } catch (error) {
+      if (error.code === 'P2025') { // Record not found
+        throw new NotFoundException();
+      }
+      throw error;
+    }
   }
 
   async list(filters: { category?: string; tax_classification?: string }): Promise<Organization[]> {

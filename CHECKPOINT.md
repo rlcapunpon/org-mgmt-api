@@ -21,3 +21,11 @@ Files changed: src/database/prisma.service.ts, src/database/prisma.module.ts, sr
 Tests added: step2.organizations.controller.spec.ts
 Build status: OK
 Notes: Full REST API implemented with auth. All tests pass using mocks to avoid DB dependencies. Ready for Step 3.
+
+# CHECKPOINT - Step 3
+Date: 2025-09-24
+Summary: Implemented tax_obligations master CRUD (admin only). Added tax_obligations table schema with Frequency enum, generated migration, created TaxObligationRepository with create and listActive methods, TaxObligationService, TaxObligationController with POST (admin required) and GET (public) endpoints, DTO for validation. Wrote failing unit tests for repository and e2e tests for controller, then implemented to make them pass. Fixed TypeScript issues in existing code.
+Files changed: prisma/schema.prisma, src/modules/tax-obligations/repositories/tax-obligation.repository.ts, src/modules/tax-obligations/services/tax-obligation.service.ts, src/modules/tax-obligations/controllers/tax-obligation.controller.ts, src/modules/tax-obligations/dto/create-tax-obligation.dto.ts, src/modules/tax-obligations/tax-obligations.module.ts, src/app.module.ts, src/modules/tax-obligations/tests/step3.tax-obligation-repo.spec.ts, src/modules/tax-obligations/tests/step3.tax-obligations.controller.spec.ts, src/auth/jwt.strategy.ts, src/modules/organizations/repositories/organization.repository.ts, src/modules/organizations/dto/create-organization.dto.ts, src/modules/organizations/tests/step1.organization-repo.spec.ts
+Tests added: step3.tax-obligation-repo.spec.ts, step3.tax-obligations.controller.spec.ts
+Build status: OK
+Notes: Tax obligations master implemented with admin-only create. GET is public. All tests pass. Migration applied. Ready for Step 4.

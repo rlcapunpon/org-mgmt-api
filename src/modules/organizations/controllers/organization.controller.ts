@@ -36,7 +36,7 @@ export class OrganizationController {
   @RequiresPermission('organization.write')
   @HttpCode(204)
   async delete(@Param('id') id: string) {
-    await this.service.softDelete(id);
+    return this.service.softDelete(id);
   }
 
   @Get()
