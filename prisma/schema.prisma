@@ -22,9 +22,6 @@ enum Category {
 enum TaxClassification {
   VAT
   NON_VAT
-  WITHHOLDING
-  MIXED
-  OTHERS
 }
 
 enum Frequency {
@@ -50,6 +47,7 @@ enum ScheduleStatus {
 enum AccountingMethod {
   ACCRUAL
   CASH
+  OTHERS
 }
 
 model Organization {
@@ -137,6 +135,10 @@ model OrganizationOperation {
   payment_cut_off           String[]
   quarter_closing           String[]
   has_foreign               Boolean   @default(false)
+  has_employees             Boolean   @default(false)
+  is_ewt                    Boolean   @default(false)
+  is_fwt                    Boolean   @default(false)
+  is_bir_withholding_agent  Boolean   @default(false)
   accounting_method         AccountingMethod @default(ACCRUAL)
   last_update               DateTime  @default(now())
   created_at                DateTime  @default(now())

@@ -53,3 +53,11 @@ Files changed: src/common/tests/step6.auth.spec.ts, src/common/guards/permission
 Tests added: step6.auth.spec.ts
 Build status: OK
 Notes: Auth system fully implemented with JWT verification, permission checks, org-scoped permissions, wildcards, and superAdmin bypass. All tests pass. RBAC API integration placeholder implemented. Ready for Step 7.
+
+# CHECKPOINT - Steps 7.0 and 7.1
+Date: 2025-09-24
+Summary: Updated organization schema and organization operation schema. For Step 7.0: Changed TaxClassification enum to only include VAT and NON_VAT (removed WITHHOLDING, MIXED, OTHERS). Updated DTOs and tests to use only these values. For Step 7.1: Added has_employees, is_ewt, is_fwt, is_bir_withholding_agent fields to OrganizationOperation model with default values of false. Updated repository, DTOs, and all tests to include these new fields.
+Files changed: prisma/schema.prisma, src/modules/organizations/dto/create-organization.dto.ts, src/modules/organizations/dto/update-organization.dto.ts, src/modules/organizations/dto/update-organization-operation.dto.ts, src/modules/organizations/repositories/organization.repository.ts, src/modules/organizations/tests/step1.organization-repo.spec.ts, src/common/tests/step6.5.organization-status.spec.ts, src/common/tests/step6.6.organization-operation.spec.ts
+Tests added: Updated existing tests
+Build status: OK
+Notes: Schema updated and all tests pass. TaxClassification now only supports VAT and NON_VAT. OrganizationOperation includes new boolean fields for employee and withholding agent status. Prisma client regenerated. Ready for next steps.

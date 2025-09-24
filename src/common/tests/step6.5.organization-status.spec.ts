@@ -439,7 +439,7 @@ describe('Organization Status (Step 6.5)', () => {
       (prismaService.organization.findMany as jest.Mock).mockResolvedValueOnce([]);
 
       const res = await request(app.getHttpServer())
-        .get('/organizations?category=NON_INDIVIDUAL&tax_classification=OTHERS')
+        .get('/organizations?category=NON_INDIVIDUAL&tax_classification=VAT')
         .set('Authorization', `Bearer ${token}`);
 
       expect(res.status).toBe(200);

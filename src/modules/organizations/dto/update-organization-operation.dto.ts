@@ -43,6 +43,42 @@ export class UpdateOrganizationOperationDto {
   has_foreign?: boolean;
 
   @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  has_employees?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  is_ewt?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  is_fwt?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  is_bir_withholding_agent?: boolean;
+
+  @IsOptional()
   @IsEnum(['ACCRUAL', 'CASH'])
   accounting_method?: 'ACCRUAL' | 'CASH';
 }

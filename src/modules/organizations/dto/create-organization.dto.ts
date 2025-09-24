@@ -21,8 +21,8 @@ export class CreateOrganizationDto {
   subcategory: string | null;
 
   @IsNotEmpty()
-  @IsEnum(['VAT', 'NON_VAT', 'WITHHOLDING', 'MIXED', 'OTHERS'])
-  tax_classification: 'VAT' | 'NON_VAT' | 'WITHHOLDING' | 'MIXED' | 'OTHERS';
+  @IsEnum(['VAT', 'NON_VAT'])
+  tax_classification: 'VAT' | 'NON_VAT';
 
   @IsOptional()
   @Transform(({ value }) => value ? new Date(value) : null)
