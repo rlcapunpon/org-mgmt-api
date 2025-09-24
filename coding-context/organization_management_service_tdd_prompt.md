@@ -500,7 +500,58 @@ src/
 
 ---
 
-### Step 7 — Integration Tests: full flows
+### Step 7.0  - Updating the organization schema
+**Context:**
+- The current schema is incomplete and some enum values are incorrect.
+
+**Goal:** Add necessary fields in the organization schema/table to be able to store organization data properly
+
+- The TaxClassification should only be VAT and NON_VAT
+
+
+**Implementation tasks**
+- Change tests relating to organization CRUD, and other endpoints and services that use the organization object
+- Update the code to make the tests pass
+- Refactor and clean up in case there are other improvements that can be done
+- Add more tests of edge cases
+
+**Failing tests to write first:**
+- update existing CRUD tests for the organization
+
+**Acceptance:** tests & build pass. Edge cases considered. Complete code coverage.
+
+**After finishing:** Update `CHECKPOINT.md`.
+
+---
+
+### Step 7.1  - Updating the organization operation schema
+**Context:**
+- The current schema is incomplete and some enum values are incorrect.
+
+**Goal:** Add necessary fields in the OrganizationOperation schema/table to be able to store organization operation data properly
+
+- Add has_employees with default value false
+- Add is_ewt with default value false
+- Add is_fwt with default value false
+- Add is_bir_withholding_agent with default value false
+
+**Implementation tasks**
+- Change tests relating to OrganizationOperation CRUD, and other endpoints and services that use the OrganizationOperation table and object
+- Update the code to make the tests pass
+- Refactor and clean up in case there are other improvements that can be done
+- Add more tests of edge cases
+
+**Failing tests to write first:**
+- update existing CRUD tests for the OrganizationOperation
+
+**Acceptance:** tests & build pass. Edge cases considered. Complete code coverage.
+
+**After finishing:** Update `CHECKPOINT.md`.
+
+
+---
+
+### Step 7.11 — Integration Tests: full flows
 **Goal:** End-to-end tests covering typical flows (create org from OCR payload, assign obligations, compute schedules).
 
 **Failing tests to write first:**
@@ -580,47 +631,4 @@ Notes: any important notes, migrations to run, .env changes
 ## Example Test Snippets
 Below are short examples to include as failing tests (adapt to your test framework).
 
-**Example: JWT unit test (fail-first)**
-```ts
-// step6.auth.spec.ts
-import jwt from 'jsonwebtoken';
-import { signPayload } from '../test-utils/token';
-
-it('should reject expired JWT', async () => {
-  const token = jwt.sign({ userId: 'u1', iat: Math.floor(Date.now()/1000) - 3600, exp: Math.floor(Date.now()/1000) - 10, permissions: [] }, process.env.JWT_SECRET);
-  const res = await request(app.getHttpServer()).get('/organizations').set('Authorization', `Bearer ${token}`);
-  expect(res.status).toBe(401);
-});
-```
-
-**Example: organization create (integration failing test first)**
-```ts
-// step2.organizations.controller.spec.ts
-it('returns 401 without JWT', async () => {
-  const res = await request(app.getHttpServer()).post('/organizations').send({ name: 'Acme Co', category: 'NON_INDIVIDUAL' });
-  expect(res.status).toBe(401);
-});
-
-it('creates organization with proper permission', async () => {
-  const token = signPayload({ userId: 'u1', permissions: ['organization.create:*'], iat: ..., exp: ... }, process.env.JWT_SECRET);
-  const res = await request(app.getHttpServer()).post('/organizations').set('Authorization', `Bearer ${token}`).send({ name: 'Acme Co', category: 'NON_INDIVIDUAL' });
-  expect(res.status).toBe(201);
-  expect(res.body).toHaveProperty('id');
-});
-```
-
 ---
-
-## Deliverable
-- A repository scaffold following the steps above.
-- `Organization-Management-Service-TDD-Prompt.md` (this doc) — keep in repo root.
-- `CHECKPOINT.md` to be updated after each step.
-- Tests prefixed by step number.
-
----
-
-When you are ready, I can **start Step 0 (initialize repo & baseline tests)** and follow the TDD plan interactively.  
-
-*Do you want me to start with Step 0 now?*  
-(If you prefer, I can instead export this document as a `.md` file for download.)
-
