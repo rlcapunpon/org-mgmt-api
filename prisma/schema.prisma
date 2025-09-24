@@ -40,6 +40,13 @@ enum Status {
   EXEMPT
 }
 
+enum ScheduleStatus {
+  DUE
+  FILED
+  LATE
+  EXEMPT
+}
+
 model Organization {
   id                String   @id @default(cuid())
   name              String
@@ -83,7 +90,22 @@ model OrganizationObligation {
   organization     Organization  @relation(fields: [organization_id], references: [id])
   obligation       TaxObligation @relation(fields: [obligation_id], references: [id])
 
+  schedules        ObligationSchedule[]
+
   @@unique([organization_id, obligation_id])
+}
+
+model ObligationSchedule {
+  id                  String         @id @default(cuid())
+  org_obligation_id   String
+  period              String
+  due_date            DateTime
+  status              ScheduleStatus @default(DUE)
+  filed_at            DateTime?
+  created_at          DateTime       @default(now())
+  updated_at          DateTime       @updatedAt
+
+  org_obligation      OrganizationObligation @relation(fields: [org_obligation_id], references: [id])
 }
 
 
