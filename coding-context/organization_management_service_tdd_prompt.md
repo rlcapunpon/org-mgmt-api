@@ -548,6 +548,27 @@ src/
 
 **After finishing:** Update `CHECKPOINT.md`.
 
+--- 
+
+### Step 7.2  - Creating Seeding for Tax Obligations of Category INDIVIDUAL > Sub-Category: Self-Employed, Sole Proprietor, Freelancer
+
+**Context:**
+- We have a file: tax-obligations-flow/obligation-flow-self_employed-sole_proprietor-freelancer.txt that contains details about tax obligations, schedules, and flow. 
+- Sub-Categories: Self-Employed, Sole Proprietor, and Freelancer have similar tax obligations
+
+**Goal:** Seed the database for tax obligations and conditions for Category INDIVIDUAL > Sub-Category: Self-Employed / Sole Proprietor / Freelancer that can be used later for tax obligation schedule creation.
+
+**Implementation tasks**
+- We have to create an enum for subcategory of Organization 
+- We have to create a database prisma seeding for the tax obligations specific to the Category INDIVIDUAL > Sub-Category: Self-Employed, Sole Proprietor, Freelancer
+
+**Failing tests to write first:**
+- update existing CRUD tests that are related to the schemas that will be updated
+
+**Acceptance:** tests & build pass. no build errors,  edge cases considered. Complete code coverage.
+
+**After finishing:** Update `CHECKPOINT.md`.
+
 
 ---
 
