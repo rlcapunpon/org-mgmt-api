@@ -25,7 +25,7 @@ describe('Organization Management API Integration Tests', () => {
     const payload = {
       sub: 'test-user-id',
       username: 'testuser',
-      permissions: ['resource:create', 'resource:read', 'resource:update', 'resource:delete']
+      permissions: ['resource:create', 'resource:read', 'resource:update', 'resource:delete', 'tax:configure', '*']
     };
     authToken = signPayload(payload, jwtSecret);
 
@@ -42,15 +42,6 @@ describe('Organization Management API Integration Tests', () => {
   const authRequest = (method: 'get' | 'post' | 'put' | 'delete', url: string) => {
     return request(app.getHttpServer())[method](url).set('Authorization', `Bearer ${authToken}`);
   };
-
-    // Clean up any existing test data
-    await prisma.organizationOperation.deleteMany();
-    await prisma.organizationStatus.deleteMany();
-    await prisma.obligationSchedule.deleteMany();
-    await prisma.organizationObligation.deleteMany();
-    await prisma.organization.deleteMany();
-    await prisma.taxObligation.deleteMany();
-  });
 
   afterAll(async () => {
     // Clean up test data
@@ -80,6 +71,7 @@ describe('Organization Management API Integration Tests', () => {
     it('should create a new tax obligation (POST)', () => {
       return request(app.getHttpServer())
         .post('/tax-obligations')
+        .set('Authorization', `Bearer ${authToken}`)
         .send({
           code: 'VAT_MONTHLY_001',
           name: 'Monthly VAT Filing',
@@ -100,6 +92,7 @@ describe('Organization Management API Integration Tests', () => {
     it('should get all tax obligations (GET)', () => {
       return request(app.getHttpServer())
         .get('/tax-obligations')
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(200)
         .expect((res) => {
           expect(Array.isArray(res.body)).toBe(true);

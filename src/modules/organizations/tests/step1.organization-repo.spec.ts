@@ -39,6 +39,10 @@ describe('OrganizationRepository', () => {
       name: 'Test Org',
       category: 'NON_INDIVIDUAL' as const,
       tax_classification: 'VAT' as const,
+      tin: null,
+      subcategory: null,
+      registration_date: null,
+      address: null,
     };
     const mockOrg = {
       id: 'uuid',
