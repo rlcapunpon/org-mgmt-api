@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, RequestMethod } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { validateEnvironment } from './config/app.config';
@@ -35,6 +35,15 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
+
+  // Set global API prefix, excluding health and docs endpoints
+  app.setGlobalPrefix('api/org', {
+    exclude: [
+      { path: 'health', method: RequestMethod.GET },
+      { path: 'docs', method: RequestMethod.GET },
+      { path: 'docs-json', method: RequestMethod.GET }
+    ]
+  });
 
   await app.listen(process.env.PORT ?? 3000);
 }
