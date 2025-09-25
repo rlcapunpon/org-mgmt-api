@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrganizationObligationRepository } from '../repositories/organization-obligation.repository';
-import { OrganizationObligation, Prisma } from '../../../../generated/prisma';
+import { OrganizationObligation, Prisma } from '@prisma/client';
 
 @Injectable()
 export class OrganizationObligationService {

@@ -6,7 +6,7 @@ import { AppModule } from '../../../app.module';
 import { signPayload } from '../../../test-utils/token';
 import { OrganizationService } from '../services/organization.service';
 import { PrismaService } from '../../../database/prisma.service';
-import { Category, SubCategory, TaxClassification, AccountingMethod } from '../../../../generated/prisma';
+import { Category, SubCategory, TaxClassification, AccountingMethod } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
 
 describe('Organization Integration Tests (e2e)', () => {

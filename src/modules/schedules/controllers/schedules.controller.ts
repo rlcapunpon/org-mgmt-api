@@ -5,7 +5,7 @@ import { GetSchedulesQueryDto } from '../dto/get-schedules-query.dto';
 import { AuthGuard } from '../../../common/guards/auth.guard';
 import { PermissionsGuard } from '../../../common/guards/permissions.guard';
 import { RequiresPermission } from '../../../common/decorators/requires-permission.decorator';
-import { ObligationSchedule } from '../../../../generated/prisma';
+import { ObligationSchedule } from '@prisma/client';
 
 @Controller('organizations')
 @UseGuards(AuthGuard, PermissionsGuard)

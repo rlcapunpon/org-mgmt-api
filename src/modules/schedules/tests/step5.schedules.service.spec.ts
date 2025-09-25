@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchedulesService } from '../services/schedules.service';
-import { OrganizationObligation, ScheduleStatus } from '../../../../generated/prisma';
+import { OrganizationObligation, ScheduleStatus } from '@prisma/client';
 
 describe('SchedulesService', () => {
   let service: SchedulesService;

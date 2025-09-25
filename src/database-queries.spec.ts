@@ -8,7 +8,7 @@ import {
   Status,
   ScheduleStatus,
   AccountingMethod
-} from '../generated/prisma';
+} from '@prisma/client';
 
 describe('Database Queries Tests', () => {
   let prisma: PrismaService;

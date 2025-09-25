@@ -6,7 +6,7 @@ import { signPayload } from '../../../test-utils/token';
 import { SchedulesService } from '../services/schedules.service';
 import { SchedulesRepository } from '../repositories/schedules.repository';
 import { PrismaService } from '../../../database/prisma.service';
-import { ScheduleStatus } from '../../../../generated/prisma';
+import { ScheduleStatus } from '@prisma/client';
 
 describe('Schedules Controller (e2e)', () => {
   let app: INestApplication;

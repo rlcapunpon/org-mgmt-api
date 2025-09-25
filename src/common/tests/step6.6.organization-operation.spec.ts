@@ -4,7 +4,7 @@ import request from 'supertest';
 import { AppModule } from '../../app.module';
 import { signPayload } from '../../test-utils/token';
 import { OrganizationService } from '../../modules/organizations/services/organization.service';
-import { Category, TaxClassification } from '../../../generated/prisma';
+import { Category, TaxClassification } from '@prisma/client';
 import { PrismaService } from '../../database/prisma.service';
 
 describe('Organization Business Operations (Step 6.7)', () => {

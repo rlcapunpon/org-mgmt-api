@@ -5,7 +5,7 @@ import { AppModule } from '../../../app.module';
 import { signPayload } from '../../../test-utils/token';
 import { OrganizationService } from '../services/organization.service';
 import { PrismaService } from '../../../database/prisma.service';
-import { Category, TaxClassification } from '../../../../generated/prisma';
+import { Category, TaxClassification } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
 
 describe('Organizations Controller (e2e)', () => {

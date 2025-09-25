@@ -3,8 +3,8 @@ import { OrganizationRepository } from '../repositories/organization.repository'
 import { CreateOrganizationDto } from '../dto/create-organization.dto';
 import { UpdateOrganizationDto } from '../dto/update-organization.dto';
 import { UpdateOrganizationOperationDto } from '../dto/update-organization-operation.dto';
-import { Organization } from '../../../../generated/prisma';
-import { Prisma } from '../../../../generated/prisma';
+import { Organization } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class OrganizationService {

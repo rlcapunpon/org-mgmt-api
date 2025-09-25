@@ -1,7 +1,7 @@
 import { IsOptional, IsDateString, IsArray, IsString, IsBoolean, IsEnum } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { AccountingMethod } from '../../../../generated/prisma';
+import { AccountingMethod } from '@prisma/client';
 
 export class UpdateOrganizationOperationDto {
   @ApiPropertyOptional({

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { OrganizationObligation, ObligationSchedule, ScheduleStatus } from '../../../../generated/prisma';
+import { OrganizationObligation, ObligationSchedule, ScheduleStatus } from '@prisma/client';
 
 @Injectable()
 export class SchedulesService {
