@@ -16,11 +16,10 @@ async function bootstrap() {
     .setTitle('Organization Management API')
     .setDescription('API for managing organizations, tax obligations, and compliance schedules')
     .setVersion('1.0')
-    .addTag('organizations', 'Organization management endpoints')
-    .addTag('tax-obligations', 'Tax obligation management endpoints')
-    .addTag('org-obligations', 'Organization obligation management endpoints')
-    .addTag('schedules', 'Compliance schedule management endpoints')
-    .addTag('auth', 'Authentication endpoints')
+    .addTag('Organizations', 'Organization management endpoints')
+    .addTag('TaxObligation', 'Tax obligation management endpoints')
+    .addTag('OrganizationObligation', 'Organization obligation management endpoints')
+    .addTag('Schedules', 'Compliance schedule management endpoints')
     .addBearerAuth(
       {
         type: 'http',

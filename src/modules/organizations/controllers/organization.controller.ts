@@ -8,7 +8,7 @@ import { AuthGuard } from '../../../common/guards/auth.guard';
 import { PermissionsGuard } from '../../../common/guards/permissions.guard';
 import { RequiresPermission } from '../../../common/decorators/requires-permission.decorator';
 
-@ApiTags('organizations')
+@ApiTags('Organizations')
 @ApiBearerAuth('JWT-auth')
 @Controller('organizations')
 @UseGuards(AuthGuard, PermissionsGuard)
