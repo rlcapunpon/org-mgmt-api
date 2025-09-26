@@ -76,7 +76,7 @@ Successfully implemented Step 4 of the TDD requirements: "Create new table Organ
 Existing clients must update their PUT/PATCH requests to include:
 ```json
 {
-  "status": "APPROVED",
+  "status": "INACTIVE",
   "reason": "EXPIRED",
   "description": "Optional description"
 }
