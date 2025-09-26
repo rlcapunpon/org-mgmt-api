@@ -1,9 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrganizationRepository } from '../repositories/organization.repository';
-import { CreateOrganizationDto } from '../dto/create-organization.dto';
-import { UpdateOrganizationDto } from '../dto/update-organization.dto';
-import { UpdateOrganizationOperationDto } from '../dto/update-organization-operation.dto';
-import { UpdateOrganizationStatusDto, UpdateOrganizationRegistrationDto } from '../dto/update-organization-status-registration.dto';
+import { CreateOrganizationRequestDto, UpdateOrganizationRequestDto, UpdateOrganizationOperationRequestDto, UpdateOrganizationStatusRequestDto, UpdateOrganizationRegistrationRequestDto } from '../dto/organization-request.dto';
 import { Organization } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
@@ -11,7 +8,7 @@ import { Prisma } from '@prisma/client';
 export class OrganizationService {
   constructor(private repo: OrganizationRepository) {}
 
-  async create(data: CreateOrganizationDto, userId: string): Promise<Organization> {
+  async create(data: CreateOrganizationRequestDto, userId: string): Promise<Organization> {
     // Transform undefined subcategory to null for database compatibility
     const transformedData = {
       ...data,
@@ -29,7 +26,7 @@ export class OrganizationService {
     return this.repo.getById(id);
   }
 
-  async update(id: string, data: UpdateOrganizationDto): Promise<Organization> {
+  async update(id: string, data: UpdateOrganizationRequestDto): Promise<Organization> {
     try {
       // Transform undefined subcategory to null for database compatibility
       const transformedData = {
@@ -64,7 +61,7 @@ export class OrganizationService {
     return this.repo.getOperationByOrgId(id);
   }
 
-  async updateOperation(id: string, data: UpdateOrganizationOperationDto) {
+  async updateOperation(id: string, data: UpdateOrganizationOperationRequestDto) {
     return this.repo.updateOperation(id, data);
   }
 
@@ -79,7 +76,7 @@ export class OrganizationService {
     }
   }
 
-  async updateStatus(id: string, data: UpdateOrganizationStatusDto, userId: string) {
+  async updateStatus(id: string, data: UpdateOrganizationStatusRequestDto, userId: string) {
     try {
       // Update the status
       const result = await this.repo.updateStatus(id, { status: data.status });
@@ -112,7 +109,7 @@ export class OrganizationService {
     }
   }
 
-  async updateRegistration(id: string, data: UpdateOrganizationRegistrationDto) {
+  async updateRegistration(id: string, data: UpdateOrganizationRegistrationRequestDto) {
     try {
       return await this.repo.updateRegistration(id, data);
     } catch (error) {

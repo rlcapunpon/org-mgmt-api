@@ -154,42 +154,69 @@ export class OrganizationStatusResponseDto {
 }
 
 export class OrganizationRegistrationResponseDto {
-  @ApiProperty({ description: 'Registration unique identifier' })
-  id: string;
-
-  @ApiProperty({ description: 'Organization ID' })
+  @ApiProperty({ description: 'Organization ID (foreign key)' })
   organization_id: string;
 
-  @ApiProperty({ description: 'Is VAT registered' })
-  is_vat_registered: boolean;
+  @ApiProperty({ description: 'First name of the registrant' })
+  first_name: string;
 
-  @ApiProperty({ description: 'Is non-VAT registered' })
-  is_non_vat_registered: boolean;
+  @ApiProperty({ description: 'Middle name of the registrant', required: false })
+  middle_name: string | null;
 
-  @ApiProperty({ description: 'Is percentage tax registered' })
-  is_percentage_tax_registered: boolean;
+  @ApiProperty({ description: 'Last name of the registrant' })
+  last_name: string;
 
-  @ApiProperty({ description: 'Is income tax registered' })
-  is_income_tax_registered: boolean;
+  @ApiProperty({ description: 'Trade name of the business', required: false })
+  trade_name: string | null;
 
-  @ApiProperty({ description: 'Is withholding tax registered' })
-  is_withholding_tax_registered: boolean;
+  @ApiProperty({ description: 'Line of business (PSIC code)' })
+  line_of_business: string;
 
-  @ApiProperty({ description: 'Is expanded withholding tax registered' })
-  is_ewt_registered: boolean;
+  @ApiProperty({ description: 'Address line' })
+  address_line: string;
 
-  @ApiProperty({ description: 'Is final withholding tax registered' })
-  is_fwt_registered: boolean;
+  @ApiProperty({ description: 'Region' })
+  region: string;
 
-  @ApiProperty({ description: 'Is BIR withholding agent registered' })
-  is_bir_withholding_agent_registered: boolean;
+  @ApiProperty({ description: 'City' })
+  city: string;
+
+  @ApiProperty({ description: 'ZIP code' })
+  zip_code: string;
+
+  @ApiProperty({ description: '12-digit TIN' })
+  tin: string;
+
+  @ApiProperty({ description: 'RDO code' })
+  rdo_code: string;
+
+  @ApiProperty({ description: 'Contact number' })
+  contact_number: string;
+
+  @ApiProperty({ description: 'Email address' })
+  email_address: string;
+
+  @ApiProperty({
+    description: 'Tax type for registration',
+    enum: ['VAT', 'NON_VAT', 'EXCEMPT']
+  })
+  tax_type: string;
+
+  @ApiProperty({ description: 'Start date' })
+  start_date: Date;
+
+  @ApiProperty({ description: 'Registration date for MCIT calculation' })
+  reg_date: Date;
 
   @ApiProperty({ description: 'Last update timestamp' })
-  last_update: Date;
+  update_date: Date;
+
+  @ApiProperty({ description: 'User who last updated the record' })
+  update_by: string;
 
   @ApiProperty({ description: 'Creation timestamp' })
   created_at: Date;
 
-  @ApiProperty({ description: 'Update timestamp' })
+  @ApiProperty({ description: 'Last update timestamp' })
   updated_at: Date;
 }

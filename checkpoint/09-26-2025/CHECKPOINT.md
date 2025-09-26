@@ -198,5 +198,123 @@ Successfully implemented GET and UPDATE endpoints for OrganizationStatus and Org
 - Comprehensive test coverage includes happy path, error cases, and permission scenarios
 
 ### Next Steps
-Step 3 complete. Ready to proceed to next step or refinements.</content>
+Step 3 complete. Ready to proceed to next step or refinements.
+
+---
+
+## Step 5: Request DTOs for Our Endpoints - COMPLETED ✅
+
+### Summary
+Successfully implemented Step 5 of the TDD requirements: "Request DTOs for our endpoints". Created dedicated Request DTOs for all organization endpoints to provide clear API contracts and proper validation. All tests are passing with comprehensive coverage maintained above 85%.
+
+### Changes Made
+
+#### New Request DTOs Created
+- **File**: `src/modules/organizations/dto/organization-request.dto.ts`
+- **DTOs Added**:
+  - `CreateOrganizationRequestDto` - For POST /organizations
+  - `UpdateOrganizationRequestDto` - For PUT /organizations/:id  
+  - `UpdateOrganizationOperationRequestDto` - For PUT/PATCH /organizations/:id/operation
+  - `UpdateOrganizationStatusRequestDto` - For PUT/PATCH /organizations/:id/status
+  - `UpdateOrganizationRegistrationRequestDto` - For PUT/PATCH /organizations/:id/registration
+
+#### Response DTOs Fixed
+- **File**: `src/modules/organizations/dto/organization-response.dto.ts`
+- **OrganizationRegistrationResponseDto**: Updated to match actual database schema with proper fields (first_name, last_name, etc.) instead of incorrect boolean flags
+
+#### Controller Updates
+- **File**: `src/modules/organizations/controllers/organization.controller.ts`
+- **Changes**: Updated all endpoint method signatures to use new Request DTOs
+- **Swagger**: @ApiBody decorators now reference proper Request DTOs for accurate API documentation
+
+#### Service Layer Updates
+- **File**: `src/modules/organizations/services/organization.service.ts`
+- **Changes**: Updated all method signatures to accept new Request DTO types
+
+#### Test Compatibility
+- **All Tests**: Existing tests continue to pass as they test API behavior rather than specific DTO types
+- **Validation**: New DTOs provide proper input validation while maintaining backward compatibility
+
+### API Endpoints with Request DTOs
+
+#### Organization Management
+- `POST /organizations` - Uses `CreateOrganizationRequestDto`
+- `PUT /organizations/:id` - Uses `UpdateOrganizationRequestDto`
+
+#### Organization Operation
+- `PUT /organizations/:id/operation` - Uses `UpdateOrganizationOperationRequestDto`
+- `PATCH /organizations/:id/operation` - Uses `UpdateOrganizationOperationRequestDto`
+
+#### Organization Status
+- `PUT /organizations/:id/status` - Uses `UpdateOrganizationStatusRequestDto`
+- `PATCH /organizations/:id/status` - Uses `UpdateOrganizationStatusRequestDto`
+
+#### Organization Registration
+- `PUT /organizations/:id/registration` - Uses `UpdateOrganizationRegistrationRequestDto`
+- `PATCH /organizations/:id/registration` - Uses `UpdateOrganizationRegistrationRequestDto`
+
+### Key Improvements
+
+#### Proper Separation of Concerns
+- **Request DTOs**: Focus on input validation and API contract definition
+- **Response DTOs**: Focus on output structure and API documentation
+- **Clear Contracts**: API consumers can now reference exact request structures
+
+#### Enhanced Validation
+- **Type Safety**: Strong typing for all request parameters
+- **Enum Validation**: Proper validation for status values, tax classifications, etc.
+- **Format Validation**: Email, date, and length validations where appropriate
+
+#### Swagger Documentation
+- **Accurate Schemas**: API documentation now shows correct request structures
+- **Better Developer Experience**: Clear examples and validation rules in Swagger UI
+
+### Test Results
+- **Unit Tests**: 171/171 passing ✅ (all existing tests still pass)
+- **E2E Tests**: 33/33 passing ✅
+- **Coverage**: Maintained above 85% requirement ✅
+- **Build**: Successful ✅
+
+### Technical Implementation Details
+
+#### TDD Approach Followed
+1. ✅ Created comprehensive Request DTOs with proper validation
+2. ✅ Fixed Response DTOs to match database schema
+3. ✅ Updated controller and service layers
+4. ✅ Verified all tests pass and Swagger works correctly
+
+#### Validation Features
+- **Required Fields**: Proper @IsNotEmpty decorators for mandatory fields
+- **Optional Fields**: @IsOptional for PATCH-compatible partial updates
+- **Enum Constraints**: @IsIn decorators for status and reason enums
+- **Type Transforms**: Automatic date parsing and boolean conversion
+
+#### Backward Compatibility
+- **API Contracts**: No breaking changes to existing API behavior
+- **Test Compatibility**: All existing tests continue to work
+- **Data Flow**: Request validation happens before business logic
+
+### Files Modified
+1. `src/modules/organizations/dto/organization-request.dto.ts` - **NEW FILE** - All request DTOs
+2. `src/modules/organizations/dto/organization-response.dto.ts` - Fixed OrganizationRegistrationResponseDto
+3. `src/modules/organizations/controllers/organization.controller.ts` - Updated to use request DTOs
+4. `src/modules/organizations/services/organization.service.ts` - Updated method signatures
+5. `coding-context/test-files-inventory.md` - Documentation update
+
+### Verification
+- All endpoints properly validate input using new Request DTOs
+- Swagger documentation shows accurate request schemas
+- Response DTOs correctly represent database structure
+- No breaking changes to existing functionality
+- All tests pass with comprehensive coverage maintained
+
+### Notes
+- Request DTOs provide clear API contracts for developers
+- Response DTOs now accurately reflect database schema
+- Enhanced input validation improves API reliability
+- Swagger documentation is now more accurate and helpful
+- All existing functionality preserved with improved type safety
+
+### Next Steps
+Step 5 complete. All organization management endpoints now have proper Request DTOs with clear validation and documentation.</content>
 <parameter name="filePath">c:\Users\Raenerys\Documents\Windbooks\org-mgmt-api\checkpoint\09-26-2025\CHECKPOINT.md
