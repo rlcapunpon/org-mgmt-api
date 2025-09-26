@@ -128,20 +128,11 @@ export class OrganizationStatusResponseDto {
   @ApiProperty({ description: 'Organization ID' })
   organization_id: string;
 
-  @ApiProperty({ description: 'Is active status' })
-  is_active: boolean;
-
-  @ApiProperty({ description: 'Is suspended status' })
-  is_suspended: boolean;
-
-  @ApiProperty({ description: 'Is terminated status' })
-  is_terminated: boolean;
-
-  @ApiProperty({ description: 'Suspension reason', required: false })
-  suspension_reason: string | null;
-
-  @ApiProperty({ description: 'Termination reason', required: false })
-  termination_reason: string | null;
+  @ApiProperty({
+    description: 'Organization business status',
+    enum: ['REGISTERED', 'PENDING_REG', 'ACTIVE', 'INACTIVE', 'CESSATION', 'CLOSED', 'NON_COMPLIANT', 'UNDER_AUDIT', 'SUSPENDED']
+  })
+  status: string;
 
   @ApiProperty({ description: 'Last update timestamp' })
   last_update: Date;

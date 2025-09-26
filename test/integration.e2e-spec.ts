@@ -260,13 +260,13 @@ describe('Organization Management API Integration Tests', () => {
     it('should update organization status (PUT)', () => {
       return authRequest('put', `/api/org/organizations/${createdOrgId}/status`)
         .send({
-          status: 'APPROVED',
+          status: 'ACTIVE',
           reason: 'EXPIRED'
         })
         .expect(200)
         .expect((res) => {
           expect(res.body.organization_id).toBe(createdOrgId);
-          expect(res.body.status).toBe('APPROVED');
+          expect(res.body.status).toBe('ACTIVE');
           expect(res.body).toHaveProperty('last_update');
         });
     });
@@ -274,13 +274,13 @@ describe('Organization Management API Integration Tests', () => {
     it('should partially update organization status (PATCH)', () => {
       return authRequest('patch', `/api/org/organizations/${createdOrgId}/status`)
         .send({
-          status: 'REJECTED',
+          status: 'INACTIVE',
           reason: 'VIOLATIONS'
         })
         .expect(200)
         .expect((res) => {
           expect(res.body.organization_id).toBe(createdOrgId);
-          expect(res.body.status).toBe('REJECTED');
+          expect(res.body.status).toBe('INACTIVE');
           expect(res.body).toHaveProperty('last_update');
         });
     });

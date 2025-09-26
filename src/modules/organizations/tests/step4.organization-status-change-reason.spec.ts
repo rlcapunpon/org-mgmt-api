@@ -5,6 +5,7 @@ import { AppModule } from '../../../app.module';
 import { signPayload } from '../../../test-utils/token';
 import { OrganizationService } from '../services/organization.service';
 import { OrganizationRepository } from '../repositories/organization.repository';
+import { BusinessStatus } from '@prisma/client';
 
 describe('Organization Status Change Reason (Step 4)', () => {
   let app: INestApplication;
@@ -50,7 +51,7 @@ describe('Organization Status Change Reason (Step 4)', () => {
     const mockOrganizationStatus = {
       id: 'status-1',
       organization_id: '1',
-      status: 'PENDING',
+      status: BusinessStatus.PENDING_REG,
       last_update: new Date(),
       created_at: new Date(),
       updated_at: new Date(),
@@ -58,7 +59,7 @@ describe('Organization Status Change Reason (Step 4)', () => {
 
     const mockUpdatedStatus = {
       ...mockOrganizationStatus,
-      status: 'APPROVED',
+      status: BusinessStatus.ACTIVE,
       last_update: new Date(),
     };
 
@@ -74,7 +75,7 @@ describe('Organization Status Change Reason (Step 4)', () => {
     describe('PUT /organizations/:orgId/status', () => {
       it('should update organization status and create change reason record', async () => {
         const updateData = {
-          status: 'APPROVED',
+          status: BusinessStatus.ACTIVE,
           reason: 'EXPIRED',
           description: 'Approving organization after initial setup verification',
         };
@@ -89,19 +90,19 @@ describe('Organization Status Change Reason (Step 4)', () => {
           .send(updateData);
 
         expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty('status', 'APPROVED');
+        expect(res.body).toHaveProperty('status', BusinessStatus.ACTIVE);
         expect(res.body).toHaveProperty('organization_id', '1');
         expect(mockService.updateStatus).toHaveBeenCalledWith('1', updateData, 'user-123');
       });
 
       it('should update organization status with reason but no description', async () => {
         const updateData = {
-          status: 'REJECTED',
+          status: BusinessStatus.CLOSED,
           reason: 'OPTED_OUT',
         };
 
         // Mock status update service call
-        const mockRejectedStatus = { ...mockOrganizationStatus, status: 'REJECTED' };
+        const mockRejectedStatus = { ...mockOrganizationStatus, status: BusinessStatus.CLOSED };
         mockService.updateStatus.mockResolvedValue(mockRejectedStatus);
 
         const token = signPayload({ userId: 'user-123', permissions: ['resource:update'], isSuperAdmin: false }, process.env.JWT_SECRET!);
@@ -111,13 +112,13 @@ describe('Organization Status Change Reason (Step 4)', () => {
           .send(updateData);
 
         expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty('status', 'REJECTED');
+        expect(res.body).toHaveProperty('status', BusinessStatus.CLOSED);
         expect(mockService.updateStatus).toHaveBeenCalledWith('1', updateData, 'user-123');
       });
 
       it('should return 400 when reason is missing', async () => {
         const updateData = {
-          status: 'APPROVED',
+          status: BusinessStatus.ACTIVE,
           // reason is missing - should fail validation
         };
 
@@ -132,7 +133,7 @@ describe('Organization Status Change Reason (Step 4)', () => {
 
       it('should return 400 when reason is invalid', async () => {
         const updateData = {
-          status: 'APPROVED',
+          status: BusinessStatus.ACTIVE,
           reason: 'INVALID_REASON', // Not in allowed enum values
           description: 'Test description',
         };
@@ -150,13 +151,13 @@ describe('Organization Status Change Reason (Step 4)', () => {
     describe('PATCH /organizations/:orgId/status', () => {
       it('should partially update organization status and create change reason record', async () => {
         const updateData = {
-          status: 'SUSPENDED',
+          status: BusinessStatus.SUSPENDED,
           reason: 'PAYMENT_PENDING',
           description: 'Temporarily suspending due to business restructuring',
         };
 
         // Mock status update service call
-        const mockSuspendedStatus = { ...mockOrganizationStatus, status: 'SUSPENDED' };
+        const mockSuspendedStatus = { ...mockOrganizationStatus, status: BusinessStatus.SUSPENDED };
         mockService.updateStatus.mockResolvedValue(mockSuspendedStatus);
 
         const token = signPayload({ userId: 'user-123', permissions: ['resource:update'], isSuperAdmin: false }, process.env.JWT_SECRET!);
@@ -166,7 +167,7 @@ describe('Organization Status Change Reason (Step 4)', () => {
           .send(updateData);
 
         expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty('status', 'SUSPENDED');
+        expect(res.body).toHaveProperty('status', BusinessStatus.SUSPENDED);
         expect(mockService.updateStatus).toHaveBeenCalledWith('1', updateData, 'user-123');
       });
     });

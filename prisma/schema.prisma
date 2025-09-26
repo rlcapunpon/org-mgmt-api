@@ -66,6 +66,18 @@ enum OrganizationStatusChangeReasonEnum {
   VIOLATIONS
 }
 
+enum BusinessStatus {
+  REGISTERED       // Successfully registered with BIR (active taxpayer)
+  PENDING_REG      // Application submitted but not yet completed
+  ACTIVE           // Currently operating, obligations ongoing
+  INACTIVE         // Temporarily not operating (filed for suspension)
+  CESSATION        // Operations stopped, closing process ongoing
+  CLOSED           // Deregistered / business officially closed
+  NON_COMPLIANT    // Active but flagged for missed filings/payments
+  UNDER_AUDIT      // Under LOA / investigation by BIR
+  SUSPENDED        // Temporarily suspended by order (e.g., regulatory)
+}
+
 model Organization {
   id                String   @id @default(cuid())
   name              String
@@ -134,7 +146,7 @@ model ObligationSchedule {
 model OrganizationStatus {
   id              String   @id @default(cuid())
   organization_id String   @unique
-  status          String   @default("PENDING")
+  status          BusinessStatus @default(PENDING_REG)
   last_update     DateTime @default(now())
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt

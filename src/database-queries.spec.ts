@@ -7,7 +7,8 @@ import {
   Frequency,
   Status,
   ScheduleStatus,
-  AccountingMethod
+  AccountingMethod,
+  BusinessStatus
 } from '@prisma/client';
 
 describe('Database Queries Tests', () => {
@@ -101,7 +102,7 @@ describe('Database Queries Tests', () => {
       testData.orgStatus1 = await prisma.organizationStatus.create({
         data: {
           organization_id: testData.organization1.id,
-          status: 'APPROVED',
+          status: BusinessStatus.ACTIVE,
           last_update: new Date(),
         },
       });
@@ -477,7 +478,7 @@ describe('Database Queries Tests', () => {
       if (process.env.TEST_DEV_DB_CONNECTION !== 'true') return;
 
       const result = await prisma.organizationStatus.findMany({
-        where: { status: 'NON_EXISTENT_STATUS' },
+        where: { status: BusinessStatus.SUSPENDED },
       });
       expect(result).toHaveLength(0);
     });
@@ -489,7 +490,7 @@ describe('Database Queries Tests', () => {
         where: { organization_id: testData.organization1.id },
       });
       expect(result).toBeDefined();
-      expect(result?.status).toBe('APPROVED');
+      expect(result?.status).toBe(BusinessStatus.ACTIVE);
     });
 
     it('should return multiple row responses', async () => {
@@ -504,9 +505,9 @@ describe('Database Queries Tests', () => {
 
       const updated = await prisma.organizationStatus.update({
         where: { organization_id: testData.organization1.id },
-        data: { status: 'VERIFIED' },
+        data: { status: BusinessStatus.REGISTERED },
       });
-      expect(updated.status).toBe('VERIFIED');
+      expect(updated.status).toBe(BusinessStatus.REGISTERED);
     });
 
     it('should delete row', async () => {

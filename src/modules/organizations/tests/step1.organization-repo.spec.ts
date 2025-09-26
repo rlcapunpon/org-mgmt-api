@@ -75,7 +75,7 @@ describe('OrganizationRepository', () => {
       status: {
         id: 'status-uuid',
         organization_id: 'uuid',
-        status: 'PENDING',
+        status: 'PENDING_REG',
         last_update: new Date(),
         created_at: new Date(),
         updated_at: new Date(),
@@ -120,7 +120,7 @@ describe('OrganizationRepository', () => {
         deleted_at: null,
         status: {
           create: {
-            status: 'PENDING',
+            status: 'PENDING_REG',
           },
         },
         operation: {
@@ -200,7 +200,7 @@ describe('OrganizationRepository', () => {
         status: {
           id: 'status-1',
           organization_id: '1',
-          status: 'PENDING',
+          status: 'PENDING_REG',
           last_update: new Date(),
           created_at: new Date(),
           updated_at: new Date(),
@@ -240,7 +240,7 @@ describe('OrganizationRepository', () => {
       status: {
         id: 'status-1',
         organization_id: '1',
-        status: 'PENDING',
+        status: 'PENDING_REG',
         last_update: new Date(),
         created_at: new Date(),
         updated_at: new Date(),

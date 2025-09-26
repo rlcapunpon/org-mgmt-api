@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../database/prisma.service';
-import { Organization } from '@prisma/client';
+import { Organization, BusinessStatus } from '@prisma/client';
 
 interface CreateOrganizationData extends Omit<Organization, 'id' | 'created_at' | 'updated_at' | 'deleted_at'> {
   // OrganizationRegistration fields
@@ -60,7 +60,7 @@ export class OrganizationRepository {
         deleted_at: null,
         status: {
           create: {
-            status: 'PENDING',
+            status: BusinessStatus.PENDING_REG,
           },
         },
         operation: {
@@ -216,7 +216,7 @@ export class OrganizationRepository {
     });
   }
 
-  async updateStatus(id: string, data: { status: string }) {
+  async updateStatus(id: string, data: { status: BusinessStatus }) {
     return this.prisma.organizationStatus.update({
       where: { organization_id: id },
       data: {

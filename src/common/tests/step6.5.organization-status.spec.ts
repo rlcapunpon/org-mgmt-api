@@ -4,7 +4,7 @@ import request from 'supertest';
 import { AppModule } from '../../app.module';
 import { signPayload } from '../../test-utils/token';
 import { OrganizationService } from '../../modules/organizations/services/organization.service';
-import { Category, TaxClassification } from '@prisma/client';
+import { Category, TaxClassification, BusinessStatus } from '@prisma/client';
 import { PrismaService } from '../../database/prisma.service';
 
 describe('Organization Status (Step 6.5)', () => {
@@ -36,7 +36,7 @@ describe('Organization Status (Step 6.5)', () => {
               status: {
                 id: 'status-1',
                 organization_id: '1',
-                status: 'PENDING',
+                status: BusinessStatus.PENDING_REG,
                 last_update: now,
                 created_at: now,
                 updated_at: now,
@@ -59,7 +59,7 @@ describe('Organization Status (Step 6.5)', () => {
               status: {
                 id: 'status-1',
                 organization_id: '1',
-                status: 'PENDING',
+                status: BusinessStatus.PENDING_REG,
                 last_update: new Date(),
                 created_at: new Date(),
                 updated_at: new Date(),
@@ -83,7 +83,7 @@ describe('Organization Status (Step 6.5)', () => {
               status: {
                 id: 'status-1',
                 organization_id: '1',
-                status: 'PENDING',
+                status: BusinessStatus.PENDING_REG,
                 last_update: now,
                 created_at: new Date(),
                 updated_at: now,
@@ -109,7 +109,7 @@ describe('Organization Status (Step 6.5)', () => {
               status: {
                 id: 'status-1',
                 organization_id: '1',
-                status: 'PENDING',
+                status: BusinessStatus.PENDING_REG,
                 last_update: new Date(),
                 created_at: new Date(),
                 updated_at: new Date(),
@@ -166,7 +166,7 @@ describe('Organization Status (Step 6.5)', () => {
 
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty('status');
-      expect(res.body.status).toHaveProperty('status', 'PENDING');
+      expect(res.body.status).toHaveProperty('status', 'PENDING_REG');
       expect(res.body.status).toHaveProperty('organization_id', res.body.id);
     });
 
@@ -199,7 +199,7 @@ describe('Organization Status (Step 6.5)', () => {
 
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('status');
-      expect(res.body.status.status).toBe('PENDING');
+      expect(res.body.status.status).toBe('PENDING_REG');
     });
 
     it('should return organizations with status when listing organizations', async () => {
@@ -234,7 +234,7 @@ describe('Organization Status (Step 6.5)', () => {
       expect(res.status).toBe(200);
       expect(res.body).toHaveLength(1);
       expect(res.body[0]).toHaveProperty('status');
-      expect(res.body[0].status.status).toBe('PENDING');
+      expect(res.body[0].status.status).toBe('PENDING_REG');
       expect(res.body[0]).not.toHaveProperty('operation');
     });
 
@@ -315,7 +315,7 @@ describe('Organization Status (Step 6.5)', () => {
   });
 
   describe('Organization Status Edge Cases', () => {
-    it('should create status with PENDING for INDIVIDUAL category organizations', async () => {
+    it('should create status with PENDING_REG for INDIVIDUAL category organizations', async () => {
       const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
       const payload = { name: 'Individual Org', category: 'INDIVIDUAL', tax_classification: 'NON_VAT' };
 
@@ -326,7 +326,7 @@ describe('Organization Status (Step 6.5)', () => {
 
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty('status');
-      expect(res.body.status.status).toBe('PENDING');
+      expect(res.body.status.status).toBe('PENDING_REG');
       expect(res.body.category).toBe('INDIVIDUAL');
     });
 
@@ -384,7 +384,7 @@ describe('Organization Status (Step 6.5)', () => {
       expect(res.status).toBe(200);
       expect(res.body).toHaveLength(1);
       expect(res.body[0]).toHaveProperty('status');
-      expect(res.body[0].status.status).toBe('PENDING');
+      expect(res.body[0].status.status).toBe('PENDING_REG');
       expect(res.body[0].category).toBe('NON_INDIVIDUAL');
     });
 
@@ -398,7 +398,7 @@ describe('Organization Status (Step 6.5)', () => {
       expect(res.status).toBe(200);
       expect(res.body).toHaveLength(1);
       expect(res.body[0]).toHaveProperty('status');
-      expect(res.body[0].status.status).toBe('PENDING');
+      expect(res.body[0].status.status).toBe('PENDING_REG');
       expect(res.body[0].tax_classification).toBe('VAT');
     });
 
@@ -480,7 +480,7 @@ describe('Organization Status (Step 6.5)', () => {
           status: {
             id: 'status-1',
             organization_id: '1',
-            status: 'PENDING',
+            status: BusinessStatus.PENDING_REG,
             last_update: new Date(),
             created_at: new Date(),
             updated_at: new Date(),
@@ -501,7 +501,7 @@ describe('Organization Status (Step 6.5)', () => {
           status: {
             id: 'status-2',
             organization_id: '2',
-            status: 'PENDING',
+            status: BusinessStatus.PENDING_REG,
             last_update: new Date(),
             created_at: new Date(),
             updated_at: new Date(),
@@ -519,8 +519,8 @@ describe('Organization Status (Step 6.5)', () => {
       expect(res.body[1]).toHaveProperty('status');
       expect(res.body[0].status.organization_id).toBe(res.body[0].id);
       expect(res.body[1].status.organization_id).toBe(res.body[1].id);
-      expect(res.body[0].status.status).toBe('PENDING');
-      expect(res.body[1].status.status).toBe('PENDING');
+      expect(res.body[0].status.status).toBe('PENDING_REG');
+      expect(res.body[1].status.status).toBe('PENDING_REG');
       expect(res.body[0]).not.toHaveProperty('operation');
       expect(res.body[1]).not.toHaveProperty('operation');
     });

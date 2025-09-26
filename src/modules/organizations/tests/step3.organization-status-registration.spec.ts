@@ -4,7 +4,7 @@ import request from 'supertest';
 import { AppModule } from '../../../app.module';
 import { signPayload } from '../../../test-utils/token';
 import { OrganizationService } from '../services/organization.service';
-import { Category, TaxClassification } from '@prisma/client';
+import { Category, TaxClassification, BusinessStatus } from '@prisma/client';
 import { PrismaService } from '../../../database/prisma.service';
 
 describe('Organization Status and Registration Endpoints (Step 3)', () => {
@@ -35,7 +35,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
             return Promise.resolve({
               id: 'status-1',
               organization_id: '1',
-              status: 'PENDING',
+              status: BusinessStatus.PENDING_REG,
               last_update: new Date(),
               created_at: new Date(),
               updated_at: new Date(),
@@ -132,7 +132,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       it('should update organization status', async () => {
         const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
         const updateData = {
-          status: 'APPROVED',
+          status: BusinessStatus.ACTIVE,
           reason: 'EXPIRED'
         };
 
@@ -140,7 +140,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
         (prismaService.organizationStatus.update as jest.Mock).mockResolvedValueOnce({
           id: 'status-1',
           organization_id: '1',
-          status: 'APPROVED',
+          status: BusinessStatus.ACTIVE,
           last_update: new Date(),
           created_at: new Date(),
           updated_at: new Date(),
@@ -152,14 +152,14 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
           .send(updateData);
 
         expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty('status', 'APPROVED');
+        expect(res.body).toHaveProperty('status', BusinessStatus.ACTIVE);
         expect(res.body).toHaveProperty('organization_id', '1');
       });
 
       it('should return 404 when updating non-existent organization status', async () => {
         const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
         const updateData = {
-          status: 'APPROVED',
+          status: BusinessStatus.ACTIVE,
           reason: 'EXPIRED'
         };
 
@@ -177,7 +177,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       it('should deny access without proper permissions', async () => {
         const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
         const updateData = {
-          status: 'APPROVED',
+          status: BusinessStatus.ACTIVE,
           reason: 'EXPIRED'
         };
 
@@ -194,7 +194,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       it('should partially update organization status', async () => {
         const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
         const updateData = {
-          status: 'REJECTED',
+          status: BusinessStatus.CLOSED,
           reason: 'VIOLATIONS'
         };
 
@@ -202,7 +202,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
         (prismaService.organizationStatus.update as jest.Mock).mockResolvedValueOnce({
           id: 'status-1',
           organization_id: '1',
-          status: 'REJECTED',
+          status: BusinessStatus.CLOSED,
           last_update: new Date(),
           created_at: new Date(),
           updated_at: new Date(),
@@ -214,7 +214,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
           .send(updateData);
 
         expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty('status', 'REJECTED');
+        expect(res.body).toHaveProperty('status', BusinessStatus.CLOSED);
       });
     });
   });

@@ -2,6 +2,7 @@ import { IsNotEmpty, IsEnum, IsOptional, IsString, IsDateString, IsEmail, Length
 import { Transform, Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Category, SubCategory, TaxClassification, AccountingMethod } from '@prisma/client';
+import { BusinessStatus } from '@prisma/client';
 
 // Create Organization Request DTO
 export class CreateOrganizationRequestDto {
@@ -380,13 +381,13 @@ export class UpdateOrganizationOperationRequestDto {
 export class UpdateOrganizationStatusRequestDto {
   @ApiProperty({
     description: 'Organization status',
-    example: 'APPROVED',
-    enum: ['PENDING', 'APPROVED', 'REJECTED', 'SUSPENDED', 'TERMINATED']
+    example: 'ACTIVE',
+    enum: BusinessStatus,
+    enumName: 'BusinessStatus'
   })
   @IsNotEmpty()
-  @IsString()
-  @IsIn(['PENDING', 'APPROVED', 'REJECTED', 'SUSPENDED', 'TERMINATED'])
-  status: string;
+  @IsEnum(BusinessStatus)
+  status: BusinessStatus;
 
   @ApiProperty({
     description: 'Reason for status change',
