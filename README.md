@@ -1,98 +1,225 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Organization Management API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A comprehensive REST API for managing Philippine tax compliance and organization data, built with NestJS, TypeScript, and Prisma.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Overview
 
-## Description
+This API serves as the central system for managing organizations, their tax obligations, compliance schedules, and regulatory status within the Philippine tax ecosystem. It integrates with external RBAC services for authentication and authorization, and provides a complete solution for tax compliance management.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Features
 
-## Project setup
+### 🏢 Organization Management
+- Complete organization lifecycle management
+- Philippine tax registration data (BIR integration)
+- Organization status tracking with comprehensive state management
+- Business classification and categorization
 
-```bash
-$ npm install
-```
+### 📋 Tax Obligation Management
+- Dynamic tax obligation assignment based on business classification
+- Support for various tax types (VAT, Non-VAT, Exempt)
+- Automated schedule generation for tax filings and payments
+- Status-based obligation management (Mandatory, Optional, Exempt, etc.)
 
-## Compile and run the project
+### 📅 Compliance Scheduling
+- Automated generation of tax filing and payment schedules
+- Due date calculation and tracking
+- Compliance status monitoring
+- Historical obligation tracking
 
-```bash
-# development
-$ npm run start
+### 🔐 Security & Authorization
+- JWT-based authentication with external RBAC integration
+- Granular permission system (`resource.action:scope`)
+- Role-based access control (Super Admin, User roles)
+- Secure API endpoints with proper validation
 
-# watch mode
-$ npm run start:dev
+### 📊 Status Management
+- Organization status lifecycle (Registered, Active, Inactive, Closed, etc.)
+- Tax obligation status tracking
+- Change reason logging and audit trails
+- Compliance monitoring and alerts
 
-# production mode
-$ npm run start:prod
-```
+## Technology Stack
 
-## Run tests
+- **Framework**: [NestJS](https://nestjs.com/) - Progressive Node.js framework
+- **Language**: TypeScript
+- **Database**: PostgreSQL with [Prisma ORM](https://www.prisma.io/)
+- **Authentication**: JWT with Passport.js
+- **Validation**: class-validator and class-transformer
+- **Documentation**: Swagger/OpenAPI
+- **Testing**: Jest with comprehensive test coverage
+- **Development**: ESLint, Prettier, Husky
 
-```bash
-# unit tests
-$ npm run test
+## Quick Start
 
-# e2e tests
-$ npm run test:e2e
+### Prerequisites
+- Node.js (v18+)
+- PostgreSQL (v13+)
+- npm or yarn
 
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Installation
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Clone the repository
+git clone <repository-url>
+cd org-mgmt-api
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your database credentials and JWT secret
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Database Setup
 
-## Resources
+```bash
+# Generate Prisma client
+npm run prisma:generate
 
-Check out a few resources that may come in handy when working with NestJS:
+# Push schema to database (development)
+npm run dev:reset
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Run database migrations (production)
+npm run migrate
+```
 
-## Support
+### Development
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+# Start development server with hot reload
+npm run start:dev
 
-## Stay in touch
+# Run tests
+npm run test
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# Run E2E tests
+npm run test:e2e
+
+# Generate test coverage
+npm run test:cov
+
+# Lint code
+npm run lint
+
+# Format code
+npm run format
+```
+
+### Production
+
+```bash
+# Build the application
+npm run build
+
+# Start production server
+npm run start:prod
+```
+
+## API Documentation
+
+Once the server is running, visit:
+- **API Documentation**: `http://localhost:3000/docs` (Swagger UI)
+- **Health Check**: `http://localhost:3000/health`
+
+## Key Endpoints
+
+### Organizations
+- `POST /organizations` - Create new organization
+- `GET /organizations` - List organizations
+- `GET /organizations/:id` - Get organization details
+- `PUT /organizations/:id` - Update organization
+- `DELETE /organizations/:id` - Soft delete organization
+
+### Tax Obligations
+- `POST /tax-obligations` - Create tax obligation
+- `GET /tax-obligations` - List active tax obligations
+- `GET /tax-obligations/:id` - Get tax obligation details
+
+### Organization Status
+- `GET /organizations/:id/status` - Get organization status
+- `PUT /organizations/:id/status` - Update organization status
+- `PATCH /organizations/:id/status` - Partially update status
+
+### Organization Operations
+- `GET /organizations/:id/operation` - Get operation details
+- `PUT /organizations/:id/operation` - Update operation settings
+
+### Schedules
+- `GET /organizations/:id/schedules` - Get compliance schedules
+- `GET /organizations/:id/obligations` - Get organization obligations
+
+## Database Schema
+
+### Core Entities
+- **Organization**: Main entity for businesses/taxpayers
+- **TaxObligation**: Tax requirements and obligations
+- **OrganizationObligation**: Links organizations to their obligations
+- **ObligationSchedule**: Generated filing/payment schedules
+- **OrganizationStatus**: Current status and state
+- **OrganizationOperation**: Operational settings and dates
+- **OrganizationRegistration**: BIR registration details
+
+### Enums
+- **BusinessStatus**: Organization lifecycle states
+- **TaxObligationStatus**: Obligation requirement levels
+- **TaxClassification**: VAT/Non-VAT/Exempt classifications
+- **ScheduleStatus**: Filing/payment status tracking
+
+## Testing Strategy
+
+This project follows strict Test-Driven Development (TDD) principles:
+
+### Test Coverage
+- **Unit Tests**: Repository, service, and controller logic
+- **Integration Tests**: End-to-end API testing
+- **Database Tests**: Schema validation and queries
+- **Coverage Target**: Minimum 85% per file
+
+### Test Categories
+- Repository layer tests with Prisma mocks
+- Service layer business logic tests
+- Controller endpoint tests
+- E2E API integration tests
+- Database connectivity and schema tests
+
+## Development Workflow
+
+1. **TDD Approach**: Write failing tests first, then implement
+2. **Code Quality**: ESLint + Prettier enforced
+3. **Git Workflow**: Feature branches with comprehensive commits
+4. **Documentation**: Update README and API docs for changes
+5. **Testing**: All tests must pass before merge
+
+## Environment Variables
+
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/org_mgmt_db"
+
+# JWT
+JWT_SECRET="your-jwt-secret-here"
+
+# External Services
+RBAC_API_URL="https://rbac-service.example.com"
+
+# Application
+NODE_ENV="development"
+PORT=3000
+```
+
+## Contributing
+
+1. Follow the established TDD workflow
+2. Maintain test coverage above 85%
+3. Update documentation for API changes
+4. Ensure all tests pass before submitting PR
+5. Follow conventional commit messages
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is proprietary and unlicensed for external use.
+
+## Support
+
+For questions or support, please contact the development team.
