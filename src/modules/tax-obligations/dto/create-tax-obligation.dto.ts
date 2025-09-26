@@ -1,7 +1,8 @@
 import { IsNotEmpty, IsString, IsEnum, IsObject, IsOptional } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { TaxObligationStatus } from '@prisma/client';
 
-export class CreateTaxObligationDto {
+export class CreateTaxObligationRequestDto {
   @IsNotEmpty()
   @IsString()
   code: string;
@@ -16,6 +17,7 @@ export class CreateTaxObligationDto {
 
   @IsNotEmpty()
   @IsObject()
+  @Transform(({ value }) => typeof value === 'string' ? JSON.parse(value) : value)
   due_rule: any; // JSON object
 
   @IsOptional()

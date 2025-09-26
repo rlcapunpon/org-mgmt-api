@@ -1,7 +1,8 @@
 import { IsNotEmpty, IsString, IsOptional, IsDateString, IsEnum } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { OrganizationTaxObligationStatus } from '@prisma/client';
 
-export class AssignObligationDto {
+export class AssignObligationRequestDto {
   @IsNotEmpty()
   @IsString()
   obligation_id: string;
@@ -19,7 +20,7 @@ export class AssignObligationDto {
   notes?: string;
 }
 
-export class UpdateObligationStatusDto {
+export class UpdateObligationStatusRequestDto {
   @IsNotEmpty()
   @IsEnum(OrganizationTaxObligationStatus)
   status: OrganizationTaxObligationStatus;

@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Put, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiBody } from '@nestjs/swagger';
 import { OrganizationObligationService } from '../services/organization-obligation.service';
-import { AssignObligationDto, UpdateObligationStatusDto } from '../dto/assign-obligation.dto';
+import { AssignObligationRequestDto, UpdateObligationStatusRequestDto } from '../dto/assign-obligation.dto';
 import { OrganizationObligationResponseDto } from '../dto/organization-obligation-response.dto';
 import { AuthGuard } from '../../../common/guards/auth.guard';
 import { PermissionsGuard } from '../../../common/guards/permissions.guard';
@@ -26,8 +26,8 @@ export class OrganizationObligationController {
   @ApiResponse({ status: 400, description: 'Bad request - invalid data' })
   @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
   @ApiResponse({ status: 404, description: 'Organization or obligation not found' })
-  @ApiBody({ type: AssignObligationDto })
-  async assignObligation(@Param('orgId') orgId: string, @Body() dto: AssignObligationDto) {
+  @ApiBody({ type: AssignObligationRequestDto })
+  async assignObligation(@Param('orgId') orgId: string, @Body() dto: AssignObligationRequestDto) {
     const data = {
       start_date: new Date(dto.start_date),
       end_date: dto.end_date ? new Date(dto.end_date) : null,
@@ -65,8 +65,8 @@ export class OrganizationObligationController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
   @ApiResponse({ status: 404, description: 'Obligation not found' })
-  @ApiBody({ type: UpdateObligationStatusDto })
-  async updateStatus(@Param('id') id: string, @Body() dto: UpdateObligationStatusDto) {
+  @ApiBody({ type: UpdateObligationStatusRequestDto })
+  async updateStatus(@Param('id') id: string, @Body() dto: UpdateObligationStatusRequestDto) {
     return this.service.updateStatus(id, dto.status);
   }
 }

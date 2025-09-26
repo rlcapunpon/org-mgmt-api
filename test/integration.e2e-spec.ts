@@ -356,7 +356,6 @@ describe('Organization Management API Integration Tests', () => {
             obligation_id: taxObligationId,
             start_date: '2024-01-01',
             end_date: '2024-12-31',
-            status: "ACTIVE",
             notes: 'Annual income tax filing',
           })
           .expect(201)
