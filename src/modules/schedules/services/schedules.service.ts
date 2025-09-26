@@ -38,9 +38,34 @@ export class SchedulesService {
     return schedules;
   }
 
-  private parseDueRule(dueRule: string, frequency: string): (date: Date) => Date {
-    // Simple parser for due rules like "15th of month", "last day of quarter"
-    if (dueRule.includes('last day of quarter')) {
+  private parseDueRule(dueRule: any, frequency: string): (date: Date) => Date {
+    // Handle JSON due rule objects from database
+    if (typeof dueRule === 'object' && dueRule !== null) {
+      if (dueRule.day && dueRule.relative_to) {
+        const day = dueRule.day;
+        const relativeTo = dueRule.relative_to;
+        
+        if (relativeTo === 'fiscal_quarter_end') {
+          return (date: Date) => new Date(Date.UTC(date.getFullYear(), date.getMonth() + 3, day));
+        } else if (relativeTo === 'calendar_quarter_end') {
+          return (date: Date) => new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, day));
+        } else if (relativeTo === 'calendar_month_end') {
+          return (date: Date) => new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, day));
+        } else if (relativeTo === 'fiscal_year_end') {
+          return (date: Date) => new Date(Date.UTC(date.getFullYear() + 1, dueRule.month - 1, day));
+        }
+      } else if (dueRule.conditional) {
+        // Handle conditional due dates
+        return (date: Date) => new Date(Date.UTC(date.getFullYear(), 11, 31)); // Default to year end
+      } else if (dueRule.month && dueRule.day) {
+        // Annual due date
+        return (date: Date) => new Date(Date.UTC(date.getFullYear(), dueRule.month - 1, dueRule.day));
+      }
+    }
+    
+    // Fallback to string parsing for backward compatibility
+    const dueRuleStr = typeof dueRule === 'string' ? dueRule : JSON.stringify(dueRule);
+    if (dueRuleStr.includes('last day of quarter')) {
       return (date: Date) => this.getLastDayOfQuarter(date);
     } else if (dueRule.includes('last day of month')) {
       if (frequency === 'annual') {

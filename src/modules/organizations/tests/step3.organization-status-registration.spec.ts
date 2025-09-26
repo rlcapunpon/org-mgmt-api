@@ -75,6 +75,10 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
             });
           }),
         },
+        organizationStatusChangeReason: {
+          create: jest.fn(),
+          findMany: jest.fn(),
+        },
       })
       .compile();
 
@@ -128,7 +132,8 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       it('should update organization status', async () => {
         const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
         const updateData = {
-          status: 'APPROVED'
+          status: 'APPROVED',
+          reason: 'EXPIRED'
         };
 
         const prismaService = app.get(PrismaService);
@@ -154,7 +159,8 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       it('should return 404 when updating non-existent organization status', async () => {
         const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
         const updateData = {
-          status: 'APPROVED'
+          status: 'APPROVED',
+          reason: 'EXPIRED'
         };
 
         const prismaService = app.get(PrismaService);
@@ -171,7 +177,8 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       it('should deny access without proper permissions', async () => {
         const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
         const updateData = {
-          status: 'APPROVED'
+          status: 'APPROVED',
+          reason: 'EXPIRED'
         };
 
         const res = await request(app.getHttpServer())
@@ -187,7 +194,8 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       it('should partially update organization status', async () => {
         const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
         const updateData = {
-          status: 'REJECTED'
+          status: 'REJECTED',
+          reason: 'VIOLATIONS'
         };
 
         const prismaService = app.get(PrismaService);

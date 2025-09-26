@@ -158,8 +158,9 @@ export class OrganizationController {
   @ApiResponse({ status: 404, description: 'Organization not found' })
   @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
   @ApiBody({ type: UpdateOrganizationStatusDto })
-  async updateStatus(@Param('id') id: string, @Body() dto: UpdateOrganizationStatusDto) {
-    return this.service.updateStatus(id, dto);
+  async updateStatus(@Param('id') id: string, @Body() dto: UpdateOrganizationStatusDto, @Req() req: Request) {
+    const user = req.user as { userId: string };
+    return this.service.updateStatus(id, dto, user.userId);
   }
 
   @Patch(':id/status')
@@ -174,8 +175,9 @@ export class OrganizationController {
   @ApiResponse({ status: 404, description: 'Organization not found' })
   @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
   @ApiBody({ type: UpdateOrganizationStatusDto })
-  async patchStatus(@Param('id') id: string, @Body() dto: UpdateOrganizationStatusDto) {
-    return this.service.updateStatus(id, dto);
+  async patchStatus(@Param('id') id: string, @Body() dto: UpdateOrganizationStatusDto, @Req() req: Request) {
+    const user = req.user as { userId: string };
+    return this.service.updateStatus(id, dto, user.userId);
   }
 
   @Get(':id/registration')

@@ -260,7 +260,8 @@ describe('Organization Management API Integration Tests', () => {
     it('should update organization status (PUT)', () => {
       return authRequest('put', `/api/org/organizations/${createdOrgId}/status`)
         .send({
-          status: 'APPROVED'
+          status: 'APPROVED',
+          reason: 'EXPIRED'
         })
         .expect(200)
         .expect((res) => {
@@ -273,7 +274,8 @@ describe('Organization Management API Integration Tests', () => {
     it('should partially update organization status (PATCH)', () => {
       return authRequest('patch', `/api/org/organizations/${createdOrgId}/status`)
         .send({
-          status: 'REJECTED'
+          status: 'REJECTED',
+          reason: 'VIOLATIONS'
         })
         .expect(200)
         .expect((res) => {

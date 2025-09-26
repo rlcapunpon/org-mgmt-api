@@ -5,6 +5,15 @@ export class UpdateOrganizationStatusDto {
   @IsNotEmpty()
   @IsIn(['PENDING', 'APPROVED', 'REJECTED', 'SUSPENDED', 'TERMINATED'])
   status: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsIn(['EXPIRED', 'OPTED_OUT', 'PAYMENT_PENDING', 'VIOLATIONS'])
+  reason: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
 }
 
 export class UpdateOrganizationRegistrationDto {

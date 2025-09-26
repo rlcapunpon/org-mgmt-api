@@ -79,9 +79,20 @@ export class OrganizationService {
     }
   }
 
-  async updateStatus(id: string, data: UpdateOrganizationStatusDto) {
+  async updateStatus(id: string, data: UpdateOrganizationStatusDto, userId: string) {
     try {
-      return await this.repo.updateStatus(id, data);
+      // Update the status
+      const result = await this.repo.updateStatus(id, { status: data.status });
+
+      // Create status change reason record
+      await this.repo.createStatusChangeReason({
+        organization_id: id,
+        reason: data.reason,
+        description: data.description,
+        updated_by: userId,
+      });
+
+      return result;
     } catch (error) {
       if (error.code === 'P2025') { // Record not found
         throw new NotFoundException();

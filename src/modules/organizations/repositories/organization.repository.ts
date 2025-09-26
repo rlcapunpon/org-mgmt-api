@@ -241,4 +241,27 @@ export class OrganizationRepository {
       },
     });
   }
+
+  async createStatusChangeReason(data: {
+    organization_id: string;
+    reason: string;
+    description?: string;
+    updated_by: string;
+  }) {
+    return this.prisma.organizationStatusChangeReason.create({
+      data: {
+        organization_id: data.organization_id,
+        reason: data.reason as any,
+        description: data.description,
+        updated_by: data.updated_by,
+      },
+    });
+  }
+
+  async getStatusChangeReasonsByOrgId(organization_id: string) {
+    return this.prisma.organizationStatusChangeReason.findMany({
+      where: { organization_id },
+      orderBy: { update_date: 'desc' },
+    });
+  }
 }
