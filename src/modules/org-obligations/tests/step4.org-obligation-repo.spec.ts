@@ -46,7 +46,7 @@ describe('OrganizationObligationRepository', () => {
       obligation_id: 'obl1',
       start_date: new Date('2025-01-01'),
       end_date: null,
-      status: 'ACTIVE' as const,
+      status: 'ASSIGNED' as const,
       notes: null,
       created_at: new Date(),
       updated_at: new Date(),
@@ -66,7 +66,7 @@ describe('OrganizationObligationRepository', () => {
         obligation_id: 'obl1',
         start_date: new Date('2025-01-01'),
         end_date: null,
-        status: 'ACTIVE' as const,
+        status: 'ASSIGNED' as const,
         notes: null,
         created_at: new Date(),
         updated_at: new Date(),
@@ -95,14 +95,14 @@ describe('OrganizationObligationRepository', () => {
   });
 
   it('update should update obligation assignment', async () => {
-    const updateData = { status: 'EXEMPT' as const };
+    const updateData = { status: 'PAID' as const };
     const mockUpdated = {
       id: '1',
       organization_id: 'org1',
       obligation_id: 'obl1',
       start_date: new Date('2025-01-01'),
       end_date: null,
-      status: 'EXEMPT' as const,
+      status: 'PAID' as const,
       notes: null,
       created_at: new Date(),
       updated_at: new Date(),

@@ -87,6 +87,20 @@ enum TaxObligationStatus {
   RETIRED       // No longer enforced (historical/defunct)
 }
 
+enum OrganizationTaxObligationStatus {
+  NOT_APPLICABLE   // This obligation does not apply to the business
+  ASSIGNED         // Business is registered/enrolled for this obligation
+  ACTIVE           // Obligation is active and recurring
+  DUE              // Filing/payment deadline is approaching
+  FILED            // Filed but not yet fully paid
+  PAID             // Filed and settled
+  OVERDUE          // Missed deadline, not yet complied
+  LATE             // Filed/paid but after deadline
+  EXEMPT           // Business is exempt from this obligation
+  SUSPENDED        // Temporarily suspended by BIR (e.g., inactive status approved)
+  CLOSED           // Obligation ended due to business closure/deregistration
+}
+
 model Organization {
   id                String   @id @default(cuid())
   name              String
@@ -126,7 +140,7 @@ model OrganizationObligation {
   obligation_id    String
   start_date       DateTime
   end_date         DateTime?
-  status           Status        @default(ACTIVE)
+  status           OrganizationTaxObligationStatus @default(ASSIGNED)
   notes            String?
   created_at       DateTime      @default(now())
   updated_at       DateTime      @updatedAt

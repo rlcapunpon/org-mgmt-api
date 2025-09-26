@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrganizationObligationRepository } from '../repositories/organization-obligation.repository';
-import { OrganizationObligation, Prisma } from '@prisma/client';
+import { OrganizationObligation, Prisma, OrganizationTaxObligationStatus } from '@prisma/client';
 
 @Injectable()
 export class OrganizationObligationService {
@@ -14,7 +14,7 @@ export class OrganizationObligationService {
     return this.repo.findByOrgId(orgId);
   }
 
-  async updateStatus(id: string, status: 'ACTIVE' | 'INACTIVE' | 'EXEMPT'): Promise<OrganizationObligation> {
+  async updateStatus(id: string, status: OrganizationTaxObligationStatus): Promise<OrganizationObligation> {
     try {
       return await this.repo.update(id, { status });
     } catch (error) {

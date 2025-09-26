@@ -18,7 +18,7 @@ export class OrganizationObligationResponseDto {
 
   @ApiProperty({ 
     description: 'Obligation status',
-    enum: ['ACTIVE', 'INACTIVE', 'EXEMPT']
+    enum: ['NOT_APPLICABLE', 'ASSIGNED', 'ACTIVE', 'DUE', 'FILED', 'PAID', 'OVERDUE', 'LATE', 'EXEMPT', 'SUSPENDED', 'CLOSED']
   })
   status: string;
 

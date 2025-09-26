@@ -364,7 +364,7 @@ describe('Organization Management API Integration Tests', () => {
             expect(res.body).toHaveProperty('id');
             expect(res.body.organization_id).toBe(createdOrgId);
             expect(res.body.obligation_id).toBe(taxObligationId);
-            expect(res.body.status).toBe('ACTIVE');
+            expect(res.body.status).toBe('ASSIGNED');
             expect(res.body.notes).toBe('Annual income tax filing');
           });
       });
