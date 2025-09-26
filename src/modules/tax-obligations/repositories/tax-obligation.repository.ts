@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../database/prisma.service';
 import type { TaxObligation, Prisma } from '@prisma/client';
+import { TaxObligationStatus } from '@prisma/client';
 
 @Injectable()
 export class TaxObligationRepository {
@@ -14,6 +15,6 @@ export class TaxObligationRepository {
   }
 
   async listActive(): Promise<TaxObligation[]> {
-    return this.prisma.taxObligation.findMany({ where: { active: true } });
+    return this.prisma.taxObligation.findMany({ where: { status: 'MANDATORY' } });
   }
 }

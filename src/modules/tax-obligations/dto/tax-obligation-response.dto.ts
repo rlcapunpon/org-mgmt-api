@@ -22,8 +22,11 @@ export class TaxObligationResponseDto {
   })
   due_rule: any;
 
-  @ApiProperty({ description: 'Whether the obligation is active' })
-  active: boolean;
+  @ApiProperty({ 
+    description: 'Tax obligation status',
+    enum: ['MANDATORY', 'OPTIONAL', 'EXEMPT', 'CONDITIONAL', 'ONE_TIME', 'RETIRED']
+  })
+  status: string;
 
   @ApiProperty({ description: 'Creation timestamp' })
   created_at: Date;

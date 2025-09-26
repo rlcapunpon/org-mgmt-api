@@ -115,7 +115,7 @@ describe('Organization Management API Integration Tests', () => {
           name: 'Monthly VAT Filing',
           frequency: "MONTHLY",
           due_rule: { day: 20 },
-          active: true,
+          status: 'MANDATORY',
         })
         .expect(201)
         .expect((res) => {
@@ -123,7 +123,7 @@ describe('Organization Management API Integration Tests', () => {
           expect(res.body.code).toBe('VAT_MONTHLY_E2E_001');
           expect(res.body.name).toBe('Monthly VAT Filing');
           expect(res.body.frequency).toBe('MONTHLY');
-          expect(res.body.active).toBe(true);
+          expect(res.body.status).toBe('MANDATORY');
         });
     });
 
@@ -344,7 +344,7 @@ describe('Organization Management API Integration Tests', () => {
             name: 'Annual Income Tax',
             frequency: "ANNUAL",
             due_rule: { month: 4, day: 15 },
-            active: true,
+            status: 'MANDATORY' as const,
           },
         });
         taxObligationId = taxObligation.id;
@@ -446,7 +446,7 @@ describe('Organization Management API Integration Tests', () => {
           name: 'Duplicate VAT Filing',
           frequency: "MONTHLY",
           due_rule: { day: 20 },
-          active: true,
+          status: 'MANDATORY',
         })
         .expect((res) => {
           expect([400, 500]).toContain(res.status); // Accept either validation or database error

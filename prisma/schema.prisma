@@ -78,6 +78,15 @@ enum BusinessStatus {
   SUSPENDED        // Temporarily suspended by order (e.g., regulatory)
 }
 
+enum TaxObligationStatus {
+  MANDATORY     // Required by law for this taxpayer classification
+  OPTIONAL      // Elective (e.g., VAT registration below threshold)
+  EXEMPT        // Covered by exemption or incentive
+  CONDITIONAL   // Applies only if certain conditions are met
+  ONE_TIME      // Non-recurring (Estate Tax, Donor’s Tax, CGT, etc.)
+  RETIRED       // No longer enforced (historical/defunct)
+}
+
 model Organization {
   id                String   @id @default(cuid())
   name              String
@@ -104,7 +113,7 @@ model TaxObligation {
   name       String
   frequency  Frequency
   due_rule   Json
-  active     Boolean   @default(true)
+  status     TaxObligationStatus @default(MANDATORY)
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
 

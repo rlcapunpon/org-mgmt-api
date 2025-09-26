@@ -83,7 +83,7 @@ describe('Simple API Integration Tests', () => {
           name: 'Test VAT Filing',
           frequency: 'MONTHLY',
           due_rule: { day: 20 },
-          active: true,
+          status: 'MANDATORY',
         })
         .expect(201)
         .expect((res) => {

@@ -49,7 +49,7 @@ describe('TaxObligations Controller (e2e)', () => {
   it('Admin user can POST /tax-obligations to create a new obligation', async () => {
     const token = signPayload({ userId: 'u1', permissions: ['tax:configure'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
     const payload = { code: '2550M', name: 'Monthly VAT', frequency: 'MONTHLY', due_rule: { day: 20 } };
-    const mockObligation = { id: '1', code: '2550M', name: 'Monthly VAT', frequency: 'MONTHLY' as const, due_rule: { day: 20 }, active: true, created_at: new Date(), updated_at: new Date() };
+    const mockObligation = { id: '1', code: '2550M', name: 'Monthly VAT', frequency: 'MONTHLY' as const, due_rule: { day: 20 }, status: 'MANDATORY' as const, created_at: new Date(), updated_at: new Date() };
     mockService.create.mockResolvedValue(mockObligation);
     const res = await request(app.getHttpServer()).post('/tax-obligations').set('Authorization', `Bearer ${token}`).send(payload);
     expect(res.status).toBe(201);
@@ -58,7 +58,7 @@ describe('TaxObligations Controller (e2e)', () => {
 
   it('GET /tax-obligations returns active obligations by default', async () => {
     const mockObligations = [
-      { id: '1', code: '2550M', name: 'Monthly VAT', frequency: 'MONTHLY' as const, due_rule: { day: 20 }, active: true, created_at: new Date(), updated_at: new Date() },
+      { id: '1', code: '2550M', name: 'Monthly VAT', frequency: 'MONTHLY' as const, due_rule: { day: 20 }, status: 'MANDATORY' as const, created_at: new Date(), updated_at: new Date() },
     ];
     mockService.listActive.mockResolvedValue(mockObligations);
     const res = await request(app.getHttpServer()).get('/tax-obligations');
@@ -77,7 +77,7 @@ describe('TaxObligations Controller (e2e)', () => {
   it('superAdmin can create tax obligations without specific permissions', async () => {
     const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: true, role: 'Super Admin' }, process.env.JWT_SECRET!);
     const payload = { code: '1701', name: 'Annual Income Tax', frequency: 'ANNUAL', due_rule: { month: 4, day: 15 } };
-    const mockObligation = { id: '2', code: '1701', name: 'Annual Income Tax', frequency: 'ANNUAL' as const, due_rule: { month: 4, day: 15 }, active: true, created_at: new Date(), updated_at: new Date() };
+    const mockObligation = { id: '2', code: '1701', name: 'Annual Income Tax', frequency: 'ANNUAL' as const, due_rule: { month: 4, day: 15 }, status: 'MANDATORY' as const, created_at: new Date(), updated_at: new Date() };
     mockService.create.mockResolvedValue(mockObligation);
     const res = await request(app.getHttpServer()).post('/tax-obligations').set('Authorization', `Bearer ${token}`).send(payload);
     expect(res.status).toBe(201);

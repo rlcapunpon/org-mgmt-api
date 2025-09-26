@@ -38,7 +38,7 @@ describe('TaxObligationRepository', () => {
       name: 'Monthly VAT',
       frequency: 'MONTHLY' as const,
       due_rule: { day: 20 },
-      active: true,
+      status: 'MANDATORY' as const,
     };
     const mockObligation = {
       id: 'uuid',
@@ -61,7 +61,7 @@ describe('TaxObligationRepository', () => {
         name: 'Monthly VAT',
         frequency: 'MONTHLY' as const,
         due_rule: { day: 20 },
-        active: true,
+        status: 'MANDATORY' as const,
         created_at: new Date(),
         updated_at: new Date(),
       },
@@ -70,7 +70,7 @@ describe('TaxObligationRepository', () => {
 
     const result = await repository.listActive();
     expect(result).toEqual(mockObligations);
-    expect(prismaMock.taxObligation.findMany).toHaveBeenCalledWith({ where: { active: true } });
+    expect(prismaMock.taxObligation.findMany).toHaveBeenCalledWith({ where: { status: 'MANDATORY' } });
   });
 
   it('listActive should return empty array when no active obligations', async () => {
@@ -78,6 +78,6 @@ describe('TaxObligationRepository', () => {
 
     const result = await repository.listActive();
     expect(result).toEqual([]);
-    expect(prismaMock.taxObligation.findMany).toHaveBeenCalledWith({ where: { active: true } });
+    expect(prismaMock.taxObligation.findMany).toHaveBeenCalledWith({ where: { status: 'MANDATORY' } });
   });
 });

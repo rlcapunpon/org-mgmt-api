@@ -37,7 +37,7 @@ describe('Database Queries Tests', () => {
           name: 'Test VAT Filing',
           frequency: Frequency.MONTHLY,
           due_rule: { day: 15 },
-          active: true,
+          status: 'MANDATORY' as const,
         },
       });
 
@@ -47,7 +47,7 @@ describe('Database Queries Tests', () => {
           name: 'Test Income Tax',
           frequency: Frequency.ANNUAL,
           due_rule: { month: 4, day: 15 },
-          active: true,
+          status: 'MANDATORY' as const,
         },
       });
 
@@ -243,7 +243,7 @@ describe('Database Queries Tests', () => {
       if (process.env.TEST_DEV_DB_CONNECTION !== 'true') return;
 
       const result = await prisma.taxObligation.findMany({
-        where: { active: true },
+        where: { status: 'MANDATORY' },
       });
       expect(result.length).toBeGreaterThanOrEqual(2);
       expect(result.some(item => item.code === 'TEST_VAT_001')).toBe(true);

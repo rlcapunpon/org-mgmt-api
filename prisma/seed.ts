@@ -14,7 +14,7 @@ async function main() {
       name: 'Quarterly Income Tax Return (Form 1701Q)',
       frequency: 'QUARTERLY',
       due_rule: { day: 45, relative_to: 'fiscal_quarter_end' }, // 45 days after fiscal quarter end
-      active: true,
+      status: 'MANDATORY',
     },
   });
 
@@ -26,7 +26,7 @@ async function main() {
       name: 'Annual Income Tax Return (Form 1701 or 1701A)',
       frequency: 'ANNUAL',
       due_rule: { month: 4, day: 15, relative_to: 'fiscal_year_end' }, // 15th day of 4th month after FY end
-      active: true,
+      status: "MANDATORY",
     },
   });
 
@@ -39,7 +39,7 @@ async function main() {
       name: 'Quarterly Percentage Tax (Form 2551Q)',
       frequency: 'QUARTERLY',
       due_rule: { day: 25, relative_to: 'calendar_quarter_end' }, // 25th day after quarter end
-      active: true,
+      status: "MANDATORY",
     },
   });
 
@@ -52,7 +52,7 @@ async function main() {
       name: 'Quarterly VAT Return (Form 2550Q)',
       frequency: 'QUARTERLY',
       due_rule: { day: 25, relative_to: 'calendar_quarter_end' }, // 25th day after quarter end
-      active: true,
+      status: "MANDATORY",
     },
   });
 
@@ -64,7 +64,7 @@ async function main() {
       name: 'Monthly VAT Return (Form 2550M)',
       frequency: 'MONTHLY',
       due_rule: { day: 20, relative_to: 'calendar_month_end' }, // 20th day of following month
-      active: true,
+      status: "MANDATORY",
     },
   });
 
@@ -76,7 +76,7 @@ async function main() {
       name: 'Summary List of Sales and Purchases (SLSP)',
       frequency: 'QUARTERLY',
       due_rule: { day: 25, relative_to: 'calendar_quarter_end' }, // Due with VAT return
-      active: true,
+      status: "MANDATORY",
     },
   });
 
@@ -89,7 +89,7 @@ async function main() {
       name: 'Monthly Withholding Tax on Compensation (Form 1601C)',
       frequency: 'MONTHLY',
       due_rule: { day: 10, relative_to: 'calendar_month_end' }, // 10th day of following month
-      active: true,
+      status: "MANDATORY",
     },
   });
 
@@ -101,7 +101,7 @@ async function main() {
       name: 'Annual Employee Information Return (Form 1604C) & Alphalist',
       frequency: 'ANNUAL',
       due_rule: { month: 1, day: 31 }, // On or before Jan 31 following year
-      active: true,
+      status: "MANDATORY",
     },
   });
 
@@ -113,7 +113,7 @@ async function main() {
       name: 'BIR Form 2316 (Certificate of Compensation Payment/Tax Withheld)',
       frequency: 'ANNUAL',
       due_rule: { month: 1, day: 31 }, // Issued annually to employees
-      active: true,
+      status: "MANDATORY",
     },
   });
 
@@ -126,7 +126,7 @@ async function main() {
       name: 'Monthly EWT Remittance (Form 0619E)',
       frequency: 'MONTHLY',
       due_rule: { day: 10, relative_to: 'calendar_month_end' }, // 10th day of following month
-      active: true,
+      status: "MANDATORY",
     },
   });
 
@@ -138,7 +138,7 @@ async function main() {
       name: 'Quarterly EWT Return (Form 1601EQ)',
       frequency: 'QUARTERLY',
       due_rule: { day: 'last', relative_to: 'calendar_quarter_end' }, // Last day of month following quarter
-      active: true,
+      status: "MANDATORY",
     },
   });
 
@@ -150,7 +150,7 @@ async function main() {
       name: 'Quarterly Alphalist of Payees (QAP)',
       frequency: 'QUARTERLY',
       due_rule: { day: 'last', relative_to: 'calendar_quarter_end' }, // Filed with 1601EQ
-      active: true,
+      status: "MANDATORY",
     },
   });
 
@@ -162,7 +162,7 @@ async function main() {
       name: 'Certificate of Creditable Tax Withheld at Source (BIR Form 2307)',
       frequency: 'QUARTERLY',
       due_rule: { day: 'last', relative_to: 'calendar_quarter_end' }, // Quarterly filing
-      active: true,
+      status: "MANDATORY",
     },
   });
 
@@ -175,7 +175,7 @@ async function main() {
       name: 'Monthly Final Tax Remittance (Form 0619F)',
       frequency: 'MONTHLY',
       due_rule: { day: 10, relative_to: 'calendar_month_end' }, // 10th day of following month
-      active: true,
+      status: "MANDATORY",
     },
   });
 
@@ -187,7 +187,7 @@ async function main() {
       name: 'Quarterly Final Tax Return (Form 1601FQ)',
       frequency: 'QUARTERLY',
       due_rule: { day: 'last', relative_to: 'calendar_quarter_end' }, // Last day of month following quarter
-      active: true,
+      status: "MANDATORY",
     },
   });
 
@@ -200,7 +200,7 @@ async function main() {
       name: 'Annual Registration Fee',
       frequency: 'ANNUAL',
       due_rule: { month: 1, day: 31 }, // Annual registration
-      active: true,
+      status: "MANDATORY",
     },
   });
 
@@ -212,7 +212,7 @@ async function main() {
       name: 'Registration of Books of Accounts',
       frequency: 'ONE_TIME',
       due_rule: { conditional: true }, // Conditional/one-time
-      active: true,
+      status: "MANDATORY",
     },
   });
 
@@ -224,7 +224,7 @@ async function main() {
       name: 'Registration of Official Receipts/Invoices',
       frequency: 'ONE_TIME',
       due_rule: { conditional: true }, // Conditional/one-time
-      active: true,
+      status: "MANDATORY",
     },
   });
 
@@ -237,7 +237,7 @@ async function main() {
       name: 'Summary Alphalist of Withholding Tax (SAWT)',
       frequency: 'ANNUAL',
       due_rule: { conditional: true, attached_to: '1701' }, // Attached to Income Tax Return
-      active: true,
+      status: "MANDATORY",
     },
   });
 
