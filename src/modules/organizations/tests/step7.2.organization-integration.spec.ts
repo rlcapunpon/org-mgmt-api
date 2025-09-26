@@ -51,7 +51,22 @@ describe('Organization Integration Tests (e2e)', () => {
         name: 'John Doe Self Employed',
         category: 'INDIVIDUAL',
         subcategory: 'SELF_EMPLOYED',
-        tax_classification: 'NON_VAT'
+        tax_classification: 'NON_VAT',
+        // Registration fields
+        first_name: 'John',
+        last_name: 'Doe',
+        line_of_business: '6201',
+        address_line: '123 Main St',
+        region: 'NCR',
+        city: 'Makati',
+        zip_code: '1223',
+        tin_registration: '001234567890',
+        rdo_code: '001',
+        contact_number: '+639123456789',
+        email_address: 'john.doe@example.com',
+        tax_type: 'NON_VAT',
+        start_date: '2024-01-01',
+        reg_date: '2024-01-01'
       };
 
       const mockOrg = {
@@ -121,7 +136,22 @@ describe('Organization Integration Tests (e2e)', () => {
         name: 'Jane Smith Sole Proprietor',
         category: 'INDIVIDUAL',
         subcategory: 'SOLE_PROPRIETOR',
-        tax_classification: 'VAT'
+        tax_classification: 'VAT',
+        // Registration fields
+        first_name: 'Jane',
+        last_name: 'Smith',
+        line_of_business: '6202',
+        address_line: '456 Business Ave',
+        region: 'NCR',
+        city: 'Makati',
+        zip_code: '1223',
+        tin_registration: '001234567891',
+        rdo_code: '002',
+        contact_number: '+639123456790',
+        email_address: 'jane.smith@example.com',
+        tax_type: 'VAT',
+        start_date: '2024-01-01',
+        reg_date: '2024-01-01'
       };
 
       const mockOrg = {
@@ -191,7 +221,22 @@ describe('Organization Integration Tests (e2e)', () => {
         name: 'Bob Freelancer',
         category: 'INDIVIDUAL',
         subcategory: 'FREELANCER',
-        tax_classification: 'NON_VAT'
+        tax_classification: 'NON_VAT',
+        // Registration fields
+        first_name: 'Bob',
+        last_name: 'Freelancer',
+        line_of_business: '6203',
+        address_line: '789 Creative St',
+        region: 'NCR',
+        city: 'Quezon',
+        zip_code: '1100',
+        tin_registration: '001234567892',
+        rdo_code: '003',
+        contact_number: '+639123456791',
+        email_address: 'bob.freelancer@example.com',
+        tax_type: 'NON_VAT',
+        start_date: '2024-01-01',
+        reg_date: '2024-01-01'
       };
 
       const mockOrg = {
@@ -253,7 +298,22 @@ describe('Organization Integration Tests (e2e)', () => {
         name: 'ABC Corporation',
         category: 'NON_INDIVIDUAL',
         subcategory: 'CORPORATION',
-        tax_classification: 'VAT'
+        tax_classification: 'VAT',
+        // Registration fields
+        first_name: 'John',
+        last_name: 'CEO',
+        line_of_business: '6204',
+        address_line: '123 Corporate Blvd',
+        region: 'NCR',
+        city: 'Taguig',
+        zip_code: '1630',
+        tin_registration: '001234567893',
+        rdo_code: '004',
+        contact_number: '+639123456792',
+        email_address: 'john.ceo@abc-corp.com',
+        tax_type: 'VAT',
+        start_date: '2020-01-01',
+        reg_date: '2020-01-01'
       };
 
       const mockOrg = {
@@ -316,7 +376,22 @@ describe('Organization Integration Tests (e2e)', () => {
         name: 'Invalid Subcategory Org',
         category: 'INDIVIDUAL',
         subcategory: 'INVALID_SUBCATEGORY',
-        tax_classification: 'VAT'
+        tax_classification: 'VAT',
+        // Registration fields
+        first_name: 'Invalid',
+        last_name: 'Test',
+        line_of_business: '6205',
+        address_line: '123 Test St',
+        region: 'NCR',
+        city: 'Test City',
+        zip_code: '1234',
+        tin_registration: '001234567894',
+        rdo_code: '005',
+        contact_number: '+639123456793',
+        email_address: 'invalid@test.com',
+        tax_type: 'VAT',
+        start_date: '2024-01-01',
+        reg_date: '2024-01-01'
       };
 
       // Don't mock the service for validation tests - let it fail at service level
@@ -334,7 +409,22 @@ describe('Organization Integration Tests (e2e)', () => {
         name: 'Invalid Tax Classification Org',
         category: 'INDIVIDUAL',
         subcategory: 'SELF_EMPLOYED',
-        tax_classification: 'INVALID_TAX_CLASS'
+        tax_classification: 'INVALID_TAX_CLASS',
+        // Registration fields
+        first_name: 'Tax',
+        last_name: 'Invalid',
+        line_of_business: '6206',
+        address_line: '456 Invalid St',
+        region: 'NCR',
+        city: 'Invalid City',
+        zip_code: '5678',
+        tin_registration: '001234567895',
+        rdo_code: '006',
+        contact_number: '+639123456794',
+        email_address: 'tax.invalid@test.com',
+        tax_type: 'INVALID_TAX_CLASS',
+        start_date: '2024-01-01',
+        reg_date: '2024-01-01'
       };
 
       // Don't mock the service for validation tests - let it fail at service level

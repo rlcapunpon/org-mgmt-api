@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, NotFoundException, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, NotFoundException, HttpCode, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { OrganizationService } from '../services/organization.service';
 import { CreateOrganizationDto } from '../dto/create-organization.dto';
@@ -8,6 +8,7 @@ import { OrganizationResponseDto, OrganizationOperationResponseDto } from '../dt
 import { AuthGuard } from '../../../common/guards/auth.guard';
 import { PermissionsGuard } from '../../../common/guards/permissions.guard';
 import { RequiresPermission } from '../../../common/decorators/requires-permission.decorator';
+import type { Request } from 'express';
 
 @ApiTags('Organizations')
 @ApiBearerAuth('JWT-auth')
@@ -27,8 +28,9 @@ export class OrganizationController {
   @ApiResponse({ status: 400, description: 'Bad request - invalid data' })
   @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
   @ApiBody({ type: CreateOrganizationDto })
-  async create(@Body() dto: CreateOrganizationDto) {
-    const org = await this.service.create(dto);
+  async create(@Body() dto: CreateOrganizationDto, @Req() req: Request) {
+    const user = req.user as { userId: string };
+    const org = await this.service.create(dto, user.userId);
     return org;
   }
 

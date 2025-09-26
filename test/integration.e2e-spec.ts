@@ -153,6 +153,21 @@ describe('Organization Management API Integration Tests', () => {
           tax_classification: "VAT",
           registration_date: '2024-01-01T00:00:00.000Z',
           address: '123 Test Street, Test City',
+          // Registration fields
+          first_name: 'John',
+          last_name: 'CEO',
+          line_of_business: '6201',
+          address_line: '123 Test Street',
+          region: 'NCR',
+          city: 'Makati',
+          zip_code: '1223',
+          tin_registration: '123456789012',
+          rdo_code: '001',
+          contact_number: '+639123456789',
+          email_address: 'john.ceo@testcorp.com',
+          tax_type: 'VAT',
+          start_date: '2024-01-01T00:00:00.000Z',
+          reg_date: '2024-01-01T00:00:00.000Z'
         })
         .expect(201)
         .expect((res) => {

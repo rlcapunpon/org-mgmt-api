@@ -2,17 +2,61 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../database/prisma.service';
 import { Organization } from '@prisma/client';
 
+interface CreateOrganizationData extends Omit<Organization, 'id' | 'created_at' | 'updated_at' | 'deleted_at'> {
+  // OrganizationRegistration fields
+  first_name: string;
+  middle_name?: string | null;
+  last_name: string;
+  trade_name?: string | null;
+  line_of_business: string;
+  address_line: string;
+  region: string;
+  city: string;
+  zip_code: string;
+  tin_registration: string;
+  rdo_code: string;
+  contact_number: string;
+  email_address: string;
+  tax_type: any;
+  start_date: Date;
+  reg_date: Date;
+  update_by: string;
+}
+
 @Injectable()
 export class OrganizationRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Omit<Organization, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>): Promise<Organization> {
+  async create(data: CreateOrganizationData): Promise<Organization> {
     if (!data.name || !data.category || !data.tax_classification) {
       throw new Error('Required fields missing');
     }
+
+    // Extract registration data
+    const {
+      first_name,
+      middle_name,
+      last_name,
+      trade_name,
+      line_of_business,
+      address_line,
+      region,
+      city,
+      zip_code,
+      tin_registration,
+      rdo_code,
+      contact_number,
+      email_address,
+      tax_type,
+      start_date,
+      reg_date,
+      update_by,
+      ...orgData
+    } = data;
+
     return this.prisma.organization.create({
       data: {
-        ...data,
+        ...orgData,
         deleted_at: null,
         status: {
           create: {
@@ -36,10 +80,32 @@ export class OrganizationRepository {
             accounting_method: 'ACCRUAL',
           },
         },
+        registration: {
+          create: {
+            first_name,
+            middle_name,
+            last_name,
+            trade_name,
+            line_of_business,
+            address_line,
+            region,
+            city,
+            zip_code,
+            tin: tin_registration,
+            rdo_code,
+            contact_number,
+            email_address,
+            tax_type,
+            start_date,
+            reg_date,
+            update_by,
+          },
+        },
       },
       include: {
         status: true,
         operation: true,
+        registration: true,
       },
     });
   }

@@ -43,6 +43,24 @@ describe('OrganizationRepository', () => {
       subcategory: null,
       registration_date: null,
       address: null,
+      // Registration fields
+      first_name: 'John',
+      middle_name: 'Michael',
+      last_name: 'Doe',
+      trade_name: 'Test Trading',
+      line_of_business: '6201',
+      address_line: '123 Main St',
+      region: 'NCR',
+      city: 'Makati',
+      zip_code: '1223',
+      tin_registration: '001234567890',
+      rdo_code: '001',
+      contact_number: '+639123456789',
+      email_address: 'john.doe@example.com',
+      tax_type: 'VAT' as const,
+      start_date: new Date('2024-01-01'),
+      reg_date: new Date('2024-01-01'),
+      update_by: 'test-user',
     };
     const mockOrg = {
       id: 'uuid',
@@ -62,6 +80,29 @@ describe('OrganizationRepository', () => {
         created_at: new Date(),
         updated_at: new Date(),
       },
+      registration: {
+        organization_id: 'uuid',
+        first_name: 'John',
+        middle_name: 'Michael',
+        last_name: 'Doe',
+        trade_name: 'Test Trading',
+        line_of_business: '6201',
+        address_line: '123 Main St',
+        region: 'NCR',
+        city: 'Makati',
+        zip_code: '1223',
+        tin: '001234567890',
+        rdo_code: '001',
+        contact_number: '+639123456789',
+        email_address: 'john.doe@example.com',
+        tax_type: 'VAT',
+        start_date: new Date('2024-01-01'),
+        reg_date: new Date('2024-01-01'),
+        update_date: new Date(),
+        update_by: 'test-user',
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
     };
     (prismaMock.organization.create as jest.Mock).mockResolvedValue(mockOrg);
 
@@ -69,7 +110,13 @@ describe('OrganizationRepository', () => {
     expect(result).toEqual(mockOrg);
     expect(prismaMock.organization.create).toHaveBeenCalledWith({
       data: {
-        ...data,
+        name: 'Test Org',
+        category: 'NON_INDIVIDUAL',
+        tax_classification: 'VAT',
+        tin: null,
+        subcategory: null,
+        registration_date: null,
+        address: null,
         deleted_at: null,
         status: {
           create: {
@@ -93,10 +140,32 @@ describe('OrganizationRepository', () => {
             accounting_method: 'ACCRUAL',
           },
         },
+        registration: {
+          create: {
+            first_name: 'John',
+            middle_name: 'Michael',
+            last_name: 'Doe',
+            trade_name: 'Test Trading',
+            line_of_business: '6201',
+            address_line: '123 Main St',
+            region: 'NCR',
+            city: 'Makati',
+            zip_code: '1223',
+            tin: '001234567890',
+            rdo_code: '001',
+            contact_number: '+639123456789',
+            email_address: 'john.doe@example.com',
+            tax_type: 'VAT',
+            start_date: new Date('2024-01-01'),
+            reg_date: new Date('2024-01-01'),
+            update_by: 'test-user',
+          },
+        },
       },
       include: {
         status: true,
         operation: true,
+        registration: true,
       },
     });
   });

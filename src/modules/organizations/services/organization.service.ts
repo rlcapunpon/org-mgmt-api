@@ -10,11 +10,12 @@ import { Prisma } from '@prisma/client';
 export class OrganizationService {
   constructor(private repo: OrganizationRepository) {}
 
-  async create(data: CreateOrganizationDto): Promise<Organization> {
+  async create(data: CreateOrganizationDto, userId: string): Promise<Organization> {
     // Transform undefined subcategory to null for database compatibility
     const transformedData = {
       ...data,
       subcategory: data.subcategory ?? null,
+      update_by: userId,
     };
     return this.repo.create(transformedData);
   }
