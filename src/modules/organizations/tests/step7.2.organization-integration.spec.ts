@@ -370,6 +370,85 @@ describe('Organization Integration Tests (e2e)', () => {
       expect(res.body.subcategory).toBe('CORPORATION');
     });
 
+    it('should create organization with EXCEMPT tax classification', async () => {
+      const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const payload = {
+        name: 'Tax Exempt Organization',
+        category: 'NON_INDIVIDUAL',
+        subcategory: 'PARTNERSHIP',
+        tax_classification: 'EXCEMPT',
+        // Registration fields
+        first_name: 'Exempt',
+        last_name: 'Org',
+        line_of_business: '6207',
+        address_line: '123 Exempt Blvd',
+        region: 'NCR',
+        city: 'Pasig',
+        zip_code: '1600',
+        tin_registration: '001234567896',
+        rdo_code: '007',
+        contact_number: '+639123456795',
+        email_address: 'exempt@taxfree.com',
+        tax_type: 'EXCEMPT',
+        start_date: '2021-01-01',
+        reg_date: '2021-01-01'
+      };
+
+      const mockOrg = {
+        id: '5',
+        name: 'Tax Exempt Organization',
+        category: Category.NON_INDIVIDUAL,
+        subcategory: SubCategory.PARTNERSHIP,
+        tax_classification: TaxClassification.EXCEMPT,
+        tin: '001234567891',
+        registration_date: new Date('2021-01-01'),
+        address: 'Pasig City',
+        created_at: new Date(),
+        updated_at: new Date(),
+        deleted_at: null,
+        status: {
+          id: 'status-5',
+          organization_id: '5',
+          status: 'PENDING',
+          last_update: new Date(),
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+        operation: {
+          id: 'operation-5',
+          organization_id: '5',
+          fy_start: new Date('2025-01-01'),
+          fy_end: new Date('2025-12-31'),
+          vat_reg_effectivity: new Date('2025-01-01'),
+          registration_effectivity: new Date('2025-01-01'),
+          payroll_cut_off: ['15/30'],
+          payment_cut_off: ['15/30'],
+          quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
+          has_foreign: false,
+          has_employees: false,
+          is_ewt: false,
+          is_fwt: false,
+          is_bir_withholding_agent: false,
+          accounting_method: AccountingMethod.ACCRUAL,
+          last_update: new Date(),
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+      };
+
+      mockService.create.mockResolvedValue(mockOrg);
+
+      const res = await request(app.getHttpServer())
+        .post('/organizations')
+        .set('Authorization', `Bearer ${token}`)
+        .send(payload);
+
+      expect(res.status).toBe(201);
+      expect(res.body.category).toBe('NON_INDIVIDUAL');
+      expect(res.body.subcategory).toBe('PARTNERSHIP');
+      expect(res.body.tax_classification).toBe('EXCEMPT');
+    });
+
     it('should reject invalid subcategory enum value', async () => {
       const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
       const payload = {
@@ -602,6 +681,44 @@ describe('Organization Integration Tests (e2e)', () => {
       expect(res.status).toBe(200);
       expect(res.body).toHaveLength(1);
       expect(res.body[0].tax_classification).toBe('VAT');
+    });
+
+    it('should filter organizations by EXCEMPT tax classification', async () => {
+      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+
+      const mockOrgs = [
+        {
+          id: '1',
+          name: 'Tax Exempt Org',
+          category: Category.NON_INDIVIDUAL,
+          subcategory: SubCategory.PARTNERSHIP,
+          tax_classification: TaxClassification.EXCEMPT,
+          tin: null,
+          registration_date: null,
+          address: null,
+          created_at: new Date(),
+          updated_at: new Date(),
+          deleted_at: null,
+          status: {
+            id: 'status-1',
+            organization_id: '1',
+            status: 'PENDING',
+            last_update: new Date(),
+            created_at: new Date(),
+            updated_at: new Date(),
+          },
+        },
+      ];
+
+      mockService.list.mockResolvedValue(mockOrgs);
+
+      const res = await request(app.getHttpServer())
+        .get('/organizations?tax_classification=EXCEMPT')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveLength(1);
+      expect(res.body[0].tax_classification).toBe('EXCEMPT');
     });
   });
 });
