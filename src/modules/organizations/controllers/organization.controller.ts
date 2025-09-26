@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, NotFoundException, HttpCode, Req } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, NotFoundException, HttpCode, Req, Patch } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { OrganizationService } from '../services/organization.service';
 import { CreateOrganizationDto } from '../dto/create-organization.dto';
 import { UpdateOrganizationDto } from '../dto/update-organization.dto';
 import { UpdateOrganizationOperationDto } from '../dto/update-organization-operation.dto';
-import { OrganizationResponseDto, OrganizationOperationResponseDto } from '../dto/organization-response.dto';
+import { UpdateOrganizationStatusDto, UpdateOrganizationRegistrationDto } from '../dto/update-organization-status-registration.dto';
+import { OrganizationResponseDto, OrganizationOperationResponseDto, OrganizationStatusResponseDto, OrganizationRegistrationResponseDto } from '../dto/organization-response.dto';
 import { AuthGuard } from '../../../common/guards/auth.guard';
 import { PermissionsGuard } from '../../../common/guards/permissions.guard';
 import { RequiresPermission } from '../../../common/decorators/requires-permission.decorator';
@@ -126,5 +127,103 @@ export class OrganizationController {
   @ApiBody({ type: UpdateOrganizationOperationDto })
   async updateOperation(@Param('id') id: string, @Body() dto: UpdateOrganizationOperationDto) {
     return this.service.updateOperation(id, dto);
+  }
+
+  @Get(':id/status')
+  @RequiresPermission('resource:read')
+  @ApiOperation({ summary: 'Get organization status details' })
+  @ApiParam({ name: 'id', description: 'Organization ID' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Organization status details',
+    type: OrganizationStatusResponseDto 
+  })
+  @ApiResponse({ status: 404, description: 'Organization or status not found' })
+  @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
+  async getStatus(@Param('id') id: string) {
+    const status = await this.service.getStatusByOrgId(id);
+    if (!status) throw new NotFoundException();
+    return status;
+  }
+
+  @Put(':id/status')
+  @RequiresPermission('resource:update')
+  @ApiOperation({ summary: 'Update organization status details' })
+  @ApiParam({ name: 'id', description: 'Organization ID' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Organization status updated successfully',
+    type: OrganizationStatusResponseDto 
+  })
+  @ApiResponse({ status: 404, description: 'Organization not found' })
+  @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
+  @ApiBody({ type: UpdateOrganizationStatusDto })
+  async updateStatus(@Param('id') id: string, @Body() dto: UpdateOrganizationStatusDto) {
+    return this.service.updateStatus(id, dto);
+  }
+
+  @Patch(':id/status')
+  @RequiresPermission('resource:update')
+  @ApiOperation({ summary: 'Partially update organization status details' })
+  @ApiParam({ name: 'id', description: 'Organization ID' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Organization status updated successfully',
+    type: OrganizationStatusResponseDto 
+  })
+  @ApiResponse({ status: 404, description: 'Organization not found' })
+  @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
+  @ApiBody({ type: UpdateOrganizationStatusDto })
+  async patchStatus(@Param('id') id: string, @Body() dto: UpdateOrganizationStatusDto) {
+    return this.service.updateStatus(id, dto);
+  }
+
+  @Get(':id/registration')
+  @RequiresPermission('resource:read')
+  @ApiOperation({ summary: 'Get organization registration details' })
+  @ApiParam({ name: 'id', description: 'Organization ID' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Organization registration details',
+    type: OrganizationRegistrationResponseDto 
+  })
+  @ApiResponse({ status: 404, description: 'Organization or registration not found' })
+  @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
+  async getRegistration(@Param('id') id: string) {
+    const registration = await this.service.getRegistrationByOrgId(id);
+    if (!registration) throw new NotFoundException();
+    return registration;
+  }
+
+  @Put(':id/registration')
+  @RequiresPermission('resource:update')
+  @ApiOperation({ summary: 'Update organization registration details' })
+  @ApiParam({ name: 'id', description: 'Organization ID' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Organization registration updated successfully',
+    type: OrganizationRegistrationResponseDto 
+  })
+  @ApiResponse({ status: 404, description: 'Organization not found' })
+  @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
+  @ApiBody({ type: UpdateOrganizationRegistrationDto })
+  async updateRegistration(@Param('id') id: string, @Body() dto: UpdateOrganizationRegistrationDto) {
+    return this.service.updateRegistration(id, dto);
+  }
+
+  @Patch(':id/registration')
+  @RequiresPermission('resource:update')
+  @ApiOperation({ summary: 'Partially update organization registration details' })
+  @ApiParam({ name: 'id', description: 'Organization ID' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Organization registration updated successfully',
+    type: OrganizationRegistrationResponseDto 
+  })
+  @ApiResponse({ status: 404, description: 'Organization not found' })
+  @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
+  @ApiBody({ type: UpdateOrganizationRegistrationDto })
+  async patchRegistration(@Param('id') id: string, @Body() dto: UpdateOrganizationRegistrationDto) {
+    return this.service.updateRegistration(id, dto);
   }
 }

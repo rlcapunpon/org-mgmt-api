@@ -79,7 +79,7 @@ describe('Organization Management API Integration Tests', () => {
   });
 
   // Helper function to create authenticated requests
-  const authRequest = (method: 'get' | 'post' | 'put' | 'delete', url: string) => {
+  const authRequest = (method: 'get' | 'post' | 'put' | 'delete' | 'patch', url: string) => {
     return request(app.getHttpServer())[method](url).set('Authorization', `Bearer ${authToken}`);
   };
 
@@ -243,6 +243,91 @@ describe('Organization Management API Integration Tests', () => {
           expect(res.body.has_foreign).toBe(true);
           expect(res.body.accounting_method).toBe('ACCRUAL');
           expect(res.body.is_bir_withholding_agent).toBe(true);
+        });
+    });
+
+    it('should get organization status (GET)', () => {
+      return authRequest('get', `/api/org/organizations/${createdOrgId}/status`)
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('organization_id');
+          expect(res.body.organization_id).toBe(createdOrgId);
+          expect(res.body).toHaveProperty('status');
+          expect(res.body).toHaveProperty('last_update');
+        });
+    });
+
+    it('should update organization status (PUT)', () => {
+      return authRequest('put', `/api/org/organizations/${createdOrgId}/status`)
+        .send({
+          status: 'APPROVED'
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.organization_id).toBe(createdOrgId);
+          expect(res.body.status).toBe('APPROVED');
+          expect(res.body).toHaveProperty('last_update');
+        });
+    });
+
+    it('should partially update organization status (PATCH)', () => {
+      return authRequest('patch', `/api/org/organizations/${createdOrgId}/status`)
+        .send({
+          status: 'REJECTED'
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.organization_id).toBe(createdOrgId);
+          expect(res.body.status).toBe('REJECTED');
+          expect(res.body).toHaveProperty('last_update');
+        });
+    });
+
+    it('should get organization registration (GET)', () => {
+      return authRequest('get', `/api/org/organizations/${createdOrgId}/registration`)
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('organization_id');
+          expect(res.body.organization_id).toBe(createdOrgId);
+          expect(res.body).toHaveProperty('first_name');
+          expect(res.body.first_name).toBe('John');
+          expect(res.body).toHaveProperty('last_name');
+          expect(res.body.last_name).toBe('CEO');
+          expect(res.body).toHaveProperty('email_address');
+          expect(res.body.email_address).toBe('john.ceo@testcorp.com');
+          expect(res.body).toHaveProperty('tax_type');
+        });
+    });
+
+    it('should update organization registration (PUT)', () => {
+      return authRequest('put', `/api/org/organizations/${createdOrgId}/registration`)
+        .send({
+          first_name: 'Jane',
+          last_name: 'Smith',
+          email_address: 'jane.smith@testcorp.com',
+          contact_number: '+639876543210'
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.organization_id).toBe(createdOrgId);
+          expect(res.body.first_name).toBe('Jane');
+          expect(res.body.last_name).toBe('Smith');
+          expect(res.body.email_address).toBe('jane.smith@testcorp.com');
+          expect(res.body.contact_number).toBe('+639876543210');
+        });
+    });
+
+    it('should partially update organization registration (PATCH)', () => {
+      return authRequest('patch', `/api/org/organizations/${createdOrgId}/registration`)
+        .send({
+          contact_number: '+639111111111'
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.organization_id).toBe(createdOrgId);
+          expect(res.body.contact_number).toBe('+639111111111');
+          expect(res.body.first_name).toBe('Jane'); // Should remain unchanged
+          expect(res.body.last_name).toBe('Smith'); // Should remain unchanged
         });
     });
 

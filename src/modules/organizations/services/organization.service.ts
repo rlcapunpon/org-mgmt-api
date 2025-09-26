@@ -3,6 +3,7 @@ import { OrganizationRepository } from '../repositories/organization.repository'
 import { CreateOrganizationDto } from '../dto/create-organization.dto';
 import { UpdateOrganizationDto } from '../dto/update-organization.dto';
 import { UpdateOrganizationOperationDto } from '../dto/update-organization-operation.dto';
+import { UpdateOrganizationStatusDto, UpdateOrganizationRegistrationDto } from '../dto/update-organization-status-registration.dto';
 import { Organization } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
@@ -65,5 +66,49 @@ export class OrganizationService {
 
   async updateOperation(id: string, data: UpdateOrganizationOperationDto) {
     return this.repo.updateOperation(id, data);
+  }
+
+  async getStatusByOrgId(id: string) {
+    try {
+      return await this.repo.getStatusByOrgId(id);
+    } catch (error) {
+      if (error.code === 'P2025') { // Record not found
+        throw new NotFoundException();
+      }
+      throw error;
+    }
+  }
+
+  async updateStatus(id: string, data: UpdateOrganizationStatusDto) {
+    try {
+      return await this.repo.updateStatus(id, data);
+    } catch (error) {
+      if (error.code === 'P2025') { // Record not found
+        throw new NotFoundException();
+      }
+      throw error;
+    }
+  }
+
+  async getRegistrationByOrgId(id: string) {
+    try {
+      return await this.repo.getRegistrationByOrgId(id);
+    } catch (error) {
+      if (error.code === 'P2025') { // Record not found
+        throw new NotFoundException();
+      }
+      throw error;
+    }
+  }
+
+  async updateRegistration(id: string, data: UpdateOrganizationRegistrationDto) {
+    try {
+      return await this.repo.updateRegistration(id, data);
+    } catch (error) {
+      if (error.code === 'P2025') { // Record not found
+        throw new NotFoundException();
+      }
+      throw error;
+    }
   }
 }

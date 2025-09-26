@@ -120,3 +120,76 @@ export class OrganizationOperationResponseDto {
   @ApiProperty({ description: 'Update timestamp' })
   updated_at: Date;
 }
+
+export class OrganizationStatusResponseDto {
+  @ApiProperty({ description: 'Status unique identifier' })
+  id: string;
+
+  @ApiProperty({ description: 'Organization ID' })
+  organization_id: string;
+
+  @ApiProperty({ description: 'Is active status' })
+  is_active: boolean;
+
+  @ApiProperty({ description: 'Is suspended status' })
+  is_suspended: boolean;
+
+  @ApiProperty({ description: 'Is terminated status' })
+  is_terminated: boolean;
+
+  @ApiProperty({ description: 'Suspension reason', required: false })
+  suspension_reason: string | null;
+
+  @ApiProperty({ description: 'Termination reason', required: false })
+  termination_reason: string | null;
+
+  @ApiProperty({ description: 'Last update timestamp' })
+  last_update: Date;
+
+  @ApiProperty({ description: 'Creation timestamp' })
+  created_at: Date;
+
+  @ApiProperty({ description: 'Update timestamp' })
+  updated_at: Date;
+}
+
+export class OrganizationRegistrationResponseDto {
+  @ApiProperty({ description: 'Registration unique identifier' })
+  id: string;
+
+  @ApiProperty({ description: 'Organization ID' })
+  organization_id: string;
+
+  @ApiProperty({ description: 'Is VAT registered' })
+  is_vat_registered: boolean;
+
+  @ApiProperty({ description: 'Is non-VAT registered' })
+  is_non_vat_registered: boolean;
+
+  @ApiProperty({ description: 'Is percentage tax registered' })
+  is_percentage_tax_registered: boolean;
+
+  @ApiProperty({ description: 'Is income tax registered' })
+  is_income_tax_registered: boolean;
+
+  @ApiProperty({ description: 'Is withholding tax registered' })
+  is_withholding_tax_registered: boolean;
+
+  @ApiProperty({ description: 'Is expanded withholding tax registered' })
+  is_ewt_registered: boolean;
+
+  @ApiProperty({ description: 'Is final withholding tax registered' })
+  is_fwt_registered: boolean;
+
+  @ApiProperty({ description: 'Is BIR withholding agent registered' })
+  is_bir_withholding_agent_registered: boolean;
+
+  @ApiProperty({ description: 'Last update timestamp' })
+  last_update: Date;
+
+  @ApiProperty({ description: 'Creation timestamp' })
+  created_at: Date;
+
+  @ApiProperty({ description: 'Update timestamp' })
+  updated_at: Date;
+}

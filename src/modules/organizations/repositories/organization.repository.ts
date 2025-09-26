@@ -209,4 +209,36 @@ export class OrganizationRepository {
       },
     });
   }
+
+  async getStatusByOrgId(id: string) {
+    return this.prisma.organizationStatus.findUnique({
+      where: { organization_id: id },
+    });
+  }
+
+  async updateStatus(id: string, data: { status: string }) {
+    return this.prisma.organizationStatus.update({
+      where: { organization_id: id },
+      data: {
+        status: data.status,
+        last_update: new Date(),
+      },
+    });
+  }
+
+  async getRegistrationByOrgId(id: string) {
+    return this.prisma.organizationRegistration.findUnique({
+      where: { organization_id: id },
+    });
+  }
+
+  async updateRegistration(id: string, data: any) {
+    return this.prisma.organizationRegistration.update({
+      where: { organization_id: id },
+      data: {
+        ...data,
+        update_date: new Date(),
+      },
+    });
+  }
 }
