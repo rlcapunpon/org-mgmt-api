@@ -93,6 +93,8 @@ enum OrganizationTaxObligationStatus {
   ACTIVE           // Obligation is active and recurring
   DUE              // Filing/payment deadline is approaching
   FILED            // Filed but not yet fully paid
+  ADMIN_REVERTED  // Filing/payment reverted
+  BIR_REVERTED     // Filing/payment reverted by BIR
   PAID             // Filed and settled
   OVERDUE          // Missed deadline, not yet complied
   LATE             // Filed/paid but after deadline
