@@ -61,23 +61,229 @@ Authorization: Bearer <jwt_token>
 http://localhost:3000/api/org
 ```
 
-## 📡 API Endpoint Structure
+## � Data Transfer Objects (DTOs)
+
+The API uses comprehensive DTOs for request validation and response formatting. All DTOs include proper validation decorators and TypeScript types.
+
+### Organization DTOs
+
+#### CreateOrganizationRequestDto
+Used for creating new organizations with complete registration details.
+
+**Required Fields:**
+- `name`: Organization name (string)
+- `category`: `INDIVIDUAL` or `NON_INDIVIDUAL` (enum)
+- `tax_classification`: `VAT` or `NON_VAT` (enum)
+- `first_name`: Registrant first name (string)
+- `last_name`: Registrant last name (string)
+- `line_of_business`: PSIC code (string)
+- `address_line`: Address line (string)
+- `region`: Region (string)
+- `city`: City (string)
+- `zip_code`: ZIP code (string)
+- `tin_registration`: 12-digit TIN (string, validated)
+- `rdo_code`: RDO code (string)
+- `contact_number`: Contact number (string)
+- `email_address`: Email address (string, validated)
+- `tax_type`: Tax type enum (enum)
+- `start_date`: Start date (Date)
+- `reg_date`: Registration date (Date)
+
+**Optional Fields:**
+- `tin`: Tax identification number (string)
+- `subcategory`: Organization subcategory (enum)
+- `registration_date`: Registration date (Date)
+- `address`: Organization address (string)
+- `middle_name`: Registrant middle name (string)
+- `trade_name`: Trade name (string)
+
+#### UpdateOrganizationRequestDto
+Used for updating existing organizations (all fields optional).
+
+**Fields:**
+- `name`: Organization name (string)
+- `tin`: Tax identification number (string)
+- `category`: Organization category (enum)
+- `subcategory`: Organization subcategory (enum)
+- `tax_classification`: Tax classification (enum)
+- `registration_date`: Registration date (Date)
+- `address`: Organization address (string)
+
+#### UpdateOrganizationOperationRequestDto
+Used for updating fiscal year and operational settings.
+
+**Fields:**
+- `fy_start`: Fiscal year start date (Date)
+- `fy_end`: Fiscal year end date (Date)
+- `vat_reg_effectivity`: VAT registration effectivity (Date)
+- `registration_effectivity`: Registration effectivity (Date)
+- `payroll_cut_off`: Payroll cut-off dates (string[])
+- `payment_cut_off`: Payment cut-off dates (string[])
+- `quarter_closing`: Quarter closing dates (string[])
+- `has_foreign`: Has foreign transactions (boolean)
+- `has_employees`: Has employees (boolean)
+- `is_ewt`: Is expanded withholding tax (boolean)
+- `is_fwt`: Is final withholding tax (boolean)
+- `is_bir_withholding_agent`: Is BIR withholding agent (boolean)
+- `accounting_method`: Accounting method (enum: ACCRUAL, CASH, OTHERS)
+
+#### UpdateOrganizationStatusRequestDto
+Used for updating organization business status.
+
+**Required Fields:**
+- `status`: Business status (enum)
+- `reason`: Status change reason (enum)
+
+**Optional Fields:**
+- `description`: Status change description (string)
+
+**Status Options:**
+- `REGISTERED`, `PENDING_REG`, `ACTIVE`, `INACTIVE`, `CESSATION`, `CLOSED`, `NON_COMPLIANT`, `UNDER_AUDIT`, `SUSPENDED`
+
+**Reason Options:**
+- `EXPIRED`, `OPTED_OUT`, `PAYMENT_PENDING`, `VIOLATIONS`
+
+#### UpdateOrganizationRegistrationRequestDto
+Used for updating BIR registration information (all fields optional).
+
+**Fields:**
+- `first_name`, `middle_name`, `last_name`: Registrant names (string)
+- `trade_name`: Trade name (string)
+- `line_of_business`: PSIC code (string)
+- `address_line`, `region`, `city`, `zip_code`: Address details (string)
+- `tin`, `rdo_code`: BIR registration details (string)
+- `contact_number`: Contact number (string)
+- `email_address`: Email address (string)
+- `tax_type`: Tax type (enum)
+- `start_date`, `reg_date`: Important dates (Date)
+
+### Tax Obligation DTOs
+
+#### CreateTaxObligationRequestDto
+Used for creating new tax obligation definitions.
+
+**Required Fields:**
+- `code`: Tax obligation code (string)
+- `name`: Tax obligation name (string)
+- `frequency`: Filing frequency (enum: MONTHLY, QUARTERLY, ANNUAL, ONE_TIME)
+- `due_rule`: Due date rules configuration (JSON object)
+
+**Optional Fields:**
+- `status`: Tax obligation status (enum)
+
+#### TaxObligationResponseDto
+Response format for tax obligation data.
+
+**Fields:**
+- `id`: Unique identifier (string)
+- `code`: Tax obligation code (string)
+- `name`: Tax obligation name (string)
+- `frequency`: Filing frequency (enum)
+- `due_rule`: Due date rules (object)
+- `status`: Tax obligation status (enum)
+- `created_at`, `updated_at`: Timestamps (Date)
+
+### Organization Obligation DTOs
+
+#### AssignObligationRequestDto
+Used for assigning tax obligations to organizations.
+
+**Required Fields:**
+- `obligation_id`: Tax obligation ID (string)
+- `start_date`: Obligation start date (string, date format)
+
+**Optional Fields:**
+- `end_date`: Obligation end date (string, date format)
+- `notes`: Assignment notes (string)
+
+#### UpdateObligationStatusRequestDto
+Used for updating obligation status.
+
+**Required Fields:**
+- `status`: New obligation status (enum)
+
+**Status Options:**
+- `NOT_APPLICABLE`, `ASSIGNED`, `ACTIVE`, `DUE`, `FILED`, `PAID`, `OVERDUE`, `LATE`, `EXEMPT`, `SUSPENDED`, `CLOSED`
+
+#### OrganizationObligationResponseDto
+Response format for organization obligation data.
+
+**Fields:**
+- `id`: Unique identifier (string)
+- `organization_id`: Organization ID (string)
+- `obligation_id`: Tax obligation ID (string)
+- `start_date`, `end_date`: Obligation period (Date)
+- `status`: Obligation status (enum)
+- `notes`: Notes (string)
+- `created_at`, `updated_at`: Timestamps (Date)
+
+### Organization Owner DTOs
+
+#### AssignOrganizationOwnerRequestDto
+Used for assigning organization owners.
+
+**Required Fields:**
+- `org_id`: Organization ID (string, UUID validated)
+- `user_id`: User ID (string)
+
+#### OrganizationOwnerResponseDto
+Response format for owner assignment data.
+
+**Fields:**
+- `id`: Assignment ID (string)
+- `org_id`: Organization ID (string)
+- `user_id`: User ID (string)
+- `assigned_date`: Assignment date (Date)
+- `last_update`: Last update timestamp (Date)
+
+#### CheckOwnershipResponseDto
+Response format for ownership checks.
+
+**Fields:**
+- `is_owner`: Ownership status (boolean)
+- `org_id`: Organization ID (string)
+- `user_id`: User ID (string)
+
+### Schedule DTOs
+
+#### GetSchedulesQueryDto
+Query parameters for schedule retrieval.
+
+**Optional Fields:**
+- `start_date`: Start date for schedule generation (string, date)
+- `end_date`: End date for schedule generation (string, date)
+
+#### ScheduleResponseDto
+Response format for compliance schedule data.
+
+**Fields:**
+- `org_obligation_id`: Organization obligation ID (string)
+- `period`: Reporting period (string)
+- `due_date`: Due date (Date)
+- `status`: Filing status (enum: DUE, FILED, LATE, EXEMPT)
+- `filed_at`: Filed date (Date, nullable)
+
+## �📡 API Endpoint Structure
 
 The API provides the following main endpoint categories:
 
 ### Core Endpoints
 - **Health Check**: `GET /health` (excluded from global prefix)
 - **Organizations**: `GET|POST /organizations`, `GET|PUT|DELETE /organizations/{id}`
-- **Organization Operations**: `PUT /organizations/{id}/operation`
-- **Organization Status**: `PUT /organizations/{id}/status`
-- **Organization Registration**: `PUT /organizations/{id}/registration`
+- **Organization Operations**: `GET|PUT /organizations/{id}/operation`
+- **Organization Status**: `GET|PUT|PATCH /organizations/{id}/status`
+- **Organization Registration**: `GET|PUT|PATCH /organizations/{id}/registration`
 
 ### Tax Management
 - **Tax Obligations**: `GET|POST /tax-obligations`
-- **Organization Obligations**: `GET /organizations/{orgId}/obligations`, `POST /organization-obligations/{id}`
+- **Organization Obligations**: `GET /organizations/{orgId}/obligations`, `POST /organizations/{orgId}/obligations`, `PUT /organization-obligations/{id}`
 
 ### Compliance
 - **Schedules**: `GET /organizations/{id}/schedules`
+
+### Organization Ownership
+- **Organization Owners**: `GET|POST /organizations/{orgId}/owners`, `DELETE /organizations/{orgId}/owners/{userId}`, `DELETE /organization-owners/{id}`
+- **Ownership Check**: `GET /organizations/{orgId}/ownership`
 
 ## 1. View All Organizations
 
@@ -442,7 +648,64 @@ function CreateOrganizationForm() {
 }
 ```
 
-## 3. Update Existing Organization
+## 3.1. Get Organization by ID
+
+Retrieve a specific organization by its ID.
+
+### Endpoint
+```
+GET /organizations/{organization_id}
+```
+
+### Headers
+```
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+```
+
+### Example Request
+```javascript
+const getOrganizationById = async (orgId) => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/org/organizations/${orgId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.ok) {
+      const organization = await response.json();
+      console.log('Organization:', organization);
+      return organization;
+    } else {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+  } catch (error) {
+    console.error('Failed to get organization:', error);
+    throw error;
+  }
+};
+```
+
+### Example Response
+```json
+{
+  "id": "org-123",
+  "name": "ABC Corporation",
+  "tin": "001234567890",
+  "category": "NON_INDIVIDUAL",
+  "subcategory": "CORPORATION",
+  "tax_classification": "VAT",
+  "registration_date": "2024-01-01T00:00:00.000Z",
+  "address": "Makati City, Philippines",
+  "created_at": "2024-01-01T00:00:00.000Z",
+  "updated_at": "2024-01-01T00:00:00.000Z",
+  "deleted_at": null
+}
+```
 
 Update an existing organization's information.
 
@@ -568,27 +831,193 @@ function EditOrganizationForm({ organization, onSave, onCancel }) {
 }
 ```
 
-## 4. Change Organization Status to Inactive
+## 4. Update Organization Business Status
 
-**Note**: The current API does not have a direct endpoint for changing organization status. Organization status is managed through the `OrganizationStatus` model, but no API endpoint currently exists for updating this status.
+Update an organization's business status (ACTIVE, INACTIVE, etc.).
 
-The organization status field is currently set to "PENDING" by default when an organization is created and is not exposed through the current API endpoints for updates.
-
-If you need to implement organization status changes, you would need to add a new endpoint such as:
+### Endpoint
 ```
-PUT /api/org/organizations/{organization_id}/status
+GET /organizations/{id}/status
+PUT /organizations/{id}/status
+PATCH /organizations/{id}/status
 ```
 
-With a request body like:
+### Headers
+```
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+```
+
+### GET Status Request
+```javascript
+const getOrganizationStatus = async (orgId) => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/org/organizations/${orgId}/status`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.ok) {
+      const status = await response.json();
+      console.log('Organization status:', status);
+      return status;
+    } else {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+  } catch (error) {
+    console.error('Failed to get organization status:', error);
+    throw error;
+  }
+};
+```
+
+### PUT/PATCH Status Request Body
 ```json
 {
-  "status": "INACTIVE"
+  "status": "ACTIVE",
+  "reason": "EXPIRED",
+  "description": "Organization license has expired"
 }
 ```
 
-For now, this functionality is not available in the current API.
+### Status Options
+- `REGISTERED` - Successfully registered with BIR
+- `PENDING_REG` - Application submitted but not completed
+- `ACTIVE` - Currently operating
+- `INACTIVE` - Temporarily not operating
+- `CESSATION` - Operations stopped, closing process ongoing
+- `CLOSED` - Deregistered / business officially closed
+- `NON_COMPLIANT` - Active but flagged for missed filings
+- `UNDER_AUDIT` - Under LOA / investigation by BIR
+- `SUSPENDED` - Temporarily suspended by regulatory order
 
-## 5. View All Tax Obligations
+### Reason Options
+- `EXPIRED` - License/registration expired
+- `OPTED_OUT` - Voluntary cessation
+- `PAYMENT_PENDING` - Outstanding payments
+- `VIOLATIONS` - Regulatory violations
+
+### Example Request
+```javascript
+const updateOrganizationStatus = async (orgId, statusData) => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/org/organizations/${orgId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(statusData)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Status updated:', result);
+      return result;
+    } else {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+  } catch (error) {
+    console.error('Failed to update status:', error);
+    throw error;
+  }
+};
+```
+
+## 5. Get Organization Operation Details
+
+Retrieve fiscal year settings, cut-off dates, and operational parameters for an organization.
+
+### Endpoint
+```
+GET /organizations/{id}/operation
+PUT /organizations/{id}/operation
+```
+
+### Headers
+```
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+```
+
+### GET Operation Request
+```javascript
+const getOrganizationOperation = async (orgId) => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/org/organizations/${orgId}/operation`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.ok) {
+      const operation = await response.json();
+      console.log('Organization operation:', operation);
+      return operation;
+    } else {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+  } catch (error) {
+    console.error('Failed to get organization operation:', error);
+    throw error;
+  }
+};
+```
+
+### PUT Operation Request Body
+```json
+{
+  "fy_start": "2025-01-01",
+  "fy_end": "2025-12-31",
+  "vat_reg_effectivity": "2025-01-01",
+  "registration_effectivity": "2025-01-01",
+  "payroll_cut_off": ["15", "30"],
+  "payment_cut_off": ["10", "25"],
+  "quarter_closing": ["03-31", "06-30", "09-30", "12-31"],
+  "has_foreign": false,
+  "has_employees": true,
+  "is_ewt": false,
+  "is_fwt": false,
+  "is_bir_withholding_agent": false,
+  "accounting_method": "ACCRUAL"
+}
+```
+
+### Example PUT Request
+```javascript
+const updateOrganizationOperation = async (orgId, operationData) => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/org/organizations/${orgId}/operation`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(operationData)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Operation updated:', result);
+      return result;
+    } else {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+  } catch (error) {
+    console.error('Failed to update operation:', error);
+    throw error;
+  }
+};
+```
 
 Retrieve a list of all active tax obligations.
 
@@ -1228,6 +1657,151 @@ const createTaxObligation = async (obligationData) => {
     }
   } catch (error) {
     console.error('Failed to create tax obligation:', error);
+    throw error;
+  }
+};
+```
+
+## 12. Organization Owners Management
+
+Manage organization ownership assignments (super admin only).
+
+### Endpoints
+```
+POST /organizations/{orgId}/owners
+GET /organizations/{orgId}/owners
+DELETE /organizations/{orgId}/owners/{userId}
+DELETE /organization-owners/{id}
+GET /organizations/{orgId}/ownership
+```
+
+### Assign Owner
+Assign a user as an owner of an organization.
+
+#### Request Body
+```json
+{
+  "org_id": "organization-uuid",
+  "user_id": "user-uuid"
+}
+```
+
+#### Example Request
+```javascript
+const assignOwner = async (orgId, userId) => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/org/organizations/${orgId}/owners`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        org_id: orgId,
+        user_id: userId
+      })
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Owner assigned:', result);
+      return result;
+    } else {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+  } catch (error) {
+    console.error('Failed to assign owner:', error);
+    throw error;
+  }
+};
+```
+
+### Get Organization Owners
+Retrieve all owners of an organization.
+
+#### Example Request
+```javascript
+const getOrganizationOwners = async (orgId) => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/org/organizations/${orgId}/owners`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Organization owners:', result.owners);
+      return result.owners;
+    } else {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+  } catch (error) {
+    console.error('Failed to get owners:', error);
+    throw error;
+  }
+};
+```
+
+### Check Ownership
+Check if the current user is an owner of an organization.
+
+#### Example Request
+```javascript
+const checkOwnership = async (orgId) => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/org/organizations/${orgId}/ownership`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Ownership check:', result);
+      return result.is_owner;
+    } else {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+  } catch (error) {
+    console.error('Failed to check ownership:', error);
+    throw error;
+  }
+};
+```
+
+### Remove Owner
+Remove a user as an owner of an organization.
+
+#### Example Request
+```javascript
+const removeOwner = async (orgId, userId) => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/org/organizations/${orgId}/owners/${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Owner removed:', result);
+      return result;
+    } else {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+  } catch (error) {
+    console.error('Failed to remove owner:', error);
     throw error;
   }
 };

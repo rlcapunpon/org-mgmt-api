@@ -17,6 +17,18 @@ async function bootstrap() {
     }),
   );
 
+  // CORS configuration
+  const corsOrigins = process.env.CORS_ALLOWED_ORIGINS
+    ? process.env.CORS_ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
+    : ['http://localhost:5173'];
+
+  app.enableCors({
+    origin: corsOrigins,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
   // Swagger configuration
   const config = new DocumentBuilder()
     .setTitle('Organization Management API')
