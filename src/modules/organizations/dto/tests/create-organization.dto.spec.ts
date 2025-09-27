@@ -1,4 +1,4 @@
-import { validate, validateOrReject } from 'class-validator';
+import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import { CreateOrganizationDto } from '../create-organization.dto';
 import { Category, SubCategory, TaxClassification } from '@prisma/client';
@@ -59,6 +59,7 @@ describe('CreateOrganizationDto', () => {
     });
 
     it('should fail when name is not a string', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (dto as any).name = 123;
       dto.category = Category.INDIVIDUAL;
       dto.tax_classification = TaxClassification.VAT;
@@ -109,6 +110,7 @@ describe('CreateOrganizationDto', () => {
 
     it('should fail when category is invalid', async () => {
       dto.name = 'ABC Corporation';
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (dto as any).category = 'INVALID_CATEGORY';
       dto.tax_classification = TaxClassification.VAT;
       dto.first_name = 'John';

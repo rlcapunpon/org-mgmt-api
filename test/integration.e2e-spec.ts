@@ -172,6 +172,7 @@ describe('Organization Management API Integration Tests', () => {
           tax_classification: 'VAT',
           registration_date: '2024-01-01T00:00:00.000Z',
           // Registration fields
+          registered_name: 'Test Corporation Ltd',
           first_name: 'John',
           last_name: 'CEO',
           line_of_business: '6201',

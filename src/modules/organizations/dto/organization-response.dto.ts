@@ -177,6 +177,12 @@ export class OrganizationRegistrationResponseDto {
   @ApiProperty({ description: 'Last name of the registrant' })
   last_name: string;
 
+  @ApiProperty({
+    description: 'Registered name of the business',
+    required: false,
+  })
+  registered_name: string | null;
+
   @ApiProperty({ description: 'Trade name of the business', required: false })
   trade_name: string | null;
 

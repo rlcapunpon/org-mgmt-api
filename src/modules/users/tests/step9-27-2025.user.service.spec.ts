@@ -9,7 +9,6 @@ import { AxiosResponse } from 'axios';
 
 describe('UserService', () => {
   let service: UserService;
-  let mockUserRepository: jest.Mocked<UserRepository>;
   let mockOrganizationOwnerRepository: jest.Mocked<OrganizationOwnerRepository>;
   let mockOrganizationObligationRepository: jest.Mocked<OrganizationObligationRepository>;
   let mockHttpService: jest.Mocked<HttpService>;
@@ -47,9 +46,10 @@ describe('UserService', () => {
     }).compile();
 
     service = module.get<UserService>(UserService);
-    mockUserRepository = module.get(UserRepository);
     mockOrganizationOwnerRepository = module.get(OrganizationOwnerRepository);
-    mockOrganizationObligationRepository = module.get(OrganizationObligationRepository);
+    mockOrganizationObligationRepository = module.get(
+      OrganizationObligationRepository,
+    );
     mockHttpService = module.get(HttpService);
   });
 
@@ -60,7 +60,10 @@ describe('UserService', () => {
   describe('getUserOverview', () => {
     it('should return user overview with organizations owned, assigned, and obligations due', async () => {
       const userId = 'user-123';
-      const userPermissions = ['organization.read:org-1', 'organization.write:org-2'];
+      const userPermissions = [
+        'organization.read:org-1',
+        'organization.write:org-2',
+      ];
 
       // Mock RBAC API response
       const rbacResponse: AxiosResponse = {
@@ -70,21 +73,38 @@ describe('UserService', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         config: {} as any,
       };
       mockHttpService.get.mockReturnValue(of(rbacResponse));
 
       // Mock owned organizations
       mockOrganizationOwnerRepository.getOwnersByUserId.mockResolvedValue([
-        { id: 'owner-1', org_id: 'org-1', user_id: userId, assigned_date: new Date(), last_update: new Date() },
-        { id: 'owner-2', org_id: 'org-3', user_id: userId, assigned_date: new Date(), last_update: new Date() },
+        {
+          id: 'owner-1',
+          org_id: 'org-1',
+          user_id: userId,
+          assigned_date: new Date(),
+          last_update: new Date(),
+        },
+        {
+          id: 'owner-2',
+          org_id: 'org-3',
+          user_id: userId,
+          assigned_date: new Date(),
+          last_update: new Date(),
+        },
       ]);
 
       // Mock obligations due within 30 days
-      mockOrganizationObligationRepository.countObligationsDueWithinDays.mockResolvedValue(5);
+      mockOrganizationObligationRepository.countObligationsDueWithinDays.mockResolvedValue(
+        5,
+      );
 
       // Mock total obligations
-      mockOrganizationObligationRepository.countTotalObligations.mockResolvedValue(15);
+      mockOrganizationObligationRepository.countTotalObligations.mockResolvedValue(
+        15,
+      );
 
       const result = await service.getUserOverview(userId);
 
@@ -95,11 +115,12 @@ describe('UserService', () => {
         totalObligations: 15,
       });
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockHttpService.get).toHaveBeenCalledWith(
         expect.stringContaining('/permissions/check'),
         expect.objectContaining({
           params: { userId },
-        })
+        }),
       );
     });
 
@@ -114,20 +135,31 @@ describe('UserService', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         config: {} as any,
       };
       mockHttpService.get.mockReturnValue(of(rbacResponse));
 
       // Mock owned organizations
       mockOrganizationOwnerRepository.getOwnersByUserId.mockResolvedValue([
-        { id: 'owner-1', org_id: 'org-1', user_id: userId, assigned_date: new Date(), last_update: new Date() },
+        {
+          id: 'owner-1',
+          org_id: 'org-1',
+          user_id: userId,
+          assigned_date: new Date(),
+          last_update: new Date(),
+        },
       ]);
 
       // Mock obligations due within 30 days
-      mockOrganizationObligationRepository.countObligationsDueWithinDays.mockResolvedValue(3);
+      mockOrganizationObligationRepository.countObligationsDueWithinDays.mockResolvedValue(
+        3,
+      );
 
       // Mock total obligations
-      mockOrganizationObligationRepository.countTotalObligations.mockResolvedValue(10);
+      mockOrganizationObligationRepository.countTotalObligations.mockResolvedValue(
+        10,
+      );
 
       const result = await service.getUserOverview(userId);
 
@@ -150,6 +182,7 @@ describe('UserService', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         config: {} as any,
       };
       mockHttpService.get.mockReturnValue(of(rbacResponse));
@@ -158,10 +191,14 @@ describe('UserService', () => {
       mockOrganizationOwnerRepository.getOwnersByUserId.mockResolvedValue([]);
 
       // Mock obligations due within 30 days
-      mockOrganizationObligationRepository.countObligationsDueWithinDays.mockResolvedValue(0);
+      mockOrganizationObligationRepository.countObligationsDueWithinDays.mockResolvedValue(
+        0,
+      );
 
       // Mock total obligations
-      mockOrganizationObligationRepository.countTotalObligations.mockResolvedValue(0);
+      mockOrganizationObligationRepository.countTotalObligations.mockResolvedValue(
+        0,
+      );
 
       const result = await service.getUserOverview(userId);
 
@@ -183,11 +220,21 @@ describe('UserService', () => {
 
       // Should still work with owned organizations
       mockOrganizationOwnerRepository.getOwnersByUserId.mockResolvedValue([
-        { id: 'owner-1', org_id: 'org-1', user_id: userId, assigned_date: new Date(), last_update: new Date() },
+        {
+          id: 'owner-1',
+          org_id: 'org-1',
+          user_id: userId,
+          assigned_date: new Date(),
+          last_update: new Date(),
+        },
       ]);
 
-      mockOrganizationObligationRepository.countObligationsDueWithinDays.mockResolvedValue(2);
-      mockOrganizationObligationRepository.countTotalObligations.mockResolvedValue(8);
+      mockOrganizationObligationRepository.countObligationsDueWithinDays.mockResolvedValue(
+        2,
+      );
+      mockOrganizationObligationRepository.countTotalObligations.mockResolvedValue(
+        8,
+      );
 
       const result = await service.getUserOverview(userId);
 

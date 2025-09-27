@@ -52,7 +52,13 @@ describe('Organization Obligations Controller (e2e)', () => {
 
   it('POST /organizations/:id/obligations with JWT but lacking permission -> 403', async () => {
     const token = signPayload(
-      { userId: 'u1', username: 'testuser', permissions: [], isSuperAdmin: false, role: 'User' },
+      {
+        userId: 'u1',
+        username: 'testuser',
+        permissions: [],
+        isSuperAdmin: false,
+        role: 'User',
+      },
       process.env.JWT_SECRET!,
     );
     const res = await request(app.getHttpServer())
@@ -105,7 +111,13 @@ describe('Organization Obligations Controller (e2e)', () => {
 
   it('GET /organizations/:id/obligations returns 403 when unauthorized', async () => {
     const token = signPayload(
-      { userId: 'u1', username: 'testuser', permissions: [], isSuperAdmin: false, role: 'User' },
+      {
+        userId: 'u1',
+        username: 'testuser',
+        permissions: [],
+        isSuperAdmin: false,
+        role: 'User',
+      },
       process.env.JWT_SECRET!,
     );
     const res = await request(app.getHttpServer())
@@ -199,7 +211,13 @@ describe('Organization Obligations Controller (e2e)', () => {
       .send({ status: 'EXEMPT', description: 'Tax exemption granted' });
     expect(res.status).toBe(200);
     expect(res.body.status).toBe('EXEMPT');
-    expect(mockService.updateStatus).toHaveBeenCalledWith('1', OrganizationTaxObligationStatus.EXEMPT, 'u1', 'Tax exemption granted');
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(mockService.updateStatus).toHaveBeenCalledWith(
+      '1',
+      OrganizationTaxObligationStatus.EXEMPT,
+      'u1',
+      'Tax exemption granted',
+    );
   });
 
   it('PUT /organization-obligations/:id returns 404 for non-existing obligation', async () => {
@@ -255,7 +273,13 @@ describe('Organization Obligations Controller (e2e)', () => {
 
   it('POST /organizations/:id/obligations with JWT but lacking permission -> 403', async () => {
     const token = signPayload(
-      { userId: 'u1', username: 'testuser', permissions: [], isSuperAdmin: false, role: 'User' },
+      {
+        userId: 'u1',
+        username: 'testuser',
+        permissions: [],
+        isSuperAdmin: false,
+        role: 'User',
+      },
       process.env.JWT_SECRET!,
     );
     const res = await request(app.getHttpServer())
@@ -308,7 +332,13 @@ describe('Organization Obligations Controller (e2e)', () => {
 
   it('GET /organizations/:id/obligations returns 403 when unauthorized', async () => {
     const token = signPayload(
-      { userId: 'u1', username: 'testuser', permissions: [], isSuperAdmin: false, role: 'User' },
+      {
+        userId: 'u1',
+        username: 'testuser',
+        permissions: [],
+        isSuperAdmin: false,
+        role: 'User',
+      },
       process.env.JWT_SECRET!,
     );
     const res = await request(app.getHttpServer())
@@ -402,7 +432,13 @@ describe('Organization Obligations Controller (e2e)', () => {
       .send({ status: 'EXEMPT', description: 'Tax exemption granted' });
     expect(res.status).toBe(200);
     expect(res.body.status).toBe('EXEMPT');
-    expect(mockService.updateStatus).toHaveBeenCalledWith('1', OrganizationTaxObligationStatus.EXEMPT, 'u1', 'Tax exemption granted');
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(mockService.updateStatus).toHaveBeenCalledWith(
+      '1',
+      OrganizationTaxObligationStatus.EXEMPT,
+      'u1',
+      'Tax exemption granted',
+    );
   });
 
   it('PUT /organization-obligations/:id returns 404 for non-existing obligation', async () => {

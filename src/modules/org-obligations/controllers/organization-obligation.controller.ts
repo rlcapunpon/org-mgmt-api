@@ -107,6 +107,11 @@ export class OrganizationObligationController {
     @Req() req: Request,
   ) {
     const user = req.user as { userId: string };
-    return this.service.updateStatus(id, dto.status, user.userId, dto.description);
+    return this.service.updateStatus(
+      id,
+      dto.status,
+      user.userId,
+      dto.description,
+    );
   }
 }

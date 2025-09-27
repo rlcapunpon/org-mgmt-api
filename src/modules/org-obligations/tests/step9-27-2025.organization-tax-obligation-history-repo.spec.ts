@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/unbound-method, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/unbound-method, @typescript-eslint/no-unsafe-argument */
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrganizationTaxObligationHistoryRepository } from '../repositories/organization-tax-obligation-history.repository';
 import { PrismaService } from '../../../database/prisma.service';
@@ -56,13 +56,15 @@ describe('OrganizationTaxObligationHistoryRepository', () => {
       updated_at: new Date(),
       updated_by: 'user-uuid-123',
     };
-    (prismaMock.organizationTaxObligationHistory.create as jest.Mock).mockResolvedValue(
-      mockHistory,
-    );
+    (
+      prismaMock.organizationTaxObligationHistory.create as jest.Mock
+    ).mockResolvedValue(mockHistory);
 
     const result = await repository.createHistory(data);
     expect(result).toEqual(mockHistory);
-    expect(prismaMock.organizationTaxObligationHistory.create).toHaveBeenCalledWith({
+    expect(
+      prismaMock.organizationTaxObligationHistory.create,
+    ).toHaveBeenCalledWith({
       data: {
         org_obligation_id: 'org-obligation-uuid',
         prev_status: OrganizationTaxObligationStatus.ASSIGNED,
@@ -89,13 +91,15 @@ describe('OrganizationTaxObligationHistoryRepository', () => {
       updated_at: new Date(),
       updated_by: 'user-uuid-123',
     };
-    (prismaMock.organizationTaxObligationHistory.create as jest.Mock).mockResolvedValue(
-      mockHistory,
-    );
+    (
+      prismaMock.organizationTaxObligationHistory.create as jest.Mock
+    ).mockResolvedValue(mockHistory);
 
     const result = await repository.createHistory(data);
     expect(result).toEqual(mockHistory);
-    expect(prismaMock.organizationTaxObligationHistory.create).toHaveBeenCalledWith({
+    expect(
+      prismaMock.organizationTaxObligationHistory.create,
+    ).toHaveBeenCalledWith({
       data: {
         org_obligation_id: 'org-obligation-uuid',
         prev_status: OrganizationTaxObligationStatus.ACTIVE,
@@ -107,11 +111,17 @@ describe('OrganizationTaxObligationHistoryRepository', () => {
   });
 
   it('findByOrgObligationId should return empty array when no history exists', async () => {
-    (prismaMock.organizationTaxObligationHistory.findMany as jest.Mock).mockResolvedValue([]);
+    (
+      prismaMock.organizationTaxObligationHistory.findMany as jest.Mock
+    ).mockResolvedValue([]);
 
-    const result = await repository.findByOrgObligationId('org-obligation-uuid');
+    const result = await repository.findByOrgObligationId(
+      'org-obligation-uuid',
+    );
     expect(result).toEqual([]);
-    expect(prismaMock.organizationTaxObligationHistory.findMany).toHaveBeenCalledWith({
+    expect(
+      prismaMock.organizationTaxObligationHistory.findMany,
+    ).toHaveBeenCalledWith({
       where: { org_obligation_id: 'org-obligation-uuid' },
       orderBy: { updated_at: 'desc' },
     });
@@ -138,24 +148,32 @@ describe('OrganizationTaxObligationHistoryRepository', () => {
         updated_by: 'user-uuid-123',
       },
     ];
-    (prismaMock.organizationTaxObligationHistory.findMany as jest.Mock).mockResolvedValue(
-      mockHistory,
-    );
+    (
+      prismaMock.organizationTaxObligationHistory.findMany as jest.Mock
+    ).mockResolvedValue(mockHistory);
 
-    const result = await repository.findByOrgObligationId('org-obligation-uuid');
+    const result = await repository.findByOrgObligationId(
+      'org-obligation-uuid',
+    );
     expect(result).toEqual(mockHistory);
-    expect(prismaMock.organizationTaxObligationHistory.findMany).toHaveBeenCalledWith({
+    expect(
+      prismaMock.organizationTaxObligationHistory.findMany,
+    ).toHaveBeenCalledWith({
       where: { org_obligation_id: 'org-obligation-uuid' },
       orderBy: { updated_at: 'desc' },
     });
   });
 
   it('findById should return null when history record not found', async () => {
-    (prismaMock.organizationTaxObligationHistory.findUnique as jest.Mock).mockResolvedValue(null);
+    (
+      prismaMock.organizationTaxObligationHistory.findUnique as jest.Mock
+    ).mockResolvedValue(null);
 
     const result = await repository.findById('history-uuid');
     expect(result).toBeNull();
-    expect(prismaMock.organizationTaxObligationHistory.findUnique).toHaveBeenCalledWith({
+    expect(
+      prismaMock.organizationTaxObligationHistory.findUnique,
+    ).toHaveBeenCalledWith({
       where: { id: 'history-uuid' },
     });
   });
@@ -170,13 +188,15 @@ describe('OrganizationTaxObligationHistoryRepository', () => {
       updated_at: new Date(),
       updated_by: 'user-uuid-123',
     };
-    (prismaMock.organizationTaxObligationHistory.findUnique as jest.Mock).mockResolvedValue(
-      mockHistory,
-    );
+    (
+      prismaMock.organizationTaxObligationHistory.findUnique as jest.Mock
+    ).mockResolvedValue(mockHistory);
 
     const result = await repository.findById('history-uuid');
     expect(result).toEqual(mockHistory);
-    expect(prismaMock.organizationTaxObligationHistory.findUnique).toHaveBeenCalledWith({
+    expect(
+      prismaMock.organizationTaxObligationHistory.findUnique,
+    ).toHaveBeenCalledWith({
       where: { id: 'history-uuid' },
     });
   });

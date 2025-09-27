@@ -18,7 +18,10 @@ describe('UpdateOrganizationOperationDto', () => {
   describe('date field transformations', () => {
     it('should transform fy_start string to Date', async () => {
       const plainObject = { fy_start: '2025-01-01' };
-      const transformedDto = plainToClass(UpdateOrganizationOperationDto, plainObject);
+      const transformedDto = plainToClass(
+        UpdateOrganizationOperationDto,
+        plainObject,
+      );
 
       const errors = await validate(transformedDto);
       expect(errors.length).toBe(0);
@@ -27,7 +30,10 @@ describe('UpdateOrganizationOperationDto', () => {
 
     it('should transform fy_end string to Date', async () => {
       const plainObject = { fy_end: '2025-12-31' };
-      const transformedDto = plainToClass(UpdateOrganizationOperationDto, plainObject);
+      const transformedDto = plainToClass(
+        UpdateOrganizationOperationDto,
+        plainObject,
+      );
 
       const errors = await validate(transformedDto);
       expect(errors.length).toBe(0);
@@ -36,7 +42,10 @@ describe('UpdateOrganizationOperationDto', () => {
 
     it('should transform vat_reg_effectivity string to Date', async () => {
       const plainObject = { vat_reg_effectivity: '2025-01-01' };
-      const transformedDto = plainToClass(UpdateOrganizationOperationDto, plainObject);
+      const transformedDto = plainToClass(
+        UpdateOrganizationOperationDto,
+        plainObject,
+      );
 
       const errors = await validate(transformedDto);
       expect(errors.length).toBe(0);
@@ -45,7 +54,10 @@ describe('UpdateOrganizationOperationDto', () => {
 
     it('should transform registration_effectivity string to Date', async () => {
       const plainObject = { registration_effectivity: '2025-01-01' };
-      const transformedDto = plainToClass(UpdateOrganizationOperationDto, plainObject);
+      const transformedDto = plainToClass(
+        UpdateOrganizationOperationDto,
+        plainObject,
+      );
 
       const errors = await validate(transformedDto);
       expect(errors.length).toBe(0);
@@ -71,6 +83,7 @@ describe('UpdateOrganizationOperationDto', () => {
     });
 
     it('should fail when payroll_cut_off contains non-string values', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (dto as any).payroll_cut_off = ['15/30', 123];
 
       const errors = await validate(dto);
@@ -86,6 +99,7 @@ describe('UpdateOrganizationOperationDto', () => {
     });
 
     it('should fail when payment_cut_off is not an array', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (dto as any).payment_cut_off = 'not-an-array';
 
       const errors = await validate(dto);
@@ -104,7 +118,10 @@ describe('UpdateOrganizationOperationDto', () => {
   describe('boolean field transformations', () => {
     it('should transform has_foreign string "true" to boolean true', async () => {
       const plainObject = { has_foreign: 'true' };
-      const transformedDto = plainToClass(UpdateOrganizationOperationDto, plainObject);
+      const transformedDto = plainToClass(
+        UpdateOrganizationOperationDto,
+        plainObject,
+      );
 
       const errors = await validate(transformedDto);
       expect(errors.length).toBe(0);
@@ -113,7 +130,10 @@ describe('UpdateOrganizationOperationDto', () => {
 
     it('should transform has_foreign string "false" to boolean false', async () => {
       const plainObject = { has_foreign: 'false' };
-      const transformedDto = plainToClass(UpdateOrganizationOperationDto, plainObject);
+      const transformedDto = plainToClass(
+        UpdateOrganizationOperationDto,
+        plainObject,
+      );
 
       const errors = await validate(transformedDto);
       expect(errors.length).toBe(0);
@@ -138,7 +158,10 @@ describe('UpdateOrganizationOperationDto', () => {
 
     it('should fail when has_foreign is invalid string', async () => {
       const plainObject = { has_foreign: 'invalid' };
-      const transformedDto = plainToClass(UpdateOrganizationOperationDto, plainObject);
+      const transformedDto = plainToClass(
+        UpdateOrganizationOperationDto,
+        plainObject,
+      );
 
       const errors = await validate(transformedDto);
       expect(errors.length).toBeGreaterThan(0);
@@ -150,9 +173,12 @@ describe('UpdateOrganizationOperationDto', () => {
         has_employees: 'true',
         is_ewt: 'false',
         is_fwt: 'true',
-        is_bir_withholding_agent: 'false'
+        is_bir_withholding_agent: 'false',
       };
-      const transformedDto = plainToClass(UpdateOrganizationOperationDto, plainObject);
+      const transformedDto = plainToClass(
+        UpdateOrganizationOperationDto,
+        plainObject,
+      );
 
       const errors = await validate(transformedDto);
       expect(errors.length).toBe(0);
@@ -172,6 +198,7 @@ describe('UpdateOrganizationOperationDto', () => {
     });
 
     it('should fail when accounting_method is invalid enum value', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (dto as any).accounting_method = 'INVALID_METHOD';
 
       const errors = await validate(dto);

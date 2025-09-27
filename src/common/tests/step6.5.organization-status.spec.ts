@@ -151,6 +151,18 @@ describe('Organization Status (Step 6.5)', () => {
         name: 'Test Org',
         category: 'NON_INDIVIDUAL',
         tax_classification: 'VAT',
+        tin: '001234567890',
+        registration_date: new Date('2024-01-01'),
+        registered_name: 'Test Org',
+        line_of_business: '6201',
+        address_line: '123 Main St',
+        region: 'NCR',
+        city: 'Makati',
+        zip_code: '1223',
+        rdo_code: '001',
+        contact_number: '+639123456789',
+        email_address: 'test@example.com',
+        start_date: new Date('2024-01-01'),
       };
 
       // mockService.create.mockResolvedValue(mockOrg);
@@ -278,9 +290,22 @@ describe('Organization Status (Step 6.5)', () => {
         process.env.JWT_SECRET!,
       );
       const payload = {
-        name: 'Individual Org',
+        registered_name: 'Individual Org',
         category: 'INDIVIDUAL',
         tax_classification: 'NON_VAT',
+        tin: '001234567890',
+        registration_date: new Date('2024-01-01'),
+        first_name: 'John',
+        last_name: 'Doe',
+        line_of_business: '6201',
+        address_line: '123 Main St',
+        region: 'NCR',
+        city: 'Makati',
+        zip_code: '1223',
+        rdo_code: '001',
+        contact_number: '+639123456789',
+        email_address: 'john.doe@example.com',
+        start_date: new Date('2024-01-01'),
       };
 
       const res = await request(app.getHttpServer())
@@ -413,9 +438,22 @@ describe('Organization Status (Step 6.5)', () => {
         process.env.JWT_SECRET!,
       );
       const payload = {
-        name: 'Timestamp Test Org',
+        registered_name: 'Timestamp Test Org',
         category: 'INDIVIDUAL',
         tax_classification: 'VAT',
+        tin: '001234567890',
+        registration_date: new Date('2024-01-01'),
+        first_name: 'John',
+        last_name: 'Doe',
+        line_of_business: '6201',
+        address_line: '123 Main St',
+        region: 'NCR',
+        city: 'Makati',
+        zip_code: '1223',
+        rdo_code: '001',
+        contact_number: '+639123456789',
+        email_address: 'john.doe@example.com',
+        start_date: new Date('2024-01-01'),
       };
       const beforeCreate = new Date();
 

@@ -68,7 +68,7 @@ describe('Organization Integration Tests (e2e)', () => {
         process.env.JWT_SECRET!,
       );
       const payload = {
-        name: 'John Doe Self Employed',
+        registered_name: 'John Doe Self Employed',
         category: 'INDIVIDUAL',
         subcategory: 'SELF_EMPLOYED',
         tax_classification: 'NON_VAT',
@@ -90,7 +90,7 @@ describe('Organization Integration Tests (e2e)', () => {
 
       const mockOrg = {
         id: '1',
-        name: 'John Doe Self Employed',
+        name: 'John Doe Self Employed', // Should be the registered_name
         category: Category.INDIVIDUAL,
         subcategory: SubCategory.SELF_EMPLOYED,
         tax_classification: TaxClassification.NON_VAT,
@@ -160,7 +160,7 @@ describe('Organization Integration Tests (e2e)', () => {
         process.env.JWT_SECRET!,
       );
       const payload = {
-        name: 'Jane Smith Sole Proprietor',
+        registered_name: 'Jane Smith Sole Proprietor',
         category: 'INDIVIDUAL',
         subcategory: 'SOLE_PROPRIETOR',
         tax_classification: 'VAT',
@@ -252,7 +252,7 @@ describe('Organization Integration Tests (e2e)', () => {
         process.env.JWT_SECRET!,
       );
       const payload = {
-        name: 'Bob Freelancer',
+        registered_name: 'Bob Freelancer',
         category: 'INDIVIDUAL',
         subcategory: 'FREELANCER',
         tax_classification: 'NON_VAT',
@@ -336,15 +336,13 @@ describe('Organization Integration Tests (e2e)', () => {
         process.env.JWT_SECRET!,
       );
       const payload = {
-        name: 'ABC Corporation',
+        registered_name: 'ABC Corporation',
         category: 'NON_INDIVIDUAL',
         subcategory: 'CORPORATION',
         tax_classification: 'VAT',
         tin: '001234567893',
         registration_date: '2020-01-01',
         // Registration fields
-        first_name: 'John',
-        last_name: 'CEO',
         line_of_business: '6204',
         address_line: '123 Corporate Blvd',
         region: 'NCR',
@@ -421,15 +419,13 @@ describe('Organization Integration Tests (e2e)', () => {
         process.env.JWT_SECRET!,
       );
       const payload = {
-        name: 'Tax Exempt Organization',
+        registered_name: 'Tax Exempt Organization',
         category: 'NON_INDIVIDUAL',
         subcategory: 'PARTNERSHIP',
         tax_classification: 'EXCEMPT',
         tin: '001234567896',
         registration_date: '2021-01-01',
         // Registration fields
-        first_name: 'Exempt',
-        last_name: 'Org',
         line_of_business: '6207',
         address_line: '123 Exempt Blvd',
         region: 'NCR',
@@ -507,7 +503,7 @@ describe('Organization Integration Tests (e2e)', () => {
         process.env.JWT_SECRET!,
       );
       const payload = {
-        name: 'Invalid Subcategory Org',
+        registered_name: 'Invalid Subcategory Org',
         category: 'INDIVIDUAL',
         subcategory: 'INVALID_SUBCATEGORY',
         tax_classification: 'VAT',
@@ -547,7 +543,7 @@ describe('Organization Integration Tests (e2e)', () => {
         process.env.JWT_SECRET!,
       );
       const payload = {
-        name: 'Invalid Tax Classification Org',
+        registered_name: 'Invalid Tax Classification Org',
         category: 'INDIVIDUAL',
         subcategory: 'SELF_EMPLOYED',
         tax_classification: 'INVALID_TAX_CLASS',

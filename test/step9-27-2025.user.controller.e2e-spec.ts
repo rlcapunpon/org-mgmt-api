@@ -2,13 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { PrismaService } from '../src/database/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../src/modules/users/services/user.service';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;
-  let prisma: PrismaService;
   let jwtService: JwtService;
   let userService: UserService;
 
@@ -18,7 +16,6 @@ describe('UserController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    prisma = moduleFixture.get(PrismaService);
     jwtService = moduleFixture.get(JwtService);
     userService = moduleFixture.get(UserService);
 
@@ -49,7 +46,9 @@ describe('UserController (e2e)', () => {
         totalObligations: 15,
       });
 
-      const response = await request.default(app.getHttpServer())
+      const response = await request
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        .default(app.getHttpServer())
         .get('/users/overview')
         .set('Authorization', `Bearer ${token}`)
         .expect(200);
@@ -63,7 +62,9 @@ describe('UserController (e2e)', () => {
     });
 
     it('should return 401 without authentication', async () => {
-      await request.default(app.getHttpServer())
+      await request
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        .default(app.getHttpServer())
         .get('/users/overview')
         .expect(401);
     });
@@ -78,7 +79,9 @@ describe('UserController (e2e)', () => {
       };
       const token = jwtService.sign(payload);
 
-      await request.default(app.getHttpServer())
+      await request
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        .default(app.getHttpServer())
         .get('/users/overview')
         .set('Authorization', `Bearer ${token}`)
         .expect(403);

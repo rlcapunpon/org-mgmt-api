@@ -9,26 +9,27 @@ import {
   IsBoolean,
   IsArray,
   IsIn,
+  ValidateIf,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { BusinessStatus } from '@prisma/client';
 import {
   Category,
   SubCategory,
   TaxClassification,
   AccountingMethod,
 } from '@prisma/client';
-import { BusinessStatus } from '@prisma/client';
 
 // Create Organization Request DTO
 export class CreateOrganizationRequestDto {
   @ApiProperty({
-    description: 'Organization name',
-    example: 'ABC Corporation',
+    description: 'Registered name of the business',
+    example: 'ABC Corporation Inc.',
   })
   @IsNotEmpty()
   @IsString()
-  name: string;
+  registered_name: string;
 
   @ApiProperty({
     description: 'Tax Identification Number',
@@ -75,9 +76,13 @@ export class CreateOrganizationRequestDto {
 
   // OrganizationRegistration fields
   @ApiProperty({
-    description: 'First name of the registrant',
+    description:
+      'First name of the registrant (required for INDIVIDUAL category)',
     example: 'John',
   })
+  @ValidateIf(
+    (obj: { category?: Category }) => obj.category === Category.INDIVIDUAL,
+  )
   @IsNotEmpty()
   @IsString()
   first_name: string;
@@ -92,9 +97,13 @@ export class CreateOrganizationRequestDto {
   middle_name: string | null;
 
   @ApiProperty({
-    description: 'Last name of the registrant',
+    description:
+      'Last name of the registrant (required for INDIVIDUAL category)',
     example: 'Doe',
   })
+  @ValidateIf(
+    (obj: { category?: Category }) => obj.category === Category.INDIVIDUAL,
+  )
   @IsNotEmpty()
   @IsString()
   last_name: string;

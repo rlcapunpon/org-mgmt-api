@@ -23,6 +23,7 @@ describe('UpdateOrganizationDto', () => {
   });
 
   it('should fail when name is not a string', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     (dto as any).name = 123;
 
     const errors = await validate(dto);
@@ -38,6 +39,7 @@ describe('UpdateOrganizationDto', () => {
   });
 
   it('should fail when category is invalid enum value', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     (dto as any).category = 'INVALID_CATEGORY';
 
     const errors = await validate(dto);
@@ -53,6 +55,7 @@ describe('UpdateOrganizationDto', () => {
   });
 
   it('should fail when subcategory is invalid enum value', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     (dto as any).subcategory = 'INVALID_SUBCATEGORY';
 
     const errors = await validate(dto);
@@ -68,6 +71,7 @@ describe('UpdateOrganizationDto', () => {
   });
 
   it('should fail when tax_classification is invalid enum value', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     (dto as any).tax_classification = 'INVALID_CLASSIFICATION';
 
     const errors = await validate(dto);
@@ -83,6 +87,7 @@ describe('UpdateOrganizationDto', () => {
   });
 
   it('should fail when tin is not a string', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     (dto as any).tin = 123456789;
 
     const errors = await validate(dto);
@@ -98,6 +103,7 @@ describe('UpdateOrganizationDto', () => {
   });
 
   it('should fail when address is not a string', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     (dto as any).address = 12345;
 
     const errors = await validate(dto);

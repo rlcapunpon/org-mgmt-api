@@ -13,7 +13,9 @@ export class UserController {
 
   @Get('overview')
   @RequiresPermission('user.read')
-  async getUserOverview(@Req() req: AuthenticatedRequest): Promise<UserOverview> {
+  async getUserOverview(
+    @Req() req: AuthenticatedRequest,
+  ): Promise<UserOverview> {
     const userId = req.user?.userId;
     if (!userId) {
       throw new Error('User not authenticated');

@@ -6,12 +6,13 @@ import { Organization, BusinessStatus } from '@prisma/client';
 interface CreateOrganizationData
   extends Omit<
     Organization,
-    'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'address'
+    'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'address' | 'name'
   > {
   // OrganizationRegistration fields
-  first_name: string;
+  first_name?: string;
   middle_name?: string | null;
-  last_name: string;
+  last_name?: string;
+  registered_name: string; // Now mandatory for all categories
   trade_name?: string | null;
   line_of_business: string;
   address_line: string;
@@ -44,7 +45,7 @@ export class OrganizationRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(data: CreateOrganizationData): Promise<Organization> {
-    if (!data.name || !data.category || !data.tax_classification) {
+    if (!data.category || !data.tax_classification) {
       throw new Error('Required fields missing');
     }
 
@@ -53,6 +54,7 @@ export class OrganizationRepository {
       first_name,
       middle_name,
       last_name,
+      registered_name,
       trade_name,
       line_of_business,
       address_line,
@@ -79,26 +81,63 @@ export class OrganizationRepository {
       is_bir_withholding_agent,
       accounting_method,
 
+      // Extract other fields
       ...orgData
     } = data;
 
+    // Construct organization name based on category
+    let organizationName: string;
+    let finalRegisteredName = registered_name;
+    if (data.category === 'INDIVIDUAL') {
+      if (!first_name || !last_name) {
+        throw new Error(
+          'first_name and last_name are required for INDIVIDUAL category',
+        );
+      }
+      if (!registered_name) {
+        throw new Error(
+          'registered_name is required for all categories',
+        );
+      }
+      organizationName = registered_name;
+    } else if (data.category === 'NON_INDIVIDUAL') {
+      // For NON_INDIVIDUAL, registered_name is required and used as organization name
+      if (!registered_name) {
+        throw new Error(
+          'registered_name is required for NON_INDIVIDUAL category',
+        );
+      }
+      organizationName = registered_name;
+      finalRegisteredName = registered_name;
+    } else {
+      throw new Error('Invalid category');
+    }
+
     // Set default values for OrganizationOperation if not provided
-    const defaultFyStart = fy_start || new Date("2024-12-31T16:00:00.000Z");
-    const defaultFyEnd = fy_end || new Date("2025-12-30T16:00:00.000Z");
-    const defaultVatRegEffectivity = vat_reg_effectivity || new Date("2024-12-31T16:00:00.000Z");
-    const defaultRegistrationEffectivity = registration_effectivity || new Date("2024-12-31T16:00:00.000Z");
-    const defaultPayrollCutOff = payroll_cut_off || ["15/30"];
-    const defaultPaymentCutOff = payment_cut_off || ["15/30"];
-    const defaultQuarterClosing = quarter_closing || ["03/31", "06/30", "09/30", "12/31"];
+    const defaultFyStart = fy_start || new Date('2024-12-31T16:00:00.000Z');
+    const defaultFyEnd = fy_end || new Date('2025-12-30T16:00:00.000Z');
+    const defaultVatRegEffectivity =
+      vat_reg_effectivity || new Date('2024-12-31T16:00:00.000Z');
+    const defaultRegistrationEffectivity =
+      registration_effectivity || new Date('2024-12-31T16:00:00.000Z');
+    const defaultPayrollCutOff = payroll_cut_off || ['15/30'];
+    const defaultPaymentCutOff = payment_cut_off || ['15/30'];
+    const defaultQuarterClosing = quarter_closing || [
+      '03/31',
+      '06/30',
+      '09/30',
+      '12/31',
+    ];
     const defaultHasForeign = has_foreign ?? false;
     const defaultHasEmployees = has_employees ?? false;
     const defaultIsEwt = is_ewt ?? false;
     const defaultIsFwt = is_fwt ?? false;
     const defaultIsBirWithholdingAgent = is_bir_withholding_agent ?? false;
-    const defaultAccountingMethod = accounting_method || "ACCRUAL";
+    const defaultAccountingMethod = accounting_method || 'ACCRUAL';
 
     return this.prisma.organization.create({
       data: {
+        name: organizationName,
         ...orgData,
         address: `${address_line}, ${city}, ${region}, ${zip_code}`,
         deleted_at: null,
@@ -126,9 +165,10 @@ export class OrganizationRepository {
         },
         registration: {
           create: {
-            first_name,
+            first_name: first_name || '',
             middle_name,
-            last_name,
+            last_name: last_name || '',
+            registered_name: finalRegisteredName,
             trade_name,
             line_of_business,
             address_line,

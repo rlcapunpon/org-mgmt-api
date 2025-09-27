@@ -55,7 +55,12 @@ describe('OrganizationOwnerService', () => {
 
       const result = await service.assignOwner(dto);
 
-      expect(mockRepository.isOwner).toHaveBeenCalledWith('org-123', 'user-456');
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockRepository.isOwner).toHaveBeenCalledWith(
+        'org-123',
+        'user-456',
+      );
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockRepository.assignOwner).toHaveBeenCalledWith(dto);
       expect(result).toEqual(mockOwner);
     });
@@ -69,7 +74,12 @@ describe('OrganizationOwnerService', () => {
       mockRepository.isOwner.mockResolvedValue(true);
 
       await expect(service.assignOwner(dto)).rejects.toThrow(ConflictException);
-      expect(mockRepository.isOwner).toHaveBeenCalledWith('org-123', 'user-456');
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockRepository.isOwner).toHaveBeenCalledWith(
+        'org-123',
+        'user-456',
+      );
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockRepository.assignOwner).not.toHaveBeenCalled();
     });
 
@@ -116,6 +126,7 @@ describe('OrganizationOwnerService', () => {
 
       const result = await service.getOwnersByOrgId('org-123');
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockRepository.getOwnersByOrgId).toHaveBeenCalledWith('org-123');
       expect(result).toEqual(mockOwners);
     });
@@ -127,7 +138,11 @@ describe('OrganizationOwnerService', () => {
 
       const result = await service.isOwner('org-123', 'user-456');
 
-      expect(mockRepository.isOwner).toHaveBeenCalledWith('org-123', 'user-456');
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockRepository.isOwner).toHaveBeenCalledWith(
+        'org-123',
+        'user-456',
+      );
       expect(result).toBe(true);
     });
 
@@ -146,7 +161,11 @@ describe('OrganizationOwnerService', () => {
 
       const result = await service.checkOwnership('org-123', 'user-456');
 
-      expect(mockRepository.isOwner).toHaveBeenCalledWith('org-123', 'user-456');
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockRepository.isOwner).toHaveBeenCalledWith(
+        'org-123',
+        'user-456',
+      );
       expect(result).toEqual({
         is_owner: true,
         org_id: 'org-123',
@@ -169,7 +188,11 @@ describe('OrganizationOwnerService', () => {
 
       const result = await service.removeOwner('org-123', 'user-456');
 
-      expect(mockRepository.removeOwner).toHaveBeenCalledWith('org-123', 'user-456');
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockRepository.removeOwner).toHaveBeenCalledWith(
+        'org-123',
+        'user-456',
+      );
       expect(result).toEqual(mockRemovedOwner);
     });
 
@@ -177,14 +200,18 @@ describe('OrganizationOwnerService', () => {
       const error = { code: 'P2025' };
       mockRepository.removeOwner.mockRejectedValue(error);
 
-      await expect(service.removeOwner('org-123', 'user-456')).rejects.toThrow(NotFoundException);
+      await expect(service.removeOwner('org-123', 'user-456')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should rethrow other errors', async () => {
       const error = new Error('Database error');
       mockRepository.removeOwner.mockRejectedValue(error);
 
-      await expect(service.removeOwner('org-123', 'user-456')).rejects.toThrow('Database error');
+      await expect(service.removeOwner('org-123', 'user-456')).rejects.toThrow(
+        'Database error',
+      );
     });
   });
 
@@ -202,6 +229,7 @@ describe('OrganizationOwnerService', () => {
 
       const result = await service.removeOwnerById('owner-1');
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockRepository.removeOwnerById).toHaveBeenCalledWith('owner-1');
       expect(result).toEqual(mockRemovedOwner);
     });
@@ -210,7 +238,9 @@ describe('OrganizationOwnerService', () => {
       const error = { code: 'P2025' };
       mockRepository.removeOwnerById.mockRejectedValue(error);
 
-      await expect(service.removeOwnerById('owner-1')).rejects.toThrow(NotFoundException);
+      await expect(service.removeOwnerById('owner-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -228,7 +258,11 @@ describe('OrganizationOwnerService', () => {
 
       const result = await service.updateLastUpdate('org-123', 'user-456');
 
-      expect(mockRepository.updateLastUpdate).toHaveBeenCalledWith('org-123', 'user-456');
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockRepository.updateLastUpdate).toHaveBeenCalledWith(
+        'org-123',
+        'user-456',
+      );
       expect(result).toEqual(mockUpdatedOwner);
     });
 
@@ -236,7 +270,9 @@ describe('OrganizationOwnerService', () => {
       const error = { code: 'P2025' };
       mockRepository.updateLastUpdate.mockRejectedValue(error);
 
-      await expect(service.updateLastUpdate('org-123', 'user-456')).rejects.toThrow(NotFoundException);
+      await expect(
+        service.updateLastUpdate('org-123', 'user-456'),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -254,6 +290,7 @@ describe('OrganizationOwnerService', () => {
 
       const result = await service.getOwnerById('owner-1');
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockRepository.getOwnerById).toHaveBeenCalledWith('owner-1');
       expect(result).toEqual(mockOwner);
     });

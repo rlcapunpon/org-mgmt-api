@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/unbound-method, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrganizationObligationService } from '../services/organization-obligation.service';
 import { OrganizationObligationRepository } from '../repositories/organization-obligation.repository';
@@ -10,7 +10,6 @@ describe('OrganizationObligationService', () => {
   let service: OrganizationObligationService;
   let obligationRepoMock: jest.Mocked<OrganizationObligationRepository>;
   let historyRepoMock: jest.Mocked<OrganizationTaxObligationHistoryRepository>;
-  let prismaMock: jest.Mocked<PrismaService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -48,7 +47,6 @@ describe('OrganizationObligationService', () => {
     );
     obligationRepoMock = module.get(OrganizationObligationRepository);
     historyRepoMock = module.get(OrganizationTaxObligationHistoryRepository);
-    prismaMock = module.get(PrismaService);
   });
 
   it('assignObligation should create obligation and return it', async () => {
@@ -89,7 +87,9 @@ describe('OrganizationObligationService', () => {
         updated_at: new Date(),
       },
     ];
-    (obligationRepoMock.findByOrgId as jest.Mock).mockResolvedValue(mockObligations);
+    (obligationRepoMock.findByOrgId as jest.Mock).mockResolvedValue(
+      mockObligations,
+    );
 
     const result = await service.getObligationsByOrgId('org-uuid');
     expect(result).toEqual(mockObligations);
@@ -129,11 +129,19 @@ describe('OrganizationObligationService', () => {
       updated_by: updatedBy,
     };
 
-    (obligationRepoMock.findById as jest.Mock).mockResolvedValue(existingObligation);
+    (obligationRepoMock.findById as jest.Mock).mockResolvedValue(
+      existingObligation,
+    );
     (historyRepoMock.createHistory as jest.Mock).mockResolvedValue(mockHistory);
-    (obligationRepoMock.update as jest.Mock).mockResolvedValue(updatedObligation);
+    (obligationRepoMock.update as jest.Mock).mockResolvedValue(
+      updatedObligation,
+    );
 
-    const result = await service.updateStatus(obligationId, newStatus, updatedBy);
+    const result = await service.updateStatus(
+      obligationId,
+      newStatus,
+      updatedBy,
+    );
     expect(result).toEqual(updatedObligation);
     expect(obligationRepoMock.findById).toHaveBeenCalledWith(obligationId);
     expect(historyRepoMock.createHistory).toHaveBeenCalledWith({
@@ -143,7 +151,9 @@ describe('OrganizationObligationService', () => {
       desc: undefined,
       updated_by: updatedBy,
     });
-    expect(obligationRepoMock.update).toHaveBeenCalledWith(obligationId, { status: newStatus });
+    expect(obligationRepoMock.update).toHaveBeenCalledWith(obligationId, {
+      status: newStatus,
+    });
   });
 
   it('updateStatus should create history log with description when provided', async () => {
@@ -173,18 +183,27 @@ describe('OrganizationObligationService', () => {
     const mockHistory = {
       id: 'history-uuid',
       org_obligation_id: obligationId,
-      prev_status: OrganizationTaxObligationStatus.FILE,
+      prev_status: OrganizationTaxObligationStatus.FILED,
       new_status: newStatus,
       desc: description,
       updated_at: new Date(),
       updated_by: updatedBy,
     };
 
-    (obligationRepoMock.findById as jest.Mock).mockResolvedValue(existingObligation);
+    (obligationRepoMock.findById as jest.Mock).mockResolvedValue(
+      existingObligation,
+    );
     (historyRepoMock.createHistory as jest.Mock).mockResolvedValue(mockHistory);
-    (obligationRepoMock.update as jest.Mock).mockResolvedValue(updatedObligation);
+    (obligationRepoMock.update as jest.Mock).mockResolvedValue(
+      updatedObligation,
+    );
 
-    const result = await service.updateStatus(obligationId, newStatus, updatedBy, description);
+    const result = await service.updateStatus(
+      obligationId,
+      newStatus,
+      updatedBy,
+      description,
+    );
     expect(result).toEqual(updatedObligation);
     expect(historyRepoMock.createHistory).toHaveBeenCalledWith({
       org_obligation_id: obligationId,
@@ -202,9 +221,9 @@ describe('OrganizationObligationService', () => {
 
     (obligationRepoMock.findById as jest.Mock).mockResolvedValue(null);
 
-    await expect(service.updateStatus(obligationId, newStatus, updatedBy)).rejects.toThrow(
-      'Obligation not found',
-    );
+    await expect(
+      service.updateStatus(obligationId, newStatus, updatedBy),
+    ).rejects.toThrow('Obligation not found');
     expect(obligationRepoMock.findById).toHaveBeenCalledWith(obligationId);
     expect(historyRepoMock.createHistory).not.toHaveBeenCalled();
     expect(obligationRepoMock.update).not.toHaveBeenCalled();
@@ -222,7 +241,9 @@ describe('OrganizationObligationService', () => {
       created_at: new Date(),
       updated_at: new Date(),
     };
-    (obligationRepoMock.findById as jest.Mock).mockResolvedValue(mockObligation);
+    (obligationRepoMock.findById as jest.Mock).mockResolvedValue(
+      mockObligation,
+    );
 
     const result = await service.findById('obligation-uuid');
     expect(result).toEqual(mockObligation);

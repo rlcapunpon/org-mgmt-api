@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../database/prisma.service';
-import { OrganizationTaxObligationHistory, OrganizationTaxObligationStatus } from '@prisma/client';
+import {
+  OrganizationTaxObligationHistory,
+  OrganizationTaxObligationStatus,
+} from '@prisma/client';
 
 interface CreateHistoryData {
   org_obligation_id: string;
@@ -14,8 +17,15 @@ interface CreateHistoryData {
 export class OrganizationTaxObligationHistoryRepository {
   constructor(private prisma: PrismaService) {}
 
-  async createHistory(data: CreateHistoryData): Promise<OrganizationTaxObligationHistory> {
-    if (!data.org_obligation_id || !data.prev_status || !data.new_status || !data.updated_by) {
+  async createHistory(
+    data: CreateHistoryData,
+  ): Promise<OrganizationTaxObligationHistory> {
+    if (
+      !data.org_obligation_id ||
+      !data.prev_status ||
+      !data.new_status ||
+      !data.updated_by
+    ) {
       throw new Error('Required fields missing');
     }
 
@@ -30,7 +40,9 @@ export class OrganizationTaxObligationHistoryRepository {
     });
   }
 
-  async findByOrgObligationId(orgObligationId: string): Promise<OrganizationTaxObligationHistory[]> {
+  async findByOrgObligationId(
+    orgObligationId: string,
+  ): Promise<OrganizationTaxObligationHistory[]> {
     return this.prisma.organizationTaxObligationHistory.findMany({
       where: { org_obligation_id: orgObligationId },
       orderBy: { updated_at: 'desc' },

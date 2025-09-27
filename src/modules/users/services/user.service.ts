@@ -23,7 +23,8 @@ export class UserService {
 
   async getUserOverview(userId: string): Promise<UserOverview> {
     // Get organizations owned by the user
-    const ownedOrganizations = await this.organizationOwnerRepository.getOwnersByUserId(userId);
+    const ownedOrganizations =
+      await this.organizationOwnerRepository.getOwnersByUserId(userId);
     const organizationsOwned = ownedOrganizations.length;
 
     // Get organizations assigned to the user via RBAC API
@@ -32,10 +33,11 @@ export class UserService {
       const rbacResponse = await firstValueFrom(
         this.httpService.get(`${process.env.RBAC_API_URL}/permissions/check`, {
           params: { userId },
-        })
+        }),
       );
 
-      const permissions = rbacResponse.data.permissions || [];
+      const permissions =
+        (rbacResponse.data as { permissions?: string[] }).permissions || [];
 
       // Check if user is super admin (has all permissions)
       if (permissions.includes('*')) {
@@ -44,7 +46,9 @@ export class UserService {
         // Count unique organizations from permissions like "organization.read:org-1"
         const orgIds = new Set<string>();
         permissions.forEach((permission: string) => {
-          const match = permission.match(/^organization\.(read|write|admin):(.+)$/);
+          const match = permission.match(
+            /^organization\.(read|write|admin):(.+)$/,
+          );
           if (match) {
             orgIds.add(match[2]);
           }
@@ -53,15 +57,22 @@ export class UserService {
       }
     } catch (error) {
       // If RBAC API fails, default to 0 assigned organizations
-      console.warn(`Failed to fetch permissions for user ${userId}:`, error.message);
+      console.warn(
+        `Failed to fetch permissions for user ${userId}:`,
+        (error as Error).message,
+      );
       organizationsAssigned = 0;
     }
 
     // Get obligations due within 30 days
-    const obligationsDueWithin30Days = await this.organizationObligationRepository.countObligationsDueWithinDays(30);
+    const obligationsDueWithin30Days =
+      await this.organizationObligationRepository.countObligationsDueWithinDays(
+        30,
+      );
 
     // Get total obligations
-    const totalObligations = await this.organizationObligationRepository.countTotalObligations();
+    const totalObligations =
+      await this.organizationObligationRepository.countTotalObligations();
 
     return {
       organizationsOwned,

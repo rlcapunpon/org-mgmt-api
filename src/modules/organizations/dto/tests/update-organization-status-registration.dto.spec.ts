@@ -37,6 +37,7 @@ describe('UpdateOrganizationStatusDto', () => {
     });
 
     it('should fail when status is invalid', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (dto as any).status = 'INVALID_STATUS';
       dto.reason = 'EXPIRED';
 
@@ -55,6 +56,7 @@ describe('UpdateOrganizationStatusDto', () => {
     });
 
     it('should fail when status is not a string', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (dto as any).status = 123;
       dto.reason = 'EXPIRED';
 
@@ -99,6 +101,7 @@ describe('UpdateOrganizationStatusDto', () => {
 
     it('should fail when reason is invalid', async () => {
       dto.status = 'PENDING';
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (dto as any).reason = 'INVALID_REASON';
 
       const errors = await validate(dto);
@@ -137,6 +140,7 @@ describe('UpdateOrganizationStatusDto', () => {
     it('should fail when description is not a string', async () => {
       dto.status = 'PENDING';
       dto.reason = 'EXPIRED';
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (dto as any).description = 123;
 
       const errors = await validate(dto);
@@ -179,6 +183,7 @@ describe('UpdateOrganizationRegistrationDto', () => {
 
     stringFields.forEach((field) => {
       it(`should pass when ${field} is provided as string`, async () => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         (dto as any)[field] = 'test value';
 
         const errors = await validate(dto);
@@ -186,6 +191,7 @@ describe('UpdateOrganizationRegistrationDto', () => {
       });
 
       it(`should fail when ${field} is not a string`, async () => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         (dto as any)[field] = 123;
 
         const errors = await validate(dto);
@@ -212,6 +218,7 @@ describe('UpdateOrganizationRegistrationDto', () => {
     });
 
     it('should fail when email_address is not a string', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (dto as any).email_address = 123;
 
       const errors = await validate(dto);
