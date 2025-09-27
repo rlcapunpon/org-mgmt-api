@@ -6,7 +6,7 @@ import { Organization, BusinessStatus } from '@prisma/client';
 interface CreateOrganizationData
   extends Omit<
     Organization,
-    'id' | 'created_at' | 'updated_at' | 'deleted_at'
+    'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'address'
   > {
   // OrganizationRegistration fields
   first_name: string;

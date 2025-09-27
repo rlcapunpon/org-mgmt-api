@@ -723,7 +723,7 @@ components:
           description: Organization subcategory
         tax_classification:
           type: string
-          enum: [VAT, NON_VAT]
+          enum: [VAT, NON_VAT, EXCEMPT]
           description: Tax classification
         registration_date:
           type: string
@@ -966,12 +966,12 @@ components:
         subcategory:
           type: string
           nullable: true
-          enum: [SELF_EMPLOYED, SOLE_PROPRIETOR, FREELANCER, CORPORATION, PARTNERSHIP, OTHERS]
+          enum: [SELF_EMPLOYED, SOLE_PROPRIETOR, FREELANCER, CORPORATION, PARTNERSHIP, BMBE, MIXED_INCOME, ESTATE, DONOR, FOREIGN_CORP, COOPERATIVE, NGO, GOVERNMENT, GOCC, REAL_ESTATE_DEV, IMPORTER, EXPORTER, OTHERS]
           description: Organization subcategory
           example: SELF_EMPLOYED
         tax_classification:
           type: string
-          enum: [VAT, NON_VAT]
+          enum: [VAT, NON_VAT, EXCEMPT]
           description: Tax classification
           example: VAT
         registration_date:
@@ -1035,10 +1035,6 @@ components:
           format: date
           description: Start date
           example: "2024-01-01"
-        update_by:
-          type: string
-          description: User who created/updated the record
-          example: "user123"
         # OrganizationOperation fields (optional)
         fy_start:
           type: string
@@ -1127,7 +1123,7 @@ components:
           example: CORPORATION
         tax_classification:
           type: string
-          enum: [VAT, NON_VAT]
+          enum: [VAT, NON_VAT, EXCEMPT]
           description: Tax classification
           example: VAT
         registration_date:
