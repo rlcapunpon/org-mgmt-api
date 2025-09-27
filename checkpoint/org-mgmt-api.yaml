@@ -42,7 +42,14 @@ paths:
       tags:
         - Organizations
       summary: Create a new organization
-      description: Create a new organization with complete registration details
+      description: |
+        Create a new organization with complete registration details.
+        
+        **Field Requirements by Category:**
+        - **INDIVIDUAL**: Requires `first_name`, `last_name` (optional: `middle_name`). Organization name is constructed from personal names.
+        - **NON_INDIVIDUAL**: Requires `registered_name`. Organization name uses the registered name.
+        
+        All categories require: `category`, `tax_classification`, `tin`, `registration_date`, `line_of_business`, `address_line`, `region`, `city`, `zip_code`, `rdo_code`, `contact_number`, `email_address`, `start_date`.
       operationId: createOrganization
       security:
         - JWT-auth: []
@@ -52,6 +59,48 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateOrganizationRequestDto'
+            examples:
+              individual:
+                summary: Create Individual Organization
+                description: Example payload for creating an INDIVIDUAL category organization
+                value:
+                  category: INDIVIDUAL
+                  subcategory: SELF_EMPLOYED
+                  tax_classification: VAT
+                  tin: "001234567890"
+                  registration_date: "2024-01-01"
+                  first_name: "John"
+                  middle_name: "Michael"
+                  last_name: "Doe"
+                  line_of_business: "6201"
+                  address_line: "123 Main Street"
+                  region: "NCR"
+                  city: "Makati"
+                  zip_code: "1223"
+                  rdo_code: "001"
+                  contact_number: "+639123456789"
+                  email_address: "john.doe@example.com"
+                  start_date: "2024-01-01"
+              non_individual:
+                summary: Create Non-Individual Organization
+                description: Example payload for creating a NON_INDIVIDUAL category organization
+                value:
+                  category: NON_INDIVIDUAL
+                  subcategory: CORPORATION
+                  tax_classification: VAT
+                  tin: "001234567890"
+                  registration_date: "2024-01-01"
+                  registered_name: "ABC Corporation Inc."
+                  trade_name: "ABC Trading"
+                  line_of_business: "6201"
+                  address_line: "123 Main Street"
+                  region: "NCR"
+                  city: "Makati"
+                  zip_code: "1223"
+                  rdo_code: "001"
+                  contact_number: "+639123456789"
+                  email_address: "contact@abc-corp.com"
+                  start_date: "2024-01-01"
       responses:
         '201':
           description: Organization created successfully
@@ -707,7 +756,7 @@ components:
           description: Organization unique identifier
         name:
           type: string
-          description: Organization name
+          description: Organization name (constructed from personal names for INDIVIDUAL category or registered_name for NON_INDIVIDUAL category)
         tin:
           type: string
           nullable: true
@@ -933,13 +982,10 @@ components:
     CreateOrganizationRequestDto:
       type: object
       required:
-        - name
         - category
         - tax_classification
         - tin
         - registration_date
-        - first_name
-        - last_name
         - line_of_business
         - address_line
         - region
@@ -950,9 +996,13 @@ components:
         - email_address
         - start_date
       properties:
+        registered_name:
+          type: string
+          description: Registered name of the business (required for NON_INDIVIDUAL category)
+          example: ABC Corporation Inc.
         name:
           type: string
-          description: Organization name
+          description: Organization name (computed from personal names for INDIVIDUAL or registered_name for NON_INDIVIDUAL)
           example: ABC Corporation
         tin:
           type: string
@@ -981,7 +1031,7 @@ components:
           example: "2024-01-01"
         first_name:
           type: string
-          description: First name of the registrant
+          description: First name of the registrant (required for INDIVIDUAL category)
           example: John
         middle_name:
           type: string
@@ -990,7 +1040,7 @@ components:
           example: Michael
         last_name:
           type: string
-          description: Last name of the registrant
+          description: Last name of the registrant (required for INDIVIDUAL category)
           example: Doe
         trade_name:
           type: string
