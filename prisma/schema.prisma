@@ -152,6 +152,7 @@ model OrganizationObligation {
   obligation       TaxObligation @relation(fields: [obligation_id], references: [id])
 
   schedules        ObligationSchedule[]
+  history          OrganizationTaxObligationHistory[]
 
   @@unique([organization_id, obligation_id])
 }
@@ -250,5 +251,17 @@ model OrganizationOwner {
   organization  Organization @relation(fields: [org_id], references: [id], onDelete: Cascade)
 
   @@unique([org_id, user_id])
+}
+
+model OrganizationTaxObligationHistory {
+  id                String                      @id @default(cuid())
+  org_obligation_id String
+  prev_status       OrganizationTaxObligationStatus
+  new_status        OrganizationTaxObligationStatus
+  desc              String?
+  updated_at        DateTime                    @default(now())
+  updated_by        String
+
+  org_obligation    OrganizationObligation @relation(fields: [org_obligation_id], references: [id], onDelete: Cascade)
 }
 

@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrganizationObligationRepository } from '../repositories/organization-obligation.repository';
+import { OrganizationTaxObligationHistoryRepository } from '../repositories/organization-tax-obligation-history.repository';
 import {
   OrganizationObligation,
   Prisma,
@@ -8,7 +9,10 @@ import {
 
 @Injectable()
 export class OrganizationObligationService {
-  constructor(private repo: OrganizationObligationRepository) {}
+  constructor(
+    private repo: OrganizationObligationRepository,
+    private historyRepo: OrganizationTaxObligationHistoryRepository,
+  ) {}
 
   async assignObligation(
     data: Prisma.OrganizationObligationCreateInput,
@@ -25,7 +29,25 @@ export class OrganizationObligationService {
   async updateStatus(
     id: string,
     status: OrganizationTaxObligationStatus,
+    updatedBy: string,
+    description?: string,
   ): Promise<OrganizationObligation> {
+    // First, find the current obligation to get the previous status
+    const currentObligation = await this.repo.findById(id);
+    if (!currentObligation) {
+      throw new NotFoundException('Obligation not found');
+    }
+
+    // Create history record
+    await this.historyRepo.createHistory({
+      org_obligation_id: id,
+      prev_status: currentObligation.status,
+      new_status: status,
+      desc: description,
+      updated_by: updatedBy,
+    });
+
+    // Update the obligation status
     try {
       return await this.repo.update(id, { status });
     } catch (error) {

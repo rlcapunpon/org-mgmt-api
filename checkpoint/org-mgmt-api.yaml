@@ -1371,6 +1371,10 @@ components:
           enum: [NOT_APPLICABLE, ASSIGNED, ACTIVE, DUE, FILED, PAID, OVERDUE, LATE, EXEMPT, SUSPENDED, CLOSED]
           description: New obligation status
           example: ACTIVE
+        description:
+          type: string
+          description: Optional description for the status change
+          example: "Status updated due to compliance review"
 
     # Schedule Schemas
     ScheduleResponseDto:

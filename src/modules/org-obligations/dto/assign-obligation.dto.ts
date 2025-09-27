@@ -29,4 +29,8 @@ export class UpdateObligationStatusRequestDto {
   @IsNotEmpty()
   @IsEnum(OrganizationTaxObligationStatus)
   status: OrganizationTaxObligationStatus;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
 }

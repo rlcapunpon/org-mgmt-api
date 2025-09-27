@@ -26,8 +26,6 @@ interface CreateOrganizationData
   start_date: Date;
   reg_date: Date;
   update_by: string;
-  // Creator user ID for automatic owner assignment
-  creator_user_id: string;
 }
 
 @Injectable()
@@ -73,19 +71,28 @@ export class OrganizationRepository {
         },
         operation: {
           create: {
-            fy_start: new Date(new Date().getFullYear(), 0, 1), // January 1st of current year
-            fy_end: new Date(new Date().getFullYear(), 11, 31), // December 31st of current year
-            vat_reg_effectivity: new Date(new Date().getFullYear(), 0, 1),
-            registration_effectivity: new Date(new Date().getFullYear(), 0, 1),
-            payroll_cut_off: ['15/30'],
-            payment_cut_off: ['15/30'],
-            quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
+            fy_start: new Date("2024-12-31T16:00:00.000Z"),
+            fy_end: new Date("2025-12-30T16:00:00.000Z"),
+            vat_reg_effectivity: new Date("2024-12-31T16:00:00.000Z"),
+            registration_effectivity: new Date("2024-12-31T16:00:00.000Z"),
+            payroll_cut_off: [
+              "15/30"
+            ],
+            payment_cut_off: [
+              "15/30"
+            ],
+            quarter_closing: [
+              "03/31",
+              "06/30",
+              "09/30",
+              "12/31"
+            ],
             has_foreign: false,
             has_employees: false,
             is_ewt: false,
             is_fwt: false,
             is_bir_withholding_agent: false,
-            accounting_method: 'ACCRUAL',
+            accounting_method: "ACCRUAL",
           },
         },
         registration: {

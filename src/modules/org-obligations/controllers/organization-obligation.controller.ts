@@ -6,7 +6,9 @@ import {
   Body,
   Param,
   UseGuards,
+  Req,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import {
   ApiTags,
   ApiOperation,
@@ -102,7 +104,9 @@ export class OrganizationObligationController {
   async updateStatus(
     @Param('id') id: string,
     @Body() dto: UpdateObligationStatusRequestDto,
+    @Req() req: Request,
   ) {
-    return this.service.updateStatus(id, dto.status);
+    const user = req.user as { userId: string };
+    return this.service.updateStatus(id, dto.status, user.userId, dto.description);
   }
 }

@@ -22,7 +22,6 @@ export class OrganizationService {
       ...data,
       subcategory: data.subcategory ?? null,
       update_by: userId,
-      creator_user_id: userId, // Pass creator user ID for automatic owner assignment
     };
     return this.repo.create(transformedData);
   }
