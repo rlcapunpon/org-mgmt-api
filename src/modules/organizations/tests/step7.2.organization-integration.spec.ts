@@ -72,6 +72,8 @@ describe('Organization Integration Tests (e2e)', () => {
         category: 'INDIVIDUAL',
         subcategory: 'SELF_EMPLOYED',
         tax_classification: 'NON_VAT',
+        tin: '001234567890',
+        registration_date: '2024-01-01',
         // Registration fields
         first_name: 'John',
         last_name: 'Doe',
@@ -80,13 +82,10 @@ describe('Organization Integration Tests (e2e)', () => {
         region: 'NCR',
         city: 'Makati',
         zip_code: '1223',
-        tin_registration: '001234567890',
         rdo_code: '001',
         contact_number: '+639123456789',
         email_address: 'john.doe@example.com',
-        tax_type: 'NON_VAT',
         start_date: '2024-01-01',
-        reg_date: '2024-01-01',
       };
 
       const mockOrg = {
@@ -165,6 +164,8 @@ describe('Organization Integration Tests (e2e)', () => {
         category: 'INDIVIDUAL',
         subcategory: 'SOLE_PROPRIETOR',
         tax_classification: 'VAT',
+        tin: '001234567891',
+        registration_date: '2024-01-01',
         // Registration fields
         first_name: 'Jane',
         last_name: 'Smith',
@@ -173,13 +174,10 @@ describe('Organization Integration Tests (e2e)', () => {
         region: 'NCR',
         city: 'Makati',
         zip_code: '1223',
-        tin_registration: '001234567891',
         rdo_code: '002',
         contact_number: '+639123456790',
         email_address: 'jane.smith@example.com',
-        tax_type: 'VAT',
         start_date: '2024-01-01',
-        reg_date: '2024-01-01',
       };
 
       const mockOrg = {
@@ -258,6 +256,8 @@ describe('Organization Integration Tests (e2e)', () => {
         category: 'INDIVIDUAL',
         subcategory: 'FREELANCER',
         tax_classification: 'NON_VAT',
+        tin: '001234567892',
+        registration_date: '2024-01-01',
         // Registration fields
         first_name: 'Bob',
         last_name: 'Freelancer',
@@ -266,13 +266,10 @@ describe('Organization Integration Tests (e2e)', () => {
         region: 'NCR',
         city: 'Quezon',
         zip_code: '1100',
-        tin_registration: '001234567892',
         rdo_code: '003',
         contact_number: '+639123456791',
         email_address: 'bob.freelancer@example.com',
-        tax_type: 'NON_VAT',
         start_date: '2024-01-01',
-        reg_date: '2024-01-01',
       };
 
       const mockOrg = {
@@ -343,6 +340,8 @@ describe('Organization Integration Tests (e2e)', () => {
         category: 'NON_INDIVIDUAL',
         subcategory: 'CORPORATION',
         tax_classification: 'VAT',
+        tin: '001234567893',
+        registration_date: '2020-01-01',
         // Registration fields
         first_name: 'John',
         last_name: 'CEO',
@@ -351,13 +350,10 @@ describe('Organization Integration Tests (e2e)', () => {
         region: 'NCR',
         city: 'Taguig',
         zip_code: '1630',
-        tin_registration: '001234567893',
         rdo_code: '004',
         contact_number: '+639123456792',
         email_address: 'john.ceo@abc-corp.com',
-        tax_type: 'VAT',
         start_date: '2020-01-01',
-        reg_date: '2020-01-01',
       };
 
       const mockOrg = {
@@ -429,6 +425,8 @@ describe('Organization Integration Tests (e2e)', () => {
         category: 'NON_INDIVIDUAL',
         subcategory: 'PARTNERSHIP',
         tax_classification: 'EXCEMPT',
+        tin: '001234567896',
+        registration_date: '2021-01-01',
         // Registration fields
         first_name: 'Exempt',
         last_name: 'Org',
@@ -437,13 +435,10 @@ describe('Organization Integration Tests (e2e)', () => {
         region: 'NCR',
         city: 'Pasig',
         zip_code: '1600',
-        tin_registration: '001234567896',
         rdo_code: '007',
         contact_number: '+639123456795',
         email_address: 'exempt@taxfree.com',
-        tax_type: 'EXCEMPT',
         start_date: '2021-01-01',
-        reg_date: '2021-01-01',
       };
 
       const mockOrg = {
@@ -516,6 +511,8 @@ describe('Organization Integration Tests (e2e)', () => {
         category: 'INDIVIDUAL',
         subcategory: 'INVALID_SUBCATEGORY',
         tax_classification: 'VAT',
+        tin: '001234567894',
+        registration_date: '2024-01-01',
         // Registration fields
         first_name: 'Invalid',
         last_name: 'Test',
@@ -524,13 +521,10 @@ describe('Organization Integration Tests (e2e)', () => {
         region: 'NCR',
         city: 'Test City',
         zip_code: '1234',
-        tin_registration: '001234567894',
         rdo_code: '005',
         contact_number: '+639123456793',
         email_address: 'invalid@test.com',
-        tax_type: 'VAT',
         start_date: '2024-01-01',
-        reg_date: '2024-01-01',
       };
 
       // Don't mock the service for validation tests - let it fail at service level
@@ -557,6 +551,8 @@ describe('Organization Integration Tests (e2e)', () => {
         category: 'INDIVIDUAL',
         subcategory: 'SELF_EMPLOYED',
         tax_classification: 'INVALID_TAX_CLASS',
+        tin: '001234567895',
+        registration_date: '2024-01-01',
         // Registration fields
         first_name: 'Tax',
         last_name: 'Invalid',
@@ -565,13 +561,10 @@ describe('Organization Integration Tests (e2e)', () => {
         region: 'NCR',
         city: 'Invalid City',
         zip_code: '5678',
-        tin_registration: '001234567895',
         rdo_code: '006',
         contact_number: '+639123456794',
         email_address: 'tax.invalid@test.com',
-        tax_type: 'INVALID_TAX_CLASS',
         start_date: '2024-01-01',
-        reg_date: '2024-01-01',
       };
 
       // Don't mock the service for validation tests - let it fail at service level

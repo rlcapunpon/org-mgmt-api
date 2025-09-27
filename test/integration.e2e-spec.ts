@@ -171,7 +171,6 @@ describe('Organization Management API Integration Tests', () => {
           subcategory: 'CORPORATION',
           tax_classification: 'VAT',
           registration_date: '2024-01-01T00:00:00.000Z',
-          address: '123 Test Street, Test City',
           // Registration fields
           first_name: 'John',
           last_name: 'CEO',
@@ -180,13 +179,11 @@ describe('Organization Management API Integration Tests', () => {
           region: 'NCR',
           city: 'Makati',
           zip_code: '1223',
-          tin_registration: '123456789012',
           rdo_code: '001',
           contact_number: '+639123456789',
           email_address: 'john.ceo@testcorp.com',
-          tax_type: 'VAT',
           start_date: '2024-01-01T00:00:00.000Z',
-          reg_date: '2024-01-01T00:00:00.000Z',
+          update_by: 'test-user',
         })
         .expect(201)
         .expect((res) => {
@@ -474,6 +471,10 @@ describe('Organization Management API Integration Tests', () => {
           name: 'Owner Test Organization',
           category: 'NON_INDIVIDUAL',
           tax_classification: 'VAT',
+          tin: '001234567890',
+          registration_date: new Date('2024-01-01'),
+          address: '123 Test St, Makati, NCR, 1223',
+          deleted_at: null,
           status: {
             create: {
               status: 'PENDING_REG',

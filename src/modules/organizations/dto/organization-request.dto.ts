@@ -30,14 +30,13 @@ export class CreateOrganizationRequestDto {
   @IsString()
   name: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: 'Tax Identification Number',
     example: '001234567890',
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  @Transform(({ value }): string | null => value ?? null)
-  tin: string | null;
+  tin: string;
 
   @ApiProperty({
     description: 'Organization category',
@@ -66,22 +65,13 @@ export class CreateOrganizationRequestDto {
   @IsEnum(TaxClassification)
   tax_classification: TaxClassification;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: 'Registration date',
     example: '2024-01-01',
   })
-  @IsOptional()
-  @Transform(({ value }): Date | null => (value ? new Date(value) : null))
-  registration_date: Date | null;
-
-  @ApiPropertyOptional({
-    description: 'Organization address',
-    example: 'Makati City, Philippines',
-  })
-  @IsOptional()
-  @IsString()
-  @Transform(({ value }): string | null => value ?? null)
-  address: string | null;
+  @IsNotEmpty()
+  @Transform(({ value }): Date => new Date(value))
+  registration_date: Date;
 
   // OrganizationRegistration fields
   @ApiProperty({
@@ -159,15 +149,6 @@ export class CreateOrganizationRequestDto {
   zip_code: string;
 
   @ApiProperty({
-    description: '12-digit TIN',
-    example: '001234567890',
-  })
-  @IsNotEmpty()
-  @IsString()
-  @Length(12, 12)
-  tin_registration: string;
-
-  @ApiProperty({
     description: 'RDO code',
     example: '001',
   })
@@ -192,15 +173,6 @@ export class CreateOrganizationRequestDto {
   email_address: string;
 
   @ApiProperty({
-    description: 'Tax type for registration',
-    enum: TaxClassification,
-    example: TaxClassification.VAT,
-  })
-  @IsNotEmpty()
-  @IsEnum(TaxClassification)
-  tax_type: TaxClassification;
-
-  @ApiProperty({
     description: 'Start date',
     example: '2024-01-01',
   })
@@ -208,13 +180,125 @@ export class CreateOrganizationRequestDto {
   @Transform(({ value }): Date => new Date(value))
   start_date: Date;
 
-  @ApiProperty({
-    description: 'Registration date for MCIT calculation',
+  // OrganizationOperation fields (optional)
+  @ApiPropertyOptional({
+    description: 'Fiscal year start date',
     example: '2024-01-01',
   })
-  @IsNotEmpty()
-  @Transform(({ value }): Date => new Date(value))
-  reg_date: Date;
+  @IsOptional()
+  @Transform(({ value }): Date | undefined =>
+    value ? new Date(value) : undefined,
+  )
+  fy_start?: Date;
+
+  @ApiPropertyOptional({
+    description: 'Fiscal year end date',
+    example: '2024-12-31',
+  })
+  @IsOptional()
+  @Transform(({ value }): Date | undefined =>
+    value ? new Date(value) : undefined,
+  )
+  fy_end?: Date;
+
+  @ApiPropertyOptional({
+    description: 'VAT registration effectivity date',
+    example: '2024-01-01',
+  })
+  @IsOptional()
+  @Transform(({ value }): Date | undefined =>
+    value ? new Date(value) : undefined,
+  )
+  vat_reg_effectivity?: Date;
+
+  @ApiPropertyOptional({
+    description: 'Registration effectivity date',
+    example: '2024-01-01',
+  })
+  @IsOptional()
+  @Transform(({ value }): Date | undefined =>
+    value ? new Date(value) : undefined,
+  )
+  registration_effectivity?: Date;
+
+  @ApiPropertyOptional({
+    description: 'Payroll cut-off dates',
+    example: ['15', '30'],
+    type: [String],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  payroll_cut_off?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Payment cut-off dates',
+    example: ['10', '25'],
+    type: [String],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  payment_cut_off?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Quarter closing dates',
+    example: ['03-31', '06-30', '09-30', '12-31'],
+    type: [String],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  quarter_closing?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Has foreign transactions',
+    example: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  has_foreign?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Has employees',
+    example: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  has_employees?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Is expanded withholding tax',
+    example: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  is_ewt?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Is final withholding tax',
+    example: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  is_fwt?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Is BIR withholding agent',
+    example: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  is_bir_withholding_agent?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Accounting method',
+    enum: AccountingMethod,
+    example: AccountingMethod.ACCRUAL,
+  })
+  @IsOptional()
+  @IsEnum(AccountingMethod)
+  accounting_method?: AccountingMethod;
 }
 
 // Update Organization Request DTO

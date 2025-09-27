@@ -936,6 +936,8 @@ components:
         - name
         - category
         - tax_classification
+        - tin
+        - registration_date
         - first_name
         - last_name
         - line_of_business
@@ -943,13 +945,10 @@ components:
         - region
         - city
         - zip_code
-        - tin_registration
         - rdo_code
         - contact_number
         - email_address
-        - tax_type
         - start_date
-        - reg_date
       properties:
         name:
           type: string
@@ -957,7 +956,6 @@ components:
           example: ABC Corporation
         tin:
           type: string
-          nullable: true
           description: Tax Identification Number
           example: "001234567890"
         category:
@@ -979,14 +977,8 @@ components:
         registration_date:
           type: string
           format: date
-          nullable: true
           description: Registration date
           example: "2024-01-01"
-        address:
-          type: string
-          nullable: true
-          description: Organization address
-          example: "Makati City, Philippines"
         first_name:
           type: string
           description: First name of the registrant
@@ -1025,10 +1017,6 @@ components:
           type: string
           description: ZIP code
           example: "1223"
-        tin_registration:
-          type: string
-          description: 12-digit TIN
-          example: "001234567890"
         rdo_code:
           type: string
           description: RDO code
@@ -1042,21 +1030,79 @@ components:
           format: email
           description: Email address
           example: john.doe@example.com
-        tax_type:
-          type: string
-          enum: [VAT, NON_VAT, EXCEMPT]
-          description: Tax type for registration
-          example: VAT
         start_date:
           type: string
           format: date
           description: Start date
           example: "2024-01-01"
-        reg_date:
+        update_by:
+          type: string
+          description: User who created/updated the record
+          example: "user123"
+        # OrganizationOperation fields (optional)
+        fy_start:
           type: string
           format: date
-          description: Registration date for MCIT calculation
+          description: Fiscal year start date
           example: "2024-01-01"
+        fy_end:
+          type: string
+          format: date
+          description: Fiscal year end date
+          example: "2024-12-31"
+        vat_reg_effectivity:
+          type: string
+          format: date
+          description: VAT registration effectivity date
+          example: "2024-12-31"
+        registration_effectivity:
+          type: string
+          format: date
+          description: Registration effectivity date
+          example: "2024-12-31"
+        payroll_cut_off:
+          type: array
+          items:
+            type: string
+          description: Payroll cut-off dates
+          example: ["15", "30"]
+        payment_cut_off:
+          type: array
+          items:
+            type: string
+          description: Payment cut-off dates
+          example: ["15", "30"]
+        quarter_closing:
+          type: array
+          items:
+            type: string
+          description: Quarter closing dates
+          example: ["03/31", "06/30", "09/30", "12/31"]
+        has_foreign:
+          type: boolean
+          description: Has foreign transactions
+          example: false
+        has_employees:
+          type: boolean
+          description: Has employees
+          example: false
+        is_ewt:
+          type: boolean
+          description: Is expanded withholding tax
+          example: false
+        is_fwt:
+          type: boolean
+          description: Is final withholding tax
+          example: false
+        is_bir_withholding_agent:
+          type: boolean
+          description: Is BIR withholding agent
+          example: false
+        accounting_method:
+          type: string
+          enum: [ACCRUAL, CASH, OTHERS]
+          description: Accounting method
+          example: ACCRUAL
 
     UpdateOrganizationRequestDto:
       type: object

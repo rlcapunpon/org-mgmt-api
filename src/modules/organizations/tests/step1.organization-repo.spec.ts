@@ -42,10 +42,10 @@ describe('OrganizationRepository', () => {
       name: 'Test Org',
       category: 'NON_INDIVIDUAL' as const,
       tax_classification: 'VAT' as const,
-      tin: null,
+      tin: '001234567890',
       subcategory: null,
-      registration_date: null,
-      address: null,
+      registration_date: new Date('2024-01-01'),
+      address: '123 Main St, Makati, NCR 1223',
       // Registration fields
       first_name: 'John',
       middle_name: 'Michael',
@@ -56,15 +56,15 @@ describe('OrganizationRepository', () => {
       region: 'NCR',
       city: 'Makati',
       zip_code: '1223',
-      tin_registration: '001234567890',
       rdo_code: '001',
       contact_number: '+639123456789',
       email_address: 'john.doe@example.com',
-      tax_type: 'VAT' as const,
       start_date: new Date('2024-01-01'),
-      reg_date: new Date('2024-01-01'),
       update_by: 'test-user',
-      creator_user_id: 'test-user', // Creator user ID for automatic owner assignment
+      // OrganizationOperation fields (optional)
+      fy_start: new Date('2024-01-01'),
+      fy_end: new Date('2024-12-31'),
+      accounting_method: 'ACCRUAL',
     };
     const mockOrg = {
       id: 'uuid',
@@ -126,11 +126,10 @@ describe('OrganizationRepository', () => {
         name: 'Test Org',
         category: 'NON_INDIVIDUAL',
         tax_classification: 'VAT',
-        tin: null,
+        tin: '001234567890',
         subcategory: null,
-        registration_date: null,
-        address: null,
-        creator_user_id: 'test-user',
+        registration_date: new Date('2024-01-01'),
+        address: '123 Main St, Makati, NCR, 1223',
         deleted_at: null,
         status: {
           create: {
@@ -139,10 +138,10 @@ describe('OrganizationRepository', () => {
         },
         operation: {
           create: {
-            fy_start: expect.any(Date),
-            fy_end: expect.any(Date),
-            vat_reg_effectivity: expect.any(Date),
-            registration_effectivity: expect.any(Date),
+            fy_start: new Date('2024-01-01'),
+            fy_end: new Date('2024-12-31'),
+            vat_reg_effectivity: new Date('2024-12-31T16:00:00.000Z'),
+            registration_effectivity: new Date('2024-12-31T16:00:00.000Z'),
             payroll_cut_off: ['15/30'],
             payment_cut_off: ['15/30'],
             quarter_closing: ['03/31', '06/30', '09/30', '12/31'],

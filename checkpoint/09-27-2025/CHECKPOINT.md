@@ -203,3 +203,70 @@ Successfully implemented user overview endpoint that returns organizations owned
 
 ## Next Steps
 STEP 09-27-2025.STEP6 complete. All planned steps for this checkpoint completed successfully.
+
+---
+
+# STEP 09-27-2025.STEP7 - CreateOrganizationRequestDto Updates - COMPLETED ✅
+
+## Overview
+Successfully completed Step 7: Updated CreateOrganizationRequestDto to remove redundant fields, make tin/registration_date mandatory, and add optional OrganizationOperation parameters. Followed strict TDD methodology with comprehensive testing.
+
+## Changes Made
+
+### 1. DTO Structure Updates (`src/modules/organizations/dto/organization-request.dto.ts`)
+- **Removed redundant fields**: `address`, `tin_registration`, `reg_date`, `tax_type`
+- **Made mandatory**: `tin`, `registration_date`
+- **Added optional OrganizationOperation fields**:
+  - `fy_start`, `fy_end`, `vat_reg_effectivity`, `registration_effectivity`
+  - `payroll_cut_off`, `payment_cut_off`, `quarter_closing`
+  - `has_foreign`, `has_employees`, `is_ewt`, `is_fwt`, `is_bir_withholding_agent`
+  - `accounting_method`
+
+### 2. Repository Updates (`src/modules/organizations/repositories/organization.repository.ts`)
+- Updated `CreateOrganizationData` interface to match new DTO structure
+- Modified `create` method to handle conditional OrganizationOperation creation
+- Address construction from components: `${address_line}, ${city}, ${region}, ${zip_code}`
+- Field mappings: `tin_registration` → `tin`, `reg_date` → `registration_date`, `tax_type` → `tax_classification`
+
+### 3. Comprehensive Testing (TDD Approach)
+- **New DTO Tests**: `step9-27-2025.create-organization.dto.spec.ts` - 38 validation tests
+- **Updated Integration Tests**: `step7.2.organization-integration.spec.ts` - New payload structure
+- **Fixed Repository Tests**: `step1.organization-repo.spec.ts` - Updated mock expectations
+- **All Tests Passing**: 352/352 tests, 87.16% coverage maintained
+
+### 4. Documentation Updates
+- **OpenAPI Spec**: Updated `CreateOrganizationRequestDto` schema in `checkpoint/org-mgmt-api.yaml`
+- **Test Inventory**: Added new test file to `coding-context/test-files-inventory.md` (26 total files)
+
+## Key Features Implemented
+1. **Streamlined DTO**: Eliminated field duplication and redundancy
+2. **Mandatory Business Fields**: TIN and registration date always required
+3. **Optional Operation Setup**: Single-request organization + operation creation
+4. **Automatic Address Construction**: Built from address components
+5. **Full Validation**: Comprehensive DTO validation with proper error handling
+
+## Test Results
+```
+✅ DTO Validation Tests: 38/38 passed
+✅ Repository Unit Tests: All passing
+✅ Integration Tests: All passing
+✅ Overall Test Suite: 352/352 passed
+✅ Coverage: 87.16% (maintained above 85%)
+✅ TDD Compliance: Failing tests created before implementation
+```
+
+## Files Created/Modified
+- **DTO**: `src/modules/organizations/dto/organization-request.dto.ts`
+- **Repository**: `src/modules/organizations/repositories/organization.repository.ts`
+- **Tests**: New DTO tests, updated integration and repository tests
+- **Documentation**: OpenAPI spec and test inventory updates
+
+## Validation
+- ✅ All existing functionality preserved
+- ✅ New optional fields work correctly
+- ✅ Address construction from components
+- ✅ Comprehensive test coverage maintained
+- ✅ OpenAPI documentation updated
+
+## Next Steps
+Step 09-27-2025.STEP7 complete. Ready to proceed to Step 8 or next development phase.

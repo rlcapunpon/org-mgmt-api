@@ -18,14 +18,25 @@ interface CreateOrganizationData
   region: string;
   city: string;
   zip_code: string;
-  tin_registration: string;
   rdo_code: string;
   contact_number: string;
   email_address: string;
-  tax_type: any;
   start_date: Date;
-  reg_date: Date;
   update_by: string;
+  // OrganizationOperation fields (optional)
+  fy_start?: Date;
+  fy_end?: Date;
+  vat_reg_effectivity?: Date;
+  registration_effectivity?: Date;
+  payroll_cut_off?: string[];
+  payment_cut_off?: string[];
+  quarter_closing?: string[];
+  has_foreign?: boolean;
+  has_employees?: boolean;
+  is_ewt?: boolean;
+  is_fwt?: boolean;
+  is_bir_withholding_agent?: boolean;
+  accounting_method?: string;
 }
 
 @Injectable()
@@ -48,21 +59,48 @@ export class OrganizationRepository {
       region,
       city,
       zip_code,
-      tin_registration,
       rdo_code,
       contact_number,
       email_address,
-      tax_type,
       start_date,
-      reg_date,
       update_by,
+      // OrganizationOperation fields
+      fy_start,
+      fy_end,
+      vat_reg_effectivity,
+      registration_effectivity,
+      payroll_cut_off,
+      payment_cut_off,
+      quarter_closing,
+      has_foreign,
+      has_employees,
+      is_ewt,
+      is_fwt,
+      is_bir_withholding_agent,
+      accounting_method,
 
       ...orgData
     } = data;
 
+    // Set default values for OrganizationOperation if not provided
+    const defaultFyStart = fy_start || new Date("2024-12-31T16:00:00.000Z");
+    const defaultFyEnd = fy_end || new Date("2025-12-30T16:00:00.000Z");
+    const defaultVatRegEffectivity = vat_reg_effectivity || new Date("2024-12-31T16:00:00.000Z");
+    const defaultRegistrationEffectivity = registration_effectivity || new Date("2024-12-31T16:00:00.000Z");
+    const defaultPayrollCutOff = payroll_cut_off || ["15/30"];
+    const defaultPaymentCutOff = payment_cut_off || ["15/30"];
+    const defaultQuarterClosing = quarter_closing || ["03/31", "06/30", "09/30", "12/31"];
+    const defaultHasForeign = has_foreign ?? false;
+    const defaultHasEmployees = has_employees ?? false;
+    const defaultIsEwt = is_ewt ?? false;
+    const defaultIsFwt = is_fwt ?? false;
+    const defaultIsBirWithholdingAgent = is_bir_withholding_agent ?? false;
+    const defaultAccountingMethod = accounting_method || "ACCRUAL";
+
     return this.prisma.organization.create({
       data: {
         ...orgData,
+        address: `${address_line}, ${city}, ${region}, ${zip_code}`,
         deleted_at: null,
         status: {
           create: {
@@ -71,28 +109,19 @@ export class OrganizationRepository {
         },
         operation: {
           create: {
-            fy_start: new Date("2024-12-31T16:00:00.000Z"),
-            fy_end: new Date("2025-12-30T16:00:00.000Z"),
-            vat_reg_effectivity: new Date("2024-12-31T16:00:00.000Z"),
-            registration_effectivity: new Date("2024-12-31T16:00:00.000Z"),
-            payroll_cut_off: [
-              "15/30"
-            ],
-            payment_cut_off: [
-              "15/30"
-            ],
-            quarter_closing: [
-              "03/31",
-              "06/30",
-              "09/30",
-              "12/31"
-            ],
-            has_foreign: false,
-            has_employees: false,
-            is_ewt: false,
-            is_fwt: false,
-            is_bir_withholding_agent: false,
-            accounting_method: "ACCRUAL",
+            fy_start: defaultFyStart,
+            fy_end: defaultFyEnd,
+            vat_reg_effectivity: defaultVatRegEffectivity,
+            registration_effectivity: defaultRegistrationEffectivity,
+            payroll_cut_off: defaultPayrollCutOff,
+            payment_cut_off: defaultPaymentCutOff,
+            quarter_closing: defaultQuarterClosing,
+            has_foreign: defaultHasForeign,
+            has_employees: defaultHasEmployees,
+            is_ewt: defaultIsEwt,
+            is_fwt: defaultIsFwt,
+            is_bir_withholding_agent: defaultIsBirWithholdingAgent,
+            accounting_method: defaultAccountingMethod as any,
           },
         },
         registration: {
@@ -106,13 +135,13 @@ export class OrganizationRepository {
             region,
             city,
             zip_code,
-            tin: tin_registration,
+            tin: orgData.tin!,
             rdo_code,
             contact_number,
             email_address,
-            tax_type,
+            tax_type: orgData.tax_classification,
             start_date,
-            reg_date,
+            reg_date: orgData.registration_date!,
             update_by,
           },
         },
