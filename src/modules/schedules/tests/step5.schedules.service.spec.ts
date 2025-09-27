@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access */
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchedulesService } from '../services/schedules.service';
-import { OrganizationObligation, ScheduleStatus } from '@prisma/client';
+import { ScheduleStatus } from '@prisma/client';
 
 describe('SchedulesService', () => {
   let service: SchedulesService;

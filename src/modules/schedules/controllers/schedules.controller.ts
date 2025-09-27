@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import {
   ApiTags,

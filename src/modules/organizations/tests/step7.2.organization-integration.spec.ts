@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { ValidationPipe } from '@nestjs/common';
@@ -12,7 +14,6 @@ import {
   TaxClassification,
   AccountingMethod,
 } from '@prisma/client';
-import { NotFoundException } from '@nestjs/common';
 
 describe('Organization Integration Tests (e2e)', () => {
   let app: INestApplication;

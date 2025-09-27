@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
@@ -7,6 +9,8 @@ import { SchedulesService } from '../services/schedules.service';
 import { SchedulesRepository } from '../repositories/schedules.repository';
 import { PrismaService } from '../../../database/prisma.service';
 import { ScheduleStatus } from '@prisma/client';
+
+/* eslint-disable @typescript-eslint/unbound-method */
 
 describe('Schedules Controller (e2e)', () => {
   let app: INestApplication;

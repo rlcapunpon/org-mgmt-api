@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../database/prisma.service';
 import { Organization, BusinessStatus } from '@prisma/client';
@@ -57,7 +58,7 @@ export class OrganizationRepository {
       start_date,
       reg_date,
       update_by,
-      creator_user_id,
+
       ...orgData
     } = data;
 
@@ -108,17 +109,17 @@ export class OrganizationRepository {
             update_by,
           },
         },
-        owners: {
-          create: {
-            user_id: creator_user_id,
-          },
-        },
+        // owners: {
+        //   create: {
+        //     user_id: creator_user_id,
+        //   },
+        // },
       },
       include: {
         status: true,
         operation: true,
         registration: true,
-        owners: true,
+        // owners: true,
       },
     });
   }
@@ -210,7 +211,9 @@ export class OrganizationRepository {
   }): Promise<Organization[]> {
     const where = {
       deleted_at: null,
+
       ...(filters?.category && { category: filters.category as any }),
+
       ...(filters?.tax_classification && {
         tax_classification: filters.tax_classification as any,
       }),
@@ -229,7 +232,9 @@ export class OrganizationRepository {
   }): Promise<Organization[]> {
     const where = {
       deleted_at: null,
+
       ...(filters?.category && { category: filters.category as any }),
+
       ...(filters?.tax_classification && {
         tax_classification: filters.tax_classification as any,
       }),
@@ -283,6 +288,7 @@ export class OrganizationRepository {
     return this.prisma.organizationStatusChangeReason.create({
       data: {
         organization_id: data.organization_id,
+
         reason: data.reason as any,
         description: data.description,
         updated_by: data.updated_by,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from './database/prisma.service';
 import {
@@ -13,7 +14,16 @@ import {
 
 describe('Database Queries Tests', () => {
   let prisma: PrismaService;
-  const testData: any = {};
+  const testData: {
+    taxObligation1?: any;
+    taxObligation2?: any;
+    organization1?: any;
+    organization2?: any;
+    orgObligation1?: any;
+    schedule1?: any;
+    orgStatus1?: any;
+    orgOperation1?: any;
+  } = {};
 
   beforeAll(async () => {
     if (process.env.TEST_DEV_DB_CONNECTION !== 'true') {
@@ -194,10 +204,6 @@ describe('Database Queries Tests', () => {
       `;
 
       expect(scheduleColumns).toBeDefined();
-
-      // Check ScheduleStatus enum values
-      const enumValues =
-        await prisma.$queryRaw`SELECT unnest(enum_range(NULL::"ScheduleStatus")) as values`;
 
       // Test OrganizationStatus table schema
       const statusColumns = await prisma.$queryRaw`

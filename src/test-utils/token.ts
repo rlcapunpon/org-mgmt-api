@@ -1,5 +1,6 @@
 import * as jwt from 'jsonwebtoken';
+import { JwtPayload } from '../common/interfaces/auth.interface';
 
-export function signPayload(payload: any, secret: string) {
+export function signPayload(payload: JwtPayload, secret: string) {
   return jwt.sign(payload, secret);
 }

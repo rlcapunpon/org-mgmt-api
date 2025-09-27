@@ -1,11 +1,7 @@
-import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { REQUIRES_PERMISSION } from '../decorators/requires-permission.decorator';
+import { AuthenticatedRequest } from '../interfaces/auth.interface';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -18,12 +14,8 @@ export class PermissionsGuard implements CanActivate {
     );
     if (!requiredPermission) return true;
 
-    const request = context.switchToHttp().getRequest();
-    const user = request.user as {
-      permissions?: string[];
-      isSuperAdmin?: boolean;
-      role?: string;
-    };
+    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+    const user = request.user;
     if (!user) return false;
 
     // Super admin bypass - support both isSuperAdmin boolean and role string
@@ -70,7 +62,10 @@ export class PermissionsGuard implements CanActivate {
     return false;
   }
 
-  private resolvePermission(requiredPermission: string, request: any): string {
+  private resolvePermission(
+    requiredPermission: string,
+    request: AuthenticatedRequest,
+  ): string {
     // If permission contains :id or :orgId, replace with actual org ID from params
     if (
       requiredPermission.includes(':id') ||

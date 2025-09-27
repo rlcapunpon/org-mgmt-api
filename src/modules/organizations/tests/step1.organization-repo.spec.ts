@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrganizationRepository } from '../repositories/organization.repository';
 import { PrismaService } from '../../../database/prisma.service';
@@ -129,6 +130,7 @@ describe('OrganizationRepository', () => {
         subcategory: null,
         registration_date: null,
         address: null,
+        creator_user_id: 'test-user',
         deleted_at: null,
         status: {
           create: {
@@ -173,17 +175,17 @@ describe('OrganizationRepository', () => {
             update_by: 'test-user',
           },
         },
-        owners: {
-          create: {
-            user_id: 'test-user',
-          },
-        },
+        // owners: {
+        //   create: {
+        //     user_id: 'test-user',
+        //   },
+        // },
       },
       include: {
         status: true,
         operation: true,
         registration: true,
-        owners: true,
+        // owners: true,
       },
     });
   });

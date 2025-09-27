@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
@@ -7,10 +8,11 @@ import { OrganizationService } from '../services/organization.service';
 import { OrganizationRepository } from '../repositories/organization.repository';
 import { BusinessStatus } from '@prisma/client';
 
+/* eslint-disable @typescript-eslint/unbound-method */
+
 describe('Organization Status Change Reason (Step 4)', () => {
   let app: INestApplication;
   let mockService: jest.Mocked<OrganizationService>;
-  let mockRepository: jest.Mocked<OrganizationRepository>;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -42,7 +44,6 @@ describe('Organization Status Change Reason (Step 4)', () => {
     await app.init();
 
     mockService = moduleFixture.get(OrganizationService);
-    mockRepository = moduleFixture.get(OrganizationRepository);
   });
 
   afterAll(async () => {
@@ -67,15 +68,6 @@ describe('Organization Status Change Reason (Step 4)', () => {
       ...mockOrganizationStatus,
       status: BusinessStatus.ACTIVE,
       last_update: new Date(),
-    };
-
-    const mockStatusChangeReason = {
-      id: 'reason-1',
-      organization_id: '1',
-      reason: 'EXPIRED',
-      description: 'Approving organization after initial setup verification',
-      update_date: new Date(),
-      updated_by: 'user-123',
     };
 
     describe('PUT /organizations/:orgId/status', () => {

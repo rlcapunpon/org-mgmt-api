@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import {
   IsOptional,
-  IsDateString,
   IsArray,
   IsString,
   IsBoolean,
@@ -16,7 +16,9 @@ export class UpdateOrganizationOperationDto {
     example: '2025-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  @Transform(({ value }): Date | undefined =>
+    value ? new Date(value) : undefined,
+  )
   fy_start?: Date;
 
   @ApiPropertyOptional({
@@ -24,7 +26,9 @@ export class UpdateOrganizationOperationDto {
     example: '2025-12-31',
   })
   @IsOptional()
-  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  @Transform(({ value }): Date | undefined =>
+    value ? new Date(value) : undefined,
+  )
   fy_end?: Date;
 
   @ApiPropertyOptional({
@@ -32,7 +36,9 @@ export class UpdateOrganizationOperationDto {
     example: '2025-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  @Transform(({ value }): Date | undefined =>
+    value ? new Date(value) : undefined,
+  )
   vat_reg_effectivity?: Date;
 
   @ApiPropertyOptional({
@@ -40,7 +46,9 @@ export class UpdateOrganizationOperationDto {
     example: '2025-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  @Transform(({ value }): Date | undefined =>
+    value ? new Date(value) : undefined,
+  )
   registration_effectivity?: Date;
 
   @ApiPropertyOptional({
@@ -79,7 +87,7 @@ export class UpdateOrganizationOperationDto {
   })
   @IsOptional()
   @IsBoolean()
-  @Transform(({ value }) => {
+  @Transform(({ value }): boolean | undefined => {
     if (value === 'true') return true;
     if (value === 'false') return false;
     return value;
@@ -92,7 +100,7 @@ export class UpdateOrganizationOperationDto {
   })
   @IsOptional()
   @IsBoolean()
-  @Transform(({ value }) => {
+  @Transform(({ value }): boolean | undefined => {
     if (value === 'true') return true;
     if (value === 'false') return false;
     return value;
@@ -105,7 +113,7 @@ export class UpdateOrganizationOperationDto {
   })
   @IsOptional()
   @IsBoolean()
-  @Transform(({ value }) => {
+  @Transform(({ value }): boolean | undefined => {
     if (value === 'true') return true;
     if (value === 'false') return false;
     return value;
@@ -118,7 +126,7 @@ export class UpdateOrganizationOperationDto {
   })
   @IsOptional()
   @IsBoolean()
-  @Transform(({ value }) => {
+  @Transform(({ value }): boolean | undefined => {
     if (value === 'true') return true;
     if (value === 'false') return false;
     return value;
@@ -131,7 +139,7 @@ export class UpdateOrganizationOperationDto {
   })
   @IsOptional()
   @IsBoolean()
-  @Transform(({ value }) => {
+  @Transform(({ value }): boolean | undefined => {
     if (value === 'true') return true;
     if (value === 'false') return false;
     return value;

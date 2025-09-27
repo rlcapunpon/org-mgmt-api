@@ -25,7 +25,7 @@ export class OrganizationOwnerService {
 
       return await this.repo.assignOwner(data);
     } catch (error) {
-      if (error.code === 'P2002') {
+      if ((error as { code?: string }).code === 'P2002') {
         // Unique constraint violation
         throw new ConflictException('User is already assigned as owner');
       }
@@ -57,7 +57,7 @@ export class OrganizationOwnerService {
     try {
       return await this.repo.removeOwner(orgId, userId);
     } catch (error) {
-      if (error.code === 'P2025') {
+      if ((error as { code?: string }).code === 'P2025') {
         // Record not found
         throw new NotFoundException('Owner assignment not found');
       }
@@ -69,7 +69,7 @@ export class OrganizationOwnerService {
     try {
       return await this.repo.removeOwnerById(id);
     } catch (error) {
-      if (error.code === 'P2025') {
+      if ((error as { code?: string }).code === 'P2025') {
         // Record not found
         throw new NotFoundException('Owner assignment not found');
       }
@@ -84,7 +84,7 @@ export class OrganizationOwnerService {
     try {
       return await this.repo.updateLastUpdate(orgId, userId);
     } catch (error) {
-      if (error.code === 'P2025') {
+      if ((error as { code?: string }).code === 'P2025') {
         // Record not found
         throw new NotFoundException('Owner assignment not found');
       }

@@ -1,17 +1,16 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import {
   IsNotEmpty,
   IsEnum,
   IsOptional,
   IsString,
-  IsDateString,
   IsEmail,
   Length,
   IsBoolean,
   IsArray,
-  IsDate,
   IsIn,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   Category,
@@ -37,7 +36,7 @@ export class CreateOrganizationRequestDto {
   })
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => value ?? null)
+  @Transform(({ value }): string | null => value ?? null)
   tin: string | null;
 
   @ApiProperty({
@@ -72,7 +71,7 @@ export class CreateOrganizationRequestDto {
     example: '2024-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => (value ? new Date(value) : null))
+  @Transform(({ value }): Date | null => (value ? new Date(value) : null))
   registration_date: Date | null;
 
   @ApiPropertyOptional({
@@ -81,7 +80,7 @@ export class CreateOrganizationRequestDto {
   })
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => value ?? null)
+  @Transform(({ value }): string | null => value ?? null)
   address: string | null;
 
   // OrganizationRegistration fields
@@ -99,7 +98,7 @@ export class CreateOrganizationRequestDto {
   })
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => value ?? null)
+  @Transform(({ value }): string | null => value ?? null)
   middle_name: string | null;
 
   @ApiProperty({
@@ -116,7 +115,7 @@ export class CreateOrganizationRequestDto {
   })
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => value ?? null)
+  @Transform(({ value }): string | null => value ?? null)
   trade_name: string | null;
 
   @ApiProperty({
@@ -206,7 +205,7 @@ export class CreateOrganizationRequestDto {
     example: '2024-01-01',
   })
   @IsNotEmpty()
-  @Transform(({ value }) => new Date(value))
+  @Transform(({ value }): Date => new Date(value))
   start_date: Date;
 
   @ApiProperty({
@@ -214,7 +213,7 @@ export class CreateOrganizationRequestDto {
     example: '2024-01-01',
   })
   @IsNotEmpty()
-  @Transform(({ value }) => new Date(value))
+  @Transform(({ value }): Date => new Date(value))
   reg_date: Date;
 }
 
@@ -268,7 +267,7 @@ export class UpdateOrganizationRequestDto {
     example: '2025-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => (value ? new Date(value) : null))
+  @Transform(({ value }): Date | null => (value ? new Date(value) : null))
   registration_date?: Date;
 
   @ApiPropertyOptional({
@@ -287,7 +286,9 @@ export class UpdateOrganizationOperationRequestDto {
     example: '2025-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  @Transform(({ value }): Date | undefined =>
+    value ? new Date(value) : undefined,
+  )
   fy_start?: Date;
 
   @ApiPropertyOptional({
@@ -295,7 +296,9 @@ export class UpdateOrganizationOperationRequestDto {
     example: '2025-12-31',
   })
   @IsOptional()
-  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  @Transform(({ value }): Date | undefined =>
+    value ? new Date(value) : undefined,
+  )
   fy_end?: Date;
 
   @ApiPropertyOptional({
@@ -303,7 +306,9 @@ export class UpdateOrganizationOperationRequestDto {
     example: '2025-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  @Transform(({ value }): Date | undefined =>
+    value ? new Date(value) : undefined,
+  )
   vat_reg_effectivity?: Date;
 
   @ApiPropertyOptional({
@@ -311,7 +316,9 @@ export class UpdateOrganizationOperationRequestDto {
     example: '2025-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  @Transform(({ value }): Date | undefined =>
+    value ? new Date(value) : undefined,
+  )
   registration_effectivity?: Date;
 
   @ApiPropertyOptional({
@@ -547,7 +554,9 @@ export class UpdateOrganizationRegistrationRequestDto {
     example: '2024-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  @Transform(({ value }): Date | undefined =>
+    value ? new Date(value) : undefined,
+  )
   start_date?: Date;
 
   @ApiPropertyOptional({
@@ -555,6 +564,8 @@ export class UpdateOrganizationRegistrationRequestDto {
     example: '2024-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  @Transform(({ value }): Date | undefined =>
+    value ? new Date(value) : undefined,
+  )
   reg_date?: Date;
 }

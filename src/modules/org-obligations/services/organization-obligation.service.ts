@@ -29,7 +29,7 @@ export class OrganizationObligationService {
     try {
       return await this.repo.update(id, { status });
     } catch (error) {
-      if (error.code === 'P2025') {
+      if ((error as { code?: string }).code === 'P2025') {
         throw new NotFoundException();
       }
       throw error;

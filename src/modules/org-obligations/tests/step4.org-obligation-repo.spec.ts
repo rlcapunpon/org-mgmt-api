@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method, @typescript-eslint/no-unsafe-argument */
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrganizationObligationRepository } from '../repositories/organization-obligation.repository';
 import { PrismaService } from '../../../database/prisma.service';

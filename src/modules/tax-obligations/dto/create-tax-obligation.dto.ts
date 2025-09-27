@@ -23,7 +23,7 @@ export class CreateTaxObligationRequestDto {
 
   @IsNotEmpty()
   @IsObject()
-  @Transform(({ value }) =>
+  @Transform(({ value }): any =>
     typeof value === 'string' ? JSON.parse(value) : value,
   )
   due_rule: any; // JSON object

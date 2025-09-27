@@ -8,7 +8,6 @@ import {
   UpdateOrganizationRegistrationRequestDto,
 } from '../dto/organization-request.dto';
 import { Organization } from '@prisma/client';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class OrganizationService {
@@ -48,7 +47,7 @@ export class OrganizationService {
       };
       return await this.repo.updateBasic(id, transformedData);
     } catch (error) {
-      if (error.code === 'P2025') {
+      if ((error as { code?: string }).code === 'P2025') {
         // Record not found
         throw new NotFoundException();
       }
@@ -60,7 +59,7 @@ export class OrganizationService {
     try {
       await this.repo.softDelete(id);
     } catch (error) {
-      if (error.code === 'P2025') {
+      if ((error as { code?: string }).code === 'P2025') {
         // Record not found
         throw new NotFoundException();
       }
@@ -90,7 +89,7 @@ export class OrganizationService {
     try {
       return await this.repo.getStatusByOrgId(id);
     } catch (error) {
-      if (error.code === 'P2025') {
+      if ((error as { code?: string }).code === 'P2025') {
         // Record not found
         throw new NotFoundException();
       }
@@ -117,7 +116,7 @@ export class OrganizationService {
 
       return result;
     } catch (error) {
-      if (error.code === 'P2025') {
+      if ((error as { code?: string }).code === 'P2025') {
         // Record not found
         throw new NotFoundException();
       }
@@ -129,7 +128,7 @@ export class OrganizationService {
     try {
       return await this.repo.getRegistrationByOrgId(id);
     } catch (error) {
-      if (error.code === 'P2025') {
+      if ((error as { code?: string }).code === 'P2025') {
         // Record not found
         throw new NotFoundException();
       }
@@ -144,7 +143,7 @@ export class OrganizationService {
     try {
       return await this.repo.updateRegistration(id, data);
     } catch (error) {
-      if (error.code === 'P2025') {
+      if ((error as { code?: string }).code === 'P2025') {
         // Record not found
         throw new NotFoundException();
       }

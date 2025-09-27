@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import {
   OrganizationObligation,
@@ -27,6 +28,7 @@ export class SchedulesService {
     // Parse the due rule to determine how to calculate due dates
     const dueDateCalculator = this.parseDueRule(
       obligation.obligation.due_rule,
+
       obligation.obligation.frequency,
     );
 
@@ -76,6 +78,7 @@ export class SchedulesService {
     if (typeof dueRule === 'object' && dueRule !== null) {
       if (dueRule.day && dueRule.relative_to) {
         const day = dueRule.day;
+
         const relativeTo = dueRule.relative_to;
 
         if (relativeTo === 'fiscal_quarter_end') {
@@ -117,6 +120,7 @@ export class SchedulesService {
       }
     } else {
       // Assume it's "Xth of month" format
+
       const match = dueRule.match(/(\d+)(?:st|nd|rd|th) of month/);
       if (match) {
         const day = parseInt(match[1], 10);
@@ -130,6 +134,7 @@ export class SchedulesService {
         }
       }
     }
+
     throw new Error(`Unsupported due rule format: ${dueRule}`);
   }
 

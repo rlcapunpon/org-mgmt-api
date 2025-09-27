@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../../app.module';
 import { signPayload } from '../../test-utils/token';
-import { OrganizationService } from '../../modules/organizations/services/organization.service';
 import { Category, TaxClassification, BusinessStatus } from '@prisma/client';
 import { PrismaService } from '../../database/prisma.service';
 
@@ -150,25 +152,6 @@ describe('Organization Status (Step 6.5)', () => {
         category: 'NON_INDIVIDUAL',
         tax_classification: 'VAT',
       };
-      const mockOrg = {
-        id: '1',
-        name: 'Test Org',
-        category: Category.NON_INDIVIDUAL,
-        tax_classification: TaxClassification.VAT,
-        tin: null,
-        subcategory: null,
-        registration_date: null,
-        address: null,
-        created_at: new Date(),
-        updated_at: new Date(),
-        deleted_at: null,
-        status: {
-          id: 'status-1',
-          organization_id: '1',
-          status: 'PENDING',
-          last_update: new Date(),
-        },
-      };
 
       // mockService.create.mockResolvedValue(mockOrg);
       const res = await request(app.getHttpServer())
@@ -192,25 +175,6 @@ describe('Organization Status (Step 6.5)', () => {
         },
         process.env.JWT_SECRET!,
       );
-      const mockOrg = {
-        id: '1',
-        name: 'Test Org',
-        category: Category.NON_INDIVIDUAL,
-        tax_classification: TaxClassification.VAT,
-        tin: null,
-        subcategory: null,
-        registration_date: null,
-        address: null,
-        created_at: new Date(),
-        updated_at: new Date(),
-        deleted_at: null,
-        status: {
-          id: 'status-1',
-          organization_id: '1',
-          status: 'PENDING',
-          last_update: new Date(),
-        },
-      };
 
       // mockService.findById.mockResolvedValue(mockOrg);
       const res = await request(app.getHttpServer())
@@ -232,27 +196,6 @@ describe('Organization Status (Step 6.5)', () => {
         },
         process.env.JWT_SECRET!,
       );
-      const mockOrgs = [
-        {
-          id: '1',
-          name: 'Test Org',
-          category: Category.NON_INDIVIDUAL,
-          tax_classification: TaxClassification.VAT,
-          tin: null,
-          subcategory: null,
-          registration_date: null,
-          address: null,
-          created_at: new Date(),
-          updated_at: new Date(),
-          deleted_at: null,
-          status: {
-            id: 'status-1',
-            organization_id: '1',
-            status: 'PENDING',
-            last_update: new Date(),
-          },
-        },
-      ];
 
       // mockService.list.mockResolvedValue(mockOrgs);
       const res = await request(app.getHttpServer())
@@ -276,25 +219,6 @@ describe('Organization Status (Step 6.5)', () => {
         },
         process.env.JWT_SECRET!,
       );
-      const updatedOrg = {
-        id: '1',
-        name: 'Updated Org',
-        category: Category.NON_INDIVIDUAL,
-        tax_classification: TaxClassification.VAT,
-        tin: null,
-        subcategory: null,
-        registration_date: null,
-        address: null,
-        created_at: new Date(),
-        updated_at: new Date(),
-        deleted_at: null,
-        status: {
-          id: 'status-1',
-          organization_id: '1',
-          status: 'PENDING',
-          last_update: new Date(), // Should be updated
-        },
-      };
 
       // mockService.update.mockResolvedValue(updatedOrg);
       const res = await request(app.getHttpServer())
@@ -331,25 +255,6 @@ describe('Organization Status (Step 6.5)', () => {
         },
         process.env.JWT_SECRET!,
       );
-      const mockOrg = {
-        id: '1',
-        name: 'Test Org',
-        category: Category.NON_INDIVIDUAL,
-        tax_classification: TaxClassification.VAT,
-        tin: null,
-        subcategory: null,
-        registration_date: null,
-        address: null,
-        created_at: new Date(),
-        updated_at: new Date(),
-        deleted_at: null,
-        status: {
-          id: 'status-1',
-          organization_id: '1',
-          status: 'PENDING',
-          last_update: new Date(),
-        },
-      };
 
       // mockService.findById.mockResolvedValue(mockOrg);
       const res = await request(app.getHttpServer())

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../database/prisma.service';
 import type { TaxObligation, Prisma } from '@prisma/client';
-import { TaxObligationStatus } from '@prisma/client';
 
 @Injectable()
 export class TaxObligationRepository {

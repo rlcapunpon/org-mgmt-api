@@ -38,7 +38,10 @@ describe('Database Connectivity', () => {
       expect(result).toBeDefined();
       console.log('✅ Database query successful');
     } catch (error) {
-      console.error('❌ Database connectivity test failed:', error.message);
+      console.error(
+        '❌ Database connectivity test failed:',
+        (error as Error).message,
+      );
       throw error;
     }
   });
@@ -63,7 +66,7 @@ describe('Database Connectivity', () => {
       expect(error).toBeDefined();
       console.log(
         'Database connection error (expected in some environments):',
-        error.message,
+        (error as Error).message,
       );
     }
   });

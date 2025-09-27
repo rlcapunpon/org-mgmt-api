@@ -4,16 +4,13 @@ import {
   ExecutionContext,
   ForbiddenException,
 } from '@nestjs/common';
+import { AuthenticatedRequest } from '../interfaces/auth.interface';
 
 @Injectable()
 export class SuperAdminGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
-    const request = context.switchToHttp().getRequest();
-    const user = request.user as {
-      permissions?: string[];
-      isSuperAdmin?: boolean;
-      role?: string;
-    };
+    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+    const user = request.user;
 
     if (!user) {
       throw new ForbiddenException('Authentication required');

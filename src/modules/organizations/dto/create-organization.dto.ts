@@ -3,7 +3,6 @@ import {
   IsEnum,
   IsOptional,
   IsString,
-  IsDateString,
   IsEmail,
   Length,
 } from 'class-validator';
@@ -26,7 +25,7 @@ export class CreateOrganizationDto {
   })
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => value ?? null)
+  @Transform(({ value }): string | null => value ?? null)
   tin: string | null;
 
   @ApiProperty({
@@ -61,7 +60,9 @@ export class CreateOrganizationDto {
     example: '2024-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => (value ? new Date(value) : null))
+  @Transform(({ value }: { value: unknown }): Date | null =>
+    value ? new Date(value as string | Date) : null,
+  )
   registration_date: Date | null;
 
   @ApiPropertyOptional({
@@ -70,7 +71,7 @@ export class CreateOrganizationDto {
   })
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => value ?? null)
+  @Transform(({ value }): string | null => value ?? null)
   address: string | null;
 
   // OrganizationRegistration fields
@@ -88,7 +89,7 @@ export class CreateOrganizationDto {
   })
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => value ?? null)
+  @Transform(({ value }): string | null => value ?? null)
   middle_name: string | null;
 
   @ApiProperty({
@@ -105,7 +106,7 @@ export class CreateOrganizationDto {
   })
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => value ?? null)
+  @Transform(({ value }): string | null => value ?? null)
   trade_name: string | null;
 
   @ApiProperty({
@@ -195,7 +196,9 @@ export class CreateOrganizationDto {
     example: '2024-01-01',
   })
   @IsNotEmpty()
-  @Transform(({ value }) => new Date(value))
+  @Transform(
+    ({ value }: { value: unknown }): Date => new Date(value as string | Date),
+  )
   start_date: Date;
 
   @ApiProperty({
@@ -203,6 +206,8 @@ export class CreateOrganizationDto {
     example: '2024-01-01',
   })
   @IsNotEmpty()
-  @Transform(({ value }) => new Date(value))
+  @Transform(
+    ({ value }: { value: unknown }): Date => new Date(value as string | Date),
+  )
   reg_date: Date;
 }

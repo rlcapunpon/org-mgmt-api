@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../../../app.module';
 import { signPayload } from '../../../test-utils/token';
-import { OrganizationService } from '../services/organization.service';
-import { Category, TaxClassification, BusinessStatus } from '@prisma/client';
+import { TaxClassification, BusinessStatus } from '@prisma/client';
 import { PrismaService } from '../../../database/prisma.service';
 
 describe('Organization Status and Registration Endpoints (Step 3)', () => {
