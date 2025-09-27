@@ -1,4 +1,11 @@
-import { IsOptional, IsDateString, IsArray, IsString, IsBoolean, IsEnum } from 'class-validator';
+import {
+  IsOptional,
+  IsDateString,
+  IsArray,
+  IsString,
+  IsBoolean,
+  IsEnum,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { AccountingMethod } from '@prisma/client';
@@ -6,40 +13,40 @@ import { AccountingMethod } from '@prisma/client';
 export class UpdateOrganizationOperationDto {
   @ApiPropertyOptional({
     description: 'Fiscal year start date',
-    example: '2025-01-01'
+    example: '2025-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => value ? new Date(value) : undefined)
+  @Transform(({ value }) => (value ? new Date(value) : undefined))
   fy_start?: Date;
 
   @ApiPropertyOptional({
     description: 'Fiscal year end date',
-    example: '2025-12-31'
+    example: '2025-12-31',
   })
   @IsOptional()
-  @Transform(({ value }) => value ? new Date(value) : undefined)
+  @Transform(({ value }) => (value ? new Date(value) : undefined))
   fy_end?: Date;
 
   @ApiPropertyOptional({
     description: 'VAT registration effectivity date',
-    example: '2025-01-01'
+    example: '2025-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => value ? new Date(value) : undefined)
+  @Transform(({ value }) => (value ? new Date(value) : undefined))
   vat_reg_effectivity?: Date;
 
   @ApiPropertyOptional({
     description: 'Registration effectivity date',
-    example: '2025-01-01'
+    example: '2025-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => value ? new Date(value) : undefined)
+  @Transform(({ value }) => (value ? new Date(value) : undefined))
   registration_effectivity?: Date;
 
   @ApiPropertyOptional({
     description: 'Payroll cut-off dates',
     example: ['15/30'],
-    type: [String]
+    type: [String],
   })
   @IsOptional()
   @IsArray()
@@ -49,7 +56,7 @@ export class UpdateOrganizationOperationDto {
   @ApiPropertyOptional({
     description: 'Payment cut-off dates',
     example: ['15/30'],
-    type: [String]
+    type: [String],
   })
   @IsOptional()
   @IsArray()
@@ -59,7 +66,7 @@ export class UpdateOrganizationOperationDto {
   @ApiPropertyOptional({
     description: 'Quarter closing dates',
     example: ['03/31', '06/30', '09/30', '12/31'],
-    type: [String]
+    type: [String],
   })
   @IsOptional()
   @IsArray()
@@ -68,7 +75,7 @@ export class UpdateOrganizationOperationDto {
 
   @ApiPropertyOptional({
     description: 'Has foreign operations',
-    example: false
+    example: false,
   })
   @IsOptional()
   @IsBoolean()
@@ -81,7 +88,7 @@ export class UpdateOrganizationOperationDto {
 
   @ApiPropertyOptional({
     description: 'Has employees',
-    example: false
+    example: false,
   })
   @IsOptional()
   @IsBoolean()
@@ -94,7 +101,7 @@ export class UpdateOrganizationOperationDto {
 
   @ApiPropertyOptional({
     description: 'Is Expanded Withholding Tax agent',
-    example: false
+    example: false,
   })
   @IsOptional()
   @IsBoolean()
@@ -107,7 +114,7 @@ export class UpdateOrganizationOperationDto {
 
   @ApiPropertyOptional({
     description: 'Is Final Withholding Tax agent',
-    example: false
+    example: false,
   })
   @IsOptional()
   @IsBoolean()
@@ -120,7 +127,7 @@ export class UpdateOrganizationOperationDto {
 
   @ApiPropertyOptional({
     description: 'Is BIR withholding agent',
-    example: false
+    example: false,
   })
   @IsOptional()
   @IsBoolean()
@@ -134,7 +141,7 @@ export class UpdateOrganizationOperationDto {
   @ApiPropertyOptional({
     description: 'Accounting method',
     enum: AccountingMethod,
-    example: AccountingMethod.ACCRUAL
+    example: AccountingMethod.ACCRUAL,
   })
   @IsOptional()
   @IsEnum(AccountingMethod)

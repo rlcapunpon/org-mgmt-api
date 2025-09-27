@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { OrganizationObligation, ObligationSchedule, ScheduleStatus } from '@prisma/client';
+import {
+  OrganizationObligation,
+  ObligationSchedule,
+  ScheduleStatus,
+} from '@prisma/client';
 
 @Injectable()
 export class SchedulesService {
@@ -15,24 +19,53 @@ export class SchedulesService {
     startDate: Date,
     endDate: Date,
   ): Omit<ObligationSchedule, 'id' | 'created_at' | 'updated_at'>[] {
-    const schedules: Omit<ObligationSchedule, 'id' | 'created_at' | 'updated_at'>[] = [];
+    const schedules: Omit<
+      ObligationSchedule,
+      'id' | 'created_at' | 'updated_at'
+    >[] = [];
 
     // Parse the due rule to determine how to calculate due dates
-    const dueDateCalculator = this.parseDueRule(obligation.obligation.due_rule, obligation.obligation.frequency);
+    const dueDateCalculator = this.parseDueRule(
+      obligation.obligation.due_rule,
+      obligation.obligation.frequency,
+    );
 
     // Generate schedules based on frequency
     switch (obligation.obligation.frequency) {
       case 'monthly':
-        schedules.push(...this.generateMonthlySchedules(obligation, startDate, endDate, dueDateCalculator));
+        schedules.push(
+          ...this.generateMonthlySchedules(
+            obligation,
+            startDate,
+            endDate,
+            dueDateCalculator,
+          ),
+        );
         break;
       case 'quarterly':
-        schedules.push(...this.generateQuarterlySchedules(obligation, startDate, endDate, dueDateCalculator));
+        schedules.push(
+          ...this.generateQuarterlySchedules(
+            obligation,
+            startDate,
+            endDate,
+            dueDateCalculator,
+          ),
+        );
         break;
       case 'annual':
-        schedules.push(...this.generateAnnualSchedules(obligation, startDate, endDate, dueDateCalculator));
+        schedules.push(
+          ...this.generateAnnualSchedules(
+            obligation,
+            startDate,
+            endDate,
+            dueDateCalculator,
+          ),
+        );
         break;
       default:
-        throw new Error(`Unsupported frequency: ${obligation.obligation.frequency}`);
+        throw new Error(
+          `Unsupported frequency: ${obligation.obligation.frequency}`,
+        );
     }
 
     return schedules;
@@ -44,27 +77,35 @@ export class SchedulesService {
       if (dueRule.day && dueRule.relative_to) {
         const day = dueRule.day;
         const relativeTo = dueRule.relative_to;
-        
+
         if (relativeTo === 'fiscal_quarter_end') {
-          return (date: Date) => new Date(Date.UTC(date.getFullYear(), date.getMonth() + 3, day));
+          return (date: Date) =>
+            new Date(Date.UTC(date.getFullYear(), date.getMonth() + 3, day));
         } else if (relativeTo === 'calendar_quarter_end') {
-          return (date: Date) => new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, day));
+          return (date: Date) =>
+            new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, day));
         } else if (relativeTo === 'calendar_month_end') {
-          return (date: Date) => new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, day));
+          return (date: Date) =>
+            new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, day));
         } else if (relativeTo === 'fiscal_year_end') {
-          return (date: Date) => new Date(Date.UTC(date.getFullYear() + 1, dueRule.month - 1, day));
+          return (date: Date) =>
+            new Date(Date.UTC(date.getFullYear() + 1, dueRule.month - 1, day));
         }
       } else if (dueRule.conditional) {
         // Handle conditional due dates
         return (date: Date) => new Date(Date.UTC(date.getFullYear(), 11, 31)); // Default to year end
       } else if (dueRule.month && dueRule.day) {
         // Annual due date
-        return (date: Date) => new Date(Date.UTC(date.getFullYear(), dueRule.month - 1, dueRule.day));
+        return (date: Date) =>
+          new Date(
+            Date.UTC(date.getFullYear(), dueRule.month - 1, dueRule.day),
+          );
       }
     }
-    
+
     // Fallback to string parsing for backward compatibility
-    const dueRuleStr = typeof dueRule === 'string' ? dueRule : JSON.stringify(dueRule);
+    const dueRuleStr =
+      typeof dueRule === 'string' ? dueRule : JSON.stringify(dueRule);
     if (dueRuleStr.includes('last day of quarter')) {
       return (date: Date) => this.getLastDayOfQuarter(date);
     } else if (dueRule.includes('last day of month')) {
@@ -81,9 +122,11 @@ export class SchedulesService {
         const day = parseInt(match[1], 10);
         if (frequency === 'annual') {
           // For annual, "Xth of month" means Xth of December
-          return (date: Date) => new Date(Date.UTC(date.getFullYear(), 11, day));
+          return (date: Date) =>
+            new Date(Date.UTC(date.getFullYear(), 11, day));
         } else {
-          return (date: Date) => new Date(Date.UTC(date.getFullYear(), date.getMonth(), day));
+          return (date: Date) =>
+            new Date(Date.UTC(date.getFullYear(), date.getMonth(), day));
         }
       }
     }
@@ -96,7 +139,10 @@ export class SchedulesService {
     endDate: Date,
     dueDateCalculator: (date: Date) => Date,
   ): Omit<ObligationSchedule, 'id' | 'created_at' | 'updated_at'>[] {
-    const schedules: Omit<ObligationSchedule, 'id' | 'created_at' | 'updated_at'>[] = [];
+    const schedules: Omit<
+      ObligationSchedule,
+      'id' | 'created_at' | 'updated_at'
+    >[] = [];
     const current = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
 
     while (current <= endDate) {
@@ -122,8 +168,15 @@ export class SchedulesService {
     endDate: Date,
     dueDateCalculator: (date: Date) => Date,
   ): Omit<ObligationSchedule, 'id' | 'created_at' | 'updated_at'>[] {
-    const schedules: Omit<ObligationSchedule, 'id' | 'created_at' | 'updated_at'>[] = [];
-    const current = new Date(startDate.getFullYear(), Math.floor(startDate.getMonth() / 3) * 3, 1);
+    const schedules: Omit<
+      ObligationSchedule,
+      'id' | 'created_at' | 'updated_at'
+    >[] = [];
+    const current = new Date(
+      startDate.getFullYear(),
+      Math.floor(startDate.getMonth() / 3) * 3,
+      1,
+    );
 
     while (current <= endDate) {
       const dueDate = dueDateCalculator(current);
@@ -149,7 +202,10 @@ export class SchedulesService {
     endDate: Date,
     dueDateCalculator: (date: Date) => Date,
   ): Omit<ObligationSchedule, 'id' | 'created_at' | 'updated_at'>[] {
-    const schedules: Omit<ObligationSchedule, 'id' | 'created_at' | 'updated_at'>[] = [];
+    const schedules: Omit<
+      ObligationSchedule,
+      'id' | 'created_at' | 'updated_at'
+    >[] = [];
     const current = new Date(startDate.getFullYear(), 0, 1);
 
     while (current <= endDate) {

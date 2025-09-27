@@ -21,7 +21,14 @@ describe('Simple API Integration Tests', () => {
     const payload = {
       sub: 'test-user-id',
       username: 'testuser',
-      permissions: ['resource:create', 'resource:read', 'resource:update', 'resource:delete', 'tax:configure', '*']
+      permissions: [
+        'resource:create',
+        'resource:read',
+        'resource:update',
+        'resource:delete',
+        'tax:configure',
+        '*',
+      ],
     };
     authToken = signPayload(payload, jwtSecret);
   });
@@ -97,9 +104,7 @@ describe('Simple API Integration Tests', () => {
 
   describe('Authentication', () => {
     it('should require authentication for protected endpoints', () => {
-      return request(app.getHttpServer())
-        .get('/organizations')
-        .expect(401);
+      return request(app.getHttpServer()).get('/organizations').expect(401);
     });
 
     it('should reject invalid tokens', () => {

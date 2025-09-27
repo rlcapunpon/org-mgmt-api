@@ -136,8 +136,20 @@ describe('Organization Status (Step 6.5)', () => {
 
   describe('Organization Status CRUD', () => {
     it('should create organization status automatically when organization is created', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-      const payload = { name: 'Test Org', category: 'NON_INDIVIDUAL', tax_classification: 'VAT' };
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:create'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
+      const payload = {
+        name: 'Test Org',
+        category: 'NON_INDIVIDUAL',
+        tax_classification: 'VAT',
+      };
       const mockOrg = {
         id: '1',
         name: 'Test Org',
@@ -171,7 +183,15 @@ describe('Organization Status (Step 6.5)', () => {
     });
 
     it('should return organization with status when getting organization by id', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:read'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
       const mockOrg = {
         id: '1',
         name: 'Test Org',
@@ -203,7 +223,15 @@ describe('Organization Status (Step 6.5)', () => {
     });
 
     it('should return organizations with status when listing organizations', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:read'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
       const mockOrgs = [
         {
           id: '1',
@@ -239,7 +267,15 @@ describe('Organization Status (Step 6.5)', () => {
     });
 
     it('should update organization status last_update when organization is updated', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:update'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
       const updatedOrg = {
         id: '1',
         name: 'Updated Org',
@@ -274,7 +310,10 @@ describe('Organization Status (Step 6.5)', () => {
 
   describe('Organization Status Permissions', () => {
     it('should deny access to organization status without proper read permission', async () => {
-      const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        { userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' },
+        process.env.JWT_SECRET!,
+      );
       const res = await request(app.getHttpServer())
         .get('/organizations/1')
         .set('Authorization', `Bearer ${token}`);
@@ -283,7 +322,15 @@ describe('Organization Status (Step 6.5)', () => {
     });
 
     it('should allow super admin to access organization status', async () => {
-      const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: true, role: 'Super Admin' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: [],
+          isSuperAdmin: true,
+          role: 'Super Admin',
+        },
+        process.env.JWT_SECRET!,
+      );
       const mockOrg = {
         id: '1',
         name: 'Test Org',
@@ -316,8 +363,20 @@ describe('Organization Status (Step 6.5)', () => {
 
   describe('Organization Status Edge Cases', () => {
     it('should create status with PENDING_REG for INDIVIDUAL category organizations', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-      const payload = { name: 'Individual Org', category: 'INDIVIDUAL', tax_classification: 'NON_VAT' };
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:create'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
+      const payload = {
+        name: 'Individual Org',
+        category: 'INDIVIDUAL',
+        tax_classification: 'NON_VAT',
+      };
 
       const res = await request(app.getHttpServer())
         .post('/organizations')
@@ -331,11 +390,21 @@ describe('Organization Status (Step 6.5)', () => {
     });
 
     it('should return 404 when getting status for non-existent organization', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:read'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       // Mock findUnique to return null for non-existent organization
       const prismaService = app.get(PrismaService);
-      (prismaService.organization.findUnique as jest.Mock).mockResolvedValueOnce(null);
+      (
+        prismaService.organization.findUnique as jest.Mock
+      ).mockResolvedValueOnce(null);
 
       const res = await request(app.getHttpServer())
         .get('/organizations/non-existent-id')
@@ -345,7 +414,15 @@ describe('Organization Status (Step 6.5)', () => {
     });
 
     it('should maintain status consistency across multiple organization updates', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:update'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       // First update
       const res1 = await request(app.getHttpServer())
@@ -358,7 +435,7 @@ describe('Organization Status (Step 6.5)', () => {
       const firstUpdateTime = new Date(res1.body.status.last_update);
 
       // Wait a bit to ensure timestamp difference
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       // Second update
       const res2 = await request(app.getHttpServer())
@@ -371,11 +448,21 @@ describe('Organization Status (Step 6.5)', () => {
       const secondUpdateTime = new Date(res2.body.status.last_update);
 
       // Second update should have a later timestamp
-      expect(secondUpdateTime.getTime()).toBeGreaterThanOrEqual(firstUpdateTime.getTime());
+      expect(secondUpdateTime.getTime()).toBeGreaterThanOrEqual(
+        firstUpdateTime.getTime(),
+      );
     });
 
     it('should include status in filtered organization lists', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:read'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       const res = await request(app.getHttpServer())
         .get('/organizations?category=NON_INDIVIDUAL')
@@ -389,7 +476,15 @@ describe('Organization Status (Step 6.5)', () => {
     });
 
     it('should include status in organization lists with tax classification filter', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:read'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       const res = await request(app.getHttpServer())
         .get('/organizations?tax_classification=VAT')
@@ -403,8 +498,20 @@ describe('Organization Status (Step 6.5)', () => {
     });
 
     it('should create status with proper timestamps on organization creation', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-      const payload = { name: 'Timestamp Test Org', category: 'INDIVIDUAL', tax_classification: 'VAT' };
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:create'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
+      const payload = {
+        name: 'Timestamp Test Org',
+        category: 'INDIVIDUAL',
+        tax_classification: 'VAT',
+      };
       const beforeCreate = new Date();
 
       const res = await request(app.getHttpServer())
@@ -425,18 +532,36 @@ describe('Organization Status (Step 6.5)', () => {
       const statusLastUpdate = new Date(res.body.status.last_update);
 
       // Timestamps should be reasonable (within test execution time)
-      expect(statusCreatedAt.getTime()).toBeGreaterThanOrEqual(beforeCreate.getTime());
-      expect(statusCreatedAt.getTime()).toBeLessThanOrEqual(afterCreate.getTime());
-      expect(statusUpdatedAt.getTime()).toBeGreaterThanOrEqual(beforeCreate.getTime());
-      expect(statusLastUpdate.getTime()).toBeGreaterThanOrEqual(beforeCreate.getTime());
+      expect(statusCreatedAt.getTime()).toBeGreaterThanOrEqual(
+        beforeCreate.getTime(),
+      );
+      expect(statusCreatedAt.getTime()).toBeLessThanOrEqual(
+        afterCreate.getTime(),
+      );
+      expect(statusUpdatedAt.getTime()).toBeGreaterThanOrEqual(
+        beforeCreate.getTime(),
+      );
+      expect(statusLastUpdate.getTime()).toBeGreaterThanOrEqual(
+        beforeCreate.getTime(),
+      );
     });
 
     it('should handle empty organization list with status structure', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:read'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       // Mock empty result
       const prismaService = app.get(PrismaService);
-      (prismaService.organization.findMany as jest.Mock).mockResolvedValueOnce([]);
+      (prismaService.organization.findMany as jest.Mock).mockResolvedValueOnce(
+        [],
+      );
 
       const res = await request(app.getHttpServer())
         .get('/organizations?category=NON_INDIVIDUAL&tax_classification=VAT')
@@ -447,7 +572,15 @@ describe('Organization Status (Step 6.5)', () => {
     });
 
     it('should maintain status organization_id relationship', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:read'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       const res = await request(app.getHttpServer())
         .get('/organizations/1')
@@ -460,7 +593,15 @@ describe('Organization Status (Step 6.5)', () => {
     });
 
     it('should handle multiple organizations with different statuses in list', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:read'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       // Mock multiple organizations without operation data
       const prismaService = app.get(PrismaService);
@@ -528,12 +669,26 @@ describe('Organization Status (Step 6.5)', () => {
 
   describe('Organization Status Error Handling', () => {
     it('should handle database errors during organization creation with status', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-      const payload = { name: 'Error Test Org', category: 'INDIVIDUAL', tax_classification: 'VAT' };
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:create'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
+      const payload = {
+        name: 'Error Test Org',
+        category: 'INDIVIDUAL',
+        tax_classification: 'VAT',
+      };
 
       // Mock database error
       const prismaService = app.get(PrismaService);
-      (prismaService.organization.create as jest.Mock).mockRejectedValueOnce(new Error('Database connection failed'));
+      (prismaService.organization.create as jest.Mock).mockRejectedValueOnce(
+        new Error('Database connection failed'),
+      );
 
       const res = await request(app.getHttpServer())
         .post('/organizations')
@@ -544,11 +699,21 @@ describe('Organization Status (Step 6.5)', () => {
     });
 
     it('should handle database errors during organization update with status', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:update'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       // Mock database error
       const prismaService = app.get(PrismaService);
-      (prismaService.organization.update as jest.Mock).mockRejectedValueOnce(new Error('Database update failed'));
+      (prismaService.organization.update as jest.Mock).mockRejectedValueOnce(
+        new Error('Database update failed'),
+      );
 
       const res = await request(app.getHttpServer())
         .put('/organizations/1')

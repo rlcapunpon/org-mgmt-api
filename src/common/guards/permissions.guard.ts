@@ -1,4 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { REQUIRES_PERMISSION } from '../decorators/requires-permission.decorator';
 
@@ -7,18 +12,33 @@ export class PermissionsGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredPermission = this.reflector.get<string>(REQUIRES_PERMISSION, context.getHandler());
+    const requiredPermission = this.reflector.get<string>(
+      REQUIRES_PERMISSION,
+      context.getHandler(),
+    );
     if (!requiredPermission) return true;
 
     const request = context.switchToHttp().getRequest();
-    const user = request.user as { permissions?: string[]; isSuperAdmin?: boolean; role?: string };
+    const user = request.user as {
+      permissions?: string[];
+      isSuperAdmin?: boolean;
+      role?: string;
+    };
     if (!user) return false;
 
     // Super admin bypass - support both isSuperAdmin boolean and role string
-    if (user.isSuperAdmin || user.role === 'Super Admin' || user.permissions?.includes('*')) return true;
+    if (
+      user.isSuperAdmin ||
+      user.role === 'Super Admin' ||
+      user.permissions?.includes('*')
+    )
+      return true;
 
     // Get the actual permission to check (may include org ID)
-    const permissionToCheck = this.resolvePermission(requiredPermission, request);
+    const permissionToCheck = this.resolvePermission(
+      requiredPermission,
+      request,
+    );
 
     // Check if user has the exact permission
     if (user.permissions?.includes(permissionToCheck)) return true;
@@ -31,7 +51,9 @@ export class PermissionsGuard implements CanActivate {
       if (user.permissions?.includes(wildcardPermission)) return true;
 
       // Check if user has permission for this specific org
-      const userPermission = user.permissions?.find((perm: string) => perm.startsWith(`${resourceAction}:`));
+      const userPermission = user.permissions?.find((perm: string) =>
+        perm.startsWith(`${resourceAction}:`),
+      );
       if (userPermission) {
         const [, userScope] = userPermission.split(':');
         if (userScope === scope) return true;
@@ -50,7 +72,10 @@ export class PermissionsGuard implements CanActivate {
 
   private resolvePermission(requiredPermission: string, request: any): string {
     // If permission contains :id or :orgId, replace with actual org ID from params
-    if (requiredPermission.includes(':id') || requiredPermission.includes(':orgId')) {
+    if (
+      requiredPermission.includes(':id') ||
+      requiredPermission.includes(':orgId')
+    ) {
       const orgId = request.params.id || request.params.orgId;
       return requiredPermission.replace(/:id|:orgId/g, `:${orgId}`);
     }

@@ -22,7 +22,9 @@ describe('Database Connectivity', () => {
     const testDbConnection = process.env.TEST_DEV_DB_CONNECTION === 'true';
 
     if (!testDbConnection) {
-      console.log('Skipping database connectivity test - TEST_DEV_DB_CONNECTION is not true');
+      console.log(
+        'Skipping database connectivity test - TEST_DEV_DB_CONNECTION is not true',
+      );
       return;
     }
 
@@ -45,7 +47,9 @@ describe('Database Connectivity', () => {
     const testDbConnection = process.env.TEST_DEV_DB_CONNECTION === 'true';
 
     if (!testDbConnection) {
-      console.log('Skipping database error handling test - TEST_DEV_DB_CONNECTION is not true');
+      console.log(
+        'Skipping database error handling test - TEST_DEV_DB_CONNECTION is not true',
+      );
       return;
     }
 
@@ -57,7 +61,10 @@ describe('Database Connectivity', () => {
     } catch (error) {
       // If connection fails, the error should be informative
       expect(error).toBeDefined();
-      console.log('Database connection error (expected in some environments):', error.message);
+      console.log(
+        'Database connection error (expected in some environments):',
+        error.message,
+      );
     }
   });
 });

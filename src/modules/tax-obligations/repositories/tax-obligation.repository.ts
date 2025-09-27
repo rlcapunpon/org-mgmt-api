@@ -15,6 +15,8 @@ export class TaxObligationRepository {
   }
 
   async listActive(): Promise<TaxObligation[]> {
-    return this.prisma.taxObligation.findMany({ where: { status: 'MANDATORY' } });
+    return this.prisma.taxObligation.findMany({
+      where: { status: 'MANDATORY' },
+    });
   }
 }

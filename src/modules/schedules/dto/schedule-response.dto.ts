@@ -10,9 +10,9 @@ export class ScheduleResponseDto {
   @ApiProperty({ description: 'Due date for filing' })
   due_date: Date;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Filing status',
-    enum: ['DUE', 'FILED', 'LATE', 'EXEMPT']
+    enum: ['DUE', 'FILED', 'LATE', 'EXEMPT'],
   })
   status: string;
 

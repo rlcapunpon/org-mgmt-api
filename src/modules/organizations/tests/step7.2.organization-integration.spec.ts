@@ -6,7 +6,12 @@ import { AppModule } from '../../../app.module';
 import { signPayload } from '../../../test-utils/token';
 import { OrganizationService } from '../services/organization.service';
 import { PrismaService } from '../../../database/prisma.service';
-import { Category, SubCategory, TaxClassification, AccountingMethod } from '@prisma/client';
+import {
+  Category,
+  SubCategory,
+  TaxClassification,
+  AccountingMethod,
+} from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
 
 describe('Organization Integration Tests (e2e)', () => {
@@ -35,7 +40,13 @@ describe('Organization Integration Tests (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
     await app.init();
     mockService = moduleFixture.get(OrganizationService);
   });
@@ -46,7 +57,15 @@ describe('Organization Integration Tests (e2e)', () => {
 
   describe('Organization CRUD with SubCategories', () => {
     it('should create organization with SELF_EMPLOYED subcategory', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:create'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
       const payload = {
         name: 'John Doe Self Employed',
         category: 'INDIVIDUAL',
@@ -66,7 +85,7 @@ describe('Organization Integration Tests (e2e)', () => {
         email_address: 'john.doe@example.com',
         tax_type: 'NON_VAT',
         start_date: '2024-01-01',
-        reg_date: '2024-01-01'
+        reg_date: '2024-01-01',
       };
 
       const mockOrg = {
@@ -131,7 +150,15 @@ describe('Organization Integration Tests (e2e)', () => {
     });
 
     it('should create organization with SOLE_PROPRIETOR subcategory', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:create'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
       const payload = {
         name: 'Jane Smith Sole Proprietor',
         category: 'INDIVIDUAL',
@@ -151,7 +178,7 @@ describe('Organization Integration Tests (e2e)', () => {
         email_address: 'jane.smith@example.com',
         tax_type: 'VAT',
         start_date: '2024-01-01',
-        reg_date: '2024-01-01'
+        reg_date: '2024-01-01',
       };
 
       const mockOrg = {
@@ -216,7 +243,15 @@ describe('Organization Integration Tests (e2e)', () => {
     });
 
     it('should create organization with FREELANCER subcategory', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:create'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
       const payload = {
         name: 'Bob Freelancer',
         category: 'INDIVIDUAL',
@@ -236,7 +271,7 @@ describe('Organization Integration Tests (e2e)', () => {
         email_address: 'bob.freelancer@example.com',
         tax_type: 'NON_VAT',
         start_date: '2024-01-01',
-        reg_date: '2024-01-01'
+        reg_date: '2024-01-01',
       };
 
       const mockOrg = {
@@ -293,7 +328,15 @@ describe('Organization Integration Tests (e2e)', () => {
     });
 
     it('should create NON_INDIVIDUAL organization with CORPORATION subcategory', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:create'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
       const payload = {
         name: 'ABC Corporation',
         category: 'NON_INDIVIDUAL',
@@ -313,7 +356,7 @@ describe('Organization Integration Tests (e2e)', () => {
         email_address: 'john.ceo@abc-corp.com',
         tax_type: 'VAT',
         start_date: '2020-01-01',
-        reg_date: '2020-01-01'
+        reg_date: '2020-01-01',
       };
 
       const mockOrg = {
@@ -371,7 +414,15 @@ describe('Organization Integration Tests (e2e)', () => {
     });
 
     it('should create organization with EXCEMPT tax classification', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:create'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
       const payload = {
         name: 'Tax Exempt Organization',
         category: 'NON_INDIVIDUAL',
@@ -391,7 +442,7 @@ describe('Organization Integration Tests (e2e)', () => {
         email_address: 'exempt@taxfree.com',
         tax_type: 'EXCEMPT',
         start_date: '2021-01-01',
-        reg_date: '2021-01-01'
+        reg_date: '2021-01-01',
       };
 
       const mockOrg = {
@@ -450,7 +501,15 @@ describe('Organization Integration Tests (e2e)', () => {
     });
 
     it('should reject invalid subcategory enum value', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:create'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
       const payload = {
         name: 'Invalid Subcategory Org',
         category: 'INDIVIDUAL',
@@ -470,7 +529,7 @@ describe('Organization Integration Tests (e2e)', () => {
         email_address: 'invalid@test.com',
         tax_type: 'VAT',
         start_date: '2024-01-01',
-        reg_date: '2024-01-01'
+        reg_date: '2024-01-01',
       };
 
       // Don't mock the service for validation tests - let it fail at service level
@@ -483,7 +542,15 @@ describe('Organization Integration Tests (e2e)', () => {
     });
 
     it('should reject invalid tax classification', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:create'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
       const payload = {
         name: 'Invalid Tax Classification Org',
         category: 'INDIVIDUAL',
@@ -503,7 +570,7 @@ describe('Organization Integration Tests (e2e)', () => {
         email_address: 'tax.invalid@test.com',
         tax_type: 'INVALID_TAX_CLASS',
         start_date: '2024-01-01',
-        reg_date: '2024-01-01'
+        reg_date: '2024-01-01',
       };
 
       // Don't mock the service for validation tests - let it fail at service level
@@ -518,13 +585,21 @@ describe('Organization Integration Tests (e2e)', () => {
 
   describe('Organization Operation Updates', () => {
     it('should update organization operation with employee flags', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:update'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
       const updateData = {
         has_employees: true,
         is_ewt: true,
         is_fwt: false,
         is_bir_withholding_agent: true,
-        accounting_method: 'CASH'
+        accounting_method: 'CASH',
       };
 
       const mockUpdatedOperation = {
@@ -566,10 +641,18 @@ describe('Organization Integration Tests (e2e)', () => {
     });
 
     it('should handle partial operation updates', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:update'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
       const updateData = {
         has_foreign: true,
-        accounting_method: 'ACCRUAL'
+        accounting_method: 'ACCRUAL',
       };
 
       const mockUpdatedOperation = {
@@ -608,7 +691,15 @@ describe('Organization Integration Tests (e2e)', () => {
 
   describe('Organization Filtering', () => {
     it('should filter organizations by subcategory', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:read'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       const mockOrgs = [
         {
@@ -646,7 +737,15 @@ describe('Organization Integration Tests (e2e)', () => {
     });
 
     it('should filter organizations by tax classification', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:read'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       const mockOrgs = [
         {
@@ -684,7 +783,15 @@ describe('Organization Integration Tests (e2e)', () => {
     });
 
     it('should filter organizations by EXCEMPT tax classification', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:read'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       const mockOrgs = [
         {

@@ -31,10 +31,16 @@ describe('Organization Status Change Reason (Step 4)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
     app.setGlobalPrefix('api/org');
     await app.init();
-    
+
     mockService = moduleFixture.get(OrganizationService);
     mockRepository = moduleFixture.get(OrganizationRepository);
   });
@@ -77,13 +83,21 @@ describe('Organization Status Change Reason (Step 4)', () => {
         const updateData = {
           status: BusinessStatus.ACTIVE,
           reason: 'EXPIRED',
-          description: 'Approving organization after initial setup verification',
+          description:
+            'Approving organization after initial setup verification',
         };
 
         // Mock status update service call
         mockService.updateStatus.mockResolvedValue(mockUpdatedStatus);
 
-        const token = signPayload({ userId: 'user-123', permissions: ['resource:update'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          {
+            userId: 'user-123',
+            permissions: ['resource:update'],
+            isSuperAdmin: false,
+          },
+          process.env.JWT_SECRET!,
+        );
         const res = await request(app.getHttpServer())
           .put('/api/org/organizations/1/status')
           .set('Authorization', `Bearer ${token}`)
@@ -92,7 +106,11 @@ describe('Organization Status Change Reason (Step 4)', () => {
         expect(res.status).toBe(200);
         expect(res.body).toHaveProperty('status', BusinessStatus.ACTIVE);
         expect(res.body).toHaveProperty('organization_id', '1');
-        expect(mockService.updateStatus).toHaveBeenCalledWith('1', updateData, 'user-123');
+        expect(mockService.updateStatus).toHaveBeenCalledWith(
+          '1',
+          updateData,
+          'user-123',
+        );
       });
 
       it('should update organization status with reason but no description', async () => {
@@ -102,10 +120,20 @@ describe('Organization Status Change Reason (Step 4)', () => {
         };
 
         // Mock status update service call
-        const mockRejectedStatus = { ...mockOrganizationStatus, status: BusinessStatus.CLOSED };
+        const mockRejectedStatus = {
+          ...mockOrganizationStatus,
+          status: BusinessStatus.CLOSED,
+        };
         mockService.updateStatus.mockResolvedValue(mockRejectedStatus);
 
-        const token = signPayload({ userId: 'user-123', permissions: ['resource:update'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          {
+            userId: 'user-123',
+            permissions: ['resource:update'],
+            isSuperAdmin: false,
+          },
+          process.env.JWT_SECRET!,
+        );
         const res = await request(app.getHttpServer())
           .put('/api/org/organizations/1/status')
           .set('Authorization', `Bearer ${token}`)
@@ -113,7 +141,11 @@ describe('Organization Status Change Reason (Step 4)', () => {
 
         expect(res.status).toBe(200);
         expect(res.body).toHaveProperty('status', BusinessStatus.CLOSED);
-        expect(mockService.updateStatus).toHaveBeenCalledWith('1', updateData, 'user-123');
+        expect(mockService.updateStatus).toHaveBeenCalledWith(
+          '1',
+          updateData,
+          'user-123',
+        );
       });
 
       it('should return 400 when reason is missing', async () => {
@@ -122,7 +154,14 @@ describe('Organization Status Change Reason (Step 4)', () => {
           // reason is missing - should fail validation
         };
 
-        const token = signPayload({ userId: 'user-123', permissions: ['resource:update'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          {
+            userId: 'user-123',
+            permissions: ['resource:update'],
+            isSuperAdmin: false,
+          },
+          process.env.JWT_SECRET!,
+        );
         const res = await request(app.getHttpServer())
           .put('/api/org/organizations/1/status')
           .set('Authorization', `Bearer ${token}`)
@@ -138,7 +177,14 @@ describe('Organization Status Change Reason (Step 4)', () => {
           description: 'Test description',
         };
 
-        const token = signPayload({ userId: 'user-123', permissions: ['resource:update'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          {
+            userId: 'user-123',
+            permissions: ['resource:update'],
+            isSuperAdmin: false,
+          },
+          process.env.JWT_SECRET!,
+        );
         const res = await request(app.getHttpServer())
           .put('/api/org/organizations/1/status')
           .set('Authorization', `Bearer ${token}`)
@@ -157,10 +203,20 @@ describe('Organization Status Change Reason (Step 4)', () => {
         };
 
         // Mock status update service call
-        const mockSuspendedStatus = { ...mockOrganizationStatus, status: BusinessStatus.SUSPENDED };
+        const mockSuspendedStatus = {
+          ...mockOrganizationStatus,
+          status: BusinessStatus.SUSPENDED,
+        };
         mockService.updateStatus.mockResolvedValue(mockSuspendedStatus);
 
-        const token = signPayload({ userId: 'user-123', permissions: ['resource:update'], isSuperAdmin: false }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          {
+            userId: 'user-123',
+            permissions: ['resource:update'],
+            isSuperAdmin: false,
+          },
+          process.env.JWT_SECRET!,
+        );
         const res = await request(app.getHttpServer())
           .patch('/api/org/organizations/1/status')
           .set('Authorization', `Bearer ${token}`)
@@ -168,7 +224,11 @@ describe('Organization Status Change Reason (Step 4)', () => {
 
         expect(res.status).toBe(200);
         expect(res.body).toHaveProperty('status', BusinessStatus.SUSPENDED);
-        expect(mockService.updateStatus).toHaveBeenCalledWith('1', updateData, 'user-123');
+        expect(mockService.updateStatus).toHaveBeenCalledWith(
+          '1',
+          updateData,
+          'user-123',
+        );
       });
     });
   });

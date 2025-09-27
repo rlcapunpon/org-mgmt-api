@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../database/prisma.service';
 import { Organization, BusinessStatus } from '@prisma/client';
 
-interface CreateOrganizationData extends Omit<Organization, 'id' | 'created_at' | 'updated_at' | 'deleted_at'> {
+interface CreateOrganizationData
+  extends Omit<
+    Organization,
+    'id' | 'created_at' | 'updated_at' | 'deleted_at'
+  > {
   // OrganizationRegistration fields
   first_name: string;
   middle_name?: string | null;
@@ -21,6 +25,8 @@ interface CreateOrganizationData extends Omit<Organization, 'id' | 'created_at' 
   start_date: Date;
   reg_date: Date;
   update_by: string;
+  // Creator user ID for automatic owner assignment
+  creator_user_id: string;
 }
 
 @Injectable()
@@ -51,6 +57,7 @@ export class OrganizationRepository {
       start_date,
       reg_date,
       update_by,
+      creator_user_id,
       ...orgData
     } = data;
 
@@ -101,11 +108,17 @@ export class OrganizationRepository {
             update_by,
           },
         },
+        owners: {
+          create: {
+            user_id: creator_user_id,
+          },
+        },
       },
       include: {
         status: true,
         operation: true,
         registration: true,
+        owners: true,
       },
     });
   }
@@ -134,7 +147,10 @@ export class OrganizationRepository {
     });
   }
 
-  async update(id: string, data: Partial<Omit<Organization, 'id' | 'created_at' | 'updated_at'>>): Promise<Organization> {
+  async update(
+    id: string,
+    data: Partial<Omit<Organization, 'id' | 'created_at' | 'updated_at'>>,
+  ): Promise<Organization> {
     return this.prisma.organization.update({
       where: { id },
       data: {
@@ -151,7 +167,10 @@ export class OrganizationRepository {
     });
   }
 
-  async updateBasic(id: string, data: Partial<Omit<Organization, 'id' | 'created_at' | 'updated_at'>>): Promise<Organization> {
+  async updateBasic(
+    id: string,
+    data: Partial<Omit<Organization, 'id' | 'created_at' | 'updated_at'>>,
+  ): Promise<Organization> {
     return this.prisma.organization.update({
       where: { id },
       data: {
@@ -179,14 +198,22 @@ export class OrganizationRepository {
   }
 
   async softDelete(id: string): Promise<Organization> {
-    return this.prisma.organization.update({ where: { id }, data: { deleted_at: new Date() } });
+    return this.prisma.organization.update({
+      where: { id },
+      data: { deleted_at: new Date() },
+    });
   }
 
-  async list(filters?: { category?: string; tax_classification?: string }): Promise<Organization[]> {
+  async list(filters?: {
+    category?: string;
+    tax_classification?: string;
+  }): Promise<Organization[]> {
     const where = {
       deleted_at: null,
       ...(filters?.category && { category: filters.category as any }),
-      ...(filters?.tax_classification && { tax_classification: filters.tax_classification as any }),
+      ...(filters?.tax_classification && {
+        tax_classification: filters.tax_classification as any,
+      }),
     };
     return this.prisma.organization.findMany({
       where,
@@ -196,11 +223,16 @@ export class OrganizationRepository {
     });
   }
 
-  async listBasic(filters?: { category?: string; tax_classification?: string }): Promise<Organization[]> {
+  async listBasic(filters?: {
+    category?: string;
+    tax_classification?: string;
+  }): Promise<Organization[]> {
     const where = {
       deleted_at: null,
       ...(filters?.category && { category: filters.category as any }),
-      ...(filters?.tax_classification && { tax_classification: filters.tax_classification as any }),
+      ...(filters?.tax_classification && {
+        tax_classification: filters.tax_classification as any,
+      }),
     };
     return this.prisma.organization.findMany({
       where,

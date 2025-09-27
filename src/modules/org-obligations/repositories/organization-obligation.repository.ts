@@ -6,8 +6,14 @@ import { OrganizationObligation, Prisma } from '@prisma/client';
 export class OrganizationObligationRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.OrganizationObligationCreateInput): Promise<OrganizationObligation> {
-    if (!data.organization?.connect?.id || !data.obligation?.connect?.id || !data.start_date) {
+  async create(
+    data: Prisma.OrganizationObligationCreateInput,
+  ): Promise<OrganizationObligation> {
+    if (
+      !data.organization?.connect?.id ||
+      !data.obligation?.connect?.id ||
+      !data.start_date
+    ) {
       throw new Error('Required fields missing');
     }
     return this.prisma.organizationObligation.create({ data });
@@ -20,7 +26,10 @@ export class OrganizationObligationRepository {
     });
   }
 
-  async update(id: string, data: Prisma.OrganizationObligationUpdateInput): Promise<OrganizationObligation> {
+  async update(
+    id: string,
+    data: Prisma.OrganizationObligationUpdateInput,
+  ): Promise<OrganizationObligation> {
     return this.prisma.organizationObligation.update({ where: { id }, data });
   }
 

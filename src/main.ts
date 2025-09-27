@@ -9,16 +9,27 @@ async function bootstrap() {
   validateEnvironment();
 
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   // Swagger configuration
   const config = new DocumentBuilder()
     .setTitle('Organization Management API')
-    .setDescription('API for managing organizations, tax obligations, and compliance schedules')
+    .setDescription(
+      'API for managing organizations, tax obligations, and compliance schedules',
+    )
     .setVersion('1.0')
     .addTag('Organizations', 'Organization management endpoints')
     .addTag('Tax Obligations', 'Tax obligation management endpoints')
-    .addTag('Organization Obligations', 'Organization obligation management endpoints')
+    .addTag(
+      'Organization Obligations',
+      'Organization obligation management endpoints',
+    )
     .addTag('Schedules', 'Compliance schedule management endpoints')
     .addBearerAuth(
       {
@@ -41,8 +52,8 @@ async function bootstrap() {
     exclude: [
       { path: 'health', method: RequestMethod.GET },
       { path: 'docs', method: RequestMethod.GET },
-      { path: 'docs-json', method: RequestMethod.GET }
-    ]
+      { path: 'docs-json', method: RequestMethod.GET },
+    ],
   });
 
   await app.listen(process.env.PORT ?? 3000);

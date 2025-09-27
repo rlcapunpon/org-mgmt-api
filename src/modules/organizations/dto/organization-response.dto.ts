@@ -10,22 +10,29 @@ export class OrganizationResponseDto {
   @ApiProperty({ description: 'Tax identification number', required: false })
   tin: string | null;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Organization category',
-    enum: ['INDIVIDUAL', 'NON_INDIVIDUAL']
+    enum: ['INDIVIDUAL', 'NON_INDIVIDUAL'],
   })
   category: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Organization subcategory',
-    enum: ['SELF_EMPLOYED', 'SOLE_PROPRIETOR', 'FREELANCER', 'CORPORATION', 'PARTNERSHIP', 'OTHERS'],
-    required: false
+    enum: [
+      'SELF_EMPLOYED',
+      'SOLE_PROPRIETOR',
+      'FREELANCER',
+      'CORPORATION',
+      'PARTNERSHIP',
+      'OTHERS',
+    ],
+    required: false,
   })
   subcategory: string | null;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Tax classification',
-    enum: ['VAT', 'NON_VAT']
+    enum: ['VAT', 'NON_VAT'],
   })
   tax_classification: string;
 
@@ -46,9 +53,9 @@ export class OrganizationResponseDto {
 }
 
 export class OrganizationListResponseDto {
-  @ApiProperty({ 
+  @ApiProperty({
     type: [OrganizationResponseDto],
-    description: 'Array of organizations'
+    description: 'Array of organizations',
   })
   organizations: OrganizationResponseDto[];
 }
@@ -72,21 +79,21 @@ export class OrganizationOperationResponseDto {
   @ApiProperty({ description: 'Registration effectivity date' })
   registration_effectivity: Date;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Payroll cut-off dates',
-    type: [String]
+    type: [String],
   })
   payroll_cut_off: string[];
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Payment cut-off dates',
-    type: [String]
+    type: [String],
   })
   payment_cut_off: string[];
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Quarter closing dates',
-    type: [String]
+    type: [String],
   })
   quarter_closing: string[];
 
@@ -105,9 +112,9 @@ export class OrganizationOperationResponseDto {
   @ApiProperty({ description: 'Is BIR withholding agent' })
   is_bir_withholding_agent: boolean;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Accounting method',
-    enum: ['ACCRUAL', 'CASH', 'OTHERS']
+    enum: ['ACCRUAL', 'CASH', 'OTHERS'],
   })
   accounting_method: string;
 
@@ -130,7 +137,17 @@ export class OrganizationStatusResponseDto {
 
   @ApiProperty({
     description: 'Organization business status',
-    enum: ['REGISTERED', 'PENDING_REG', 'ACTIVE', 'INACTIVE', 'CESSATION', 'CLOSED', 'NON_COMPLIANT', 'UNDER_AUDIT', 'SUSPENDED']
+    enum: [
+      'REGISTERED',
+      'PENDING_REG',
+      'ACTIVE',
+      'INACTIVE',
+      'CESSATION',
+      'CLOSED',
+      'NON_COMPLIANT',
+      'UNDER_AUDIT',
+      'SUSPENDED',
+    ],
   })
   status: string;
 
@@ -151,7 +168,10 @@ export class OrganizationRegistrationResponseDto {
   @ApiProperty({ description: 'First name of the registrant' })
   first_name: string;
 
-  @ApiProperty({ description: 'Middle name of the registrant', required: false })
+  @ApiProperty({
+    description: 'Middle name of the registrant',
+    required: false,
+  })
   middle_name: string | null;
 
   @ApiProperty({ description: 'Last name of the registrant' })
@@ -189,7 +209,7 @@ export class OrganizationRegistrationResponseDto {
 
   @ApiProperty({
     description: 'Tax type for registration',
-    enum: ['VAT', 'NON_VAT', 'EXCEMPT']
+    enum: ['VAT', 'NON_VAT', 'EXCEMPT'],
   })
   tax_type: string;
 

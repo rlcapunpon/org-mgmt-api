@@ -26,12 +26,16 @@ describe('OrganizationObligationRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<OrganizationObligationRepository>(OrganizationObligationRepository);
+    repository = module.get<OrganizationObligationRepository>(
+      OrganizationObligationRepository,
+    );
     prismaMock = module.get(PrismaService);
   });
 
   it('create should fail when required fields missing', async () => {
-    await expect(repository.create({} as any)).rejects.toThrow('Required fields missing');
+    await expect(repository.create({} as any)).rejects.toThrow(
+      'Required fields missing',
+    );
   });
 
   it('create should assign obligation and return the new assignment', async () => {
@@ -51,11 +55,15 @@ describe('OrganizationObligationRepository', () => {
       created_at: new Date(),
       updated_at: new Date(),
     };
-    (prismaMock.organizationObligation.create as jest.Mock).mockResolvedValue(mockAssignment);
+    (prismaMock.organizationObligation.create as jest.Mock).mockResolvedValue(
+      mockAssignment,
+    );
 
     const result = await repository.create(data);
     expect(result).toEqual(mockAssignment);
-    expect(prismaMock.organizationObligation.create).toHaveBeenCalledWith({ data });
+    expect(prismaMock.organizationObligation.create).toHaveBeenCalledWith({
+      data,
+    });
   });
 
   it('findByOrgId should return obligations for organization', async () => {
@@ -73,7 +81,9 @@ describe('OrganizationObligationRepository', () => {
         obligation: { id: 'obl1', code: '2550M', name: 'Monthly VAT' },
       },
     ];
-    (prismaMock.organizationObligation.findMany as jest.Mock).mockResolvedValue(mockAssignments);
+    (prismaMock.organizationObligation.findMany as jest.Mock).mockResolvedValue(
+      mockAssignments,
+    );
 
     const result = await repository.findByOrgId('org1');
     expect(result).toEqual(mockAssignments);
@@ -84,7 +94,9 @@ describe('OrganizationObligationRepository', () => {
   });
 
   it('findById should return null for non-existing id', async () => {
-    (prismaMock.organizationObligation.findUnique as jest.Mock).mockResolvedValue(null);
+    (
+      prismaMock.organizationObligation.findUnique as jest.Mock
+    ).mockResolvedValue(null);
 
     const result = await repository.findById('non-existing');
     expect(result).toBeNull();
@@ -107,10 +119,15 @@ describe('OrganizationObligationRepository', () => {
       created_at: new Date(),
       updated_at: new Date(),
     };
-    (prismaMock.organizationObligation.update as jest.Mock).mockResolvedValue(mockUpdated);
+    (prismaMock.organizationObligation.update as jest.Mock).mockResolvedValue(
+      mockUpdated,
+    );
 
     const result = await repository.update('1', updateData);
     expect(result).toEqual(mockUpdated);
-    expect(prismaMock.organizationObligation.update).toHaveBeenCalledWith({ where: { id: '1' }, data: updateData });
+    expect(prismaMock.organizationObligation.update).toHaveBeenCalledWith({
+      where: { id: '1' },
+      data: updateData,
+    });
   });
 });

@@ -29,7 +29,9 @@ describe('TaxObligationRepository', () => {
   });
 
   it('create should fail when required fields missing', async () => {
-    await expect(repository.create({} as any)).rejects.toThrow('Required fields missing');
+    await expect(repository.create({} as any)).rejects.toThrow(
+      'Required fields missing',
+    );
   });
 
   it('create should create a record and return the new obligation with id and timestamps', async () => {
@@ -46,7 +48,9 @@ describe('TaxObligationRepository', () => {
       created_at: new Date(),
       updated_at: new Date(),
     };
-    (prismaMock.taxObligation.create as jest.Mock).mockResolvedValue(mockObligation);
+    (prismaMock.taxObligation.create as jest.Mock).mockResolvedValue(
+      mockObligation,
+    );
 
     const result = await repository.create(data);
     expect(result).toEqual(mockObligation);
@@ -66,11 +70,15 @@ describe('TaxObligationRepository', () => {
         updated_at: new Date(),
       },
     ];
-    (prismaMock.taxObligation.findMany as jest.Mock).mockResolvedValue(mockObligations);
+    (prismaMock.taxObligation.findMany as jest.Mock).mockResolvedValue(
+      mockObligations,
+    );
 
     const result = await repository.listActive();
     expect(result).toEqual(mockObligations);
-    expect(prismaMock.taxObligation.findMany).toHaveBeenCalledWith({ where: { status: 'MANDATORY' } });
+    expect(prismaMock.taxObligation.findMany).toHaveBeenCalledWith({
+      where: { status: 'MANDATORY' },
+    });
   });
 
   it('listActive should return empty array when no active obligations', async () => {
@@ -78,6 +86,8 @@ describe('TaxObligationRepository', () => {
 
     const result = await repository.listActive();
     expect(result).toEqual([]);
-    expect(prismaMock.taxObligation.findMany).toHaveBeenCalledWith({ where: { status: 'MANDATORY' } });
+    expect(prismaMock.taxObligation.findMany).toHaveBeenCalledWith({
+      where: { status: 'MANDATORY' },
+    });
   });
 });

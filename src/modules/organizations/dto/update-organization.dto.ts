@@ -6,7 +6,7 @@ import { Category, SubCategory, TaxClassification } from '@prisma/client';
 export class UpdateOrganizationDto {
   @ApiPropertyOptional({
     description: 'Organization name',
-    example: 'ABC Corporation'
+    example: 'ABC Corporation',
   })
   @IsOptional()
   @IsString()
@@ -14,7 +14,7 @@ export class UpdateOrganizationDto {
 
   @ApiPropertyOptional({
     description: 'Tax Identification Number',
-    example: '123-456-789-000'
+    example: '123-456-789-000',
   })
   @IsOptional()
   @IsString()
@@ -23,7 +23,7 @@ export class UpdateOrganizationDto {
   @ApiPropertyOptional({
     description: 'Organization category',
     enum: Category,
-    example: Category.NON_INDIVIDUAL
+    example: Category.NON_INDIVIDUAL,
   })
   @IsOptional()
   @IsEnum(Category)
@@ -32,7 +32,7 @@ export class UpdateOrganizationDto {
   @ApiPropertyOptional({
     description: 'Organization subcategory',
     enum: SubCategory,
-    example: SubCategory.CORPORATION
+    example: SubCategory.CORPORATION,
   })
   @IsOptional()
   @IsEnum(SubCategory)
@@ -41,7 +41,7 @@ export class UpdateOrganizationDto {
   @ApiPropertyOptional({
     description: 'Tax classification',
     enum: TaxClassification,
-    example: TaxClassification.VAT
+    example: TaxClassification.VAT,
   })
   @IsOptional()
   @IsEnum(TaxClassification)
@@ -49,15 +49,15 @@ export class UpdateOrganizationDto {
 
   @ApiPropertyOptional({
     description: 'Registration date',
-    example: '2025-01-01'
+    example: '2025-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => value ? new Date(value) : null)
+  @Transform(({ value }) => (value ? new Date(value) : null))
   registration_date?: Date;
 
   @ApiPropertyOptional({
     description: 'Organization address',
-    example: '123 Main Street, City, Province 1234'
+    example: '123 Main Street, City, Province 1234',
   })
   @IsOptional()
   @IsString()

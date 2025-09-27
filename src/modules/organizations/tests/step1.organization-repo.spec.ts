@@ -31,7 +31,9 @@ describe('OrganizationRepository', () => {
   });
 
   it('createOrganization should fail when required fields missing', async () => {
-    await expect(repository.create({} as any)).rejects.toThrow('Required fields missing');
+    await expect(repository.create({} as any)).rejects.toThrow(
+      'Required fields missing',
+    );
   });
 
   it('createOrganization should create a record and return the new org with id and timestamps', async () => {
@@ -61,6 +63,7 @@ describe('OrganizationRepository', () => {
       start_date: new Date('2024-01-01'),
       reg_date: new Date('2024-01-01'),
       update_by: 'test-user',
+      creator_user_id: 'test-user', // Creator user ID for automatic owner assignment
     };
     const mockOrg = {
       id: 'uuid',
@@ -103,6 +106,15 @@ describe('OrganizationRepository', () => {
         created_at: new Date(),
         updated_at: new Date(),
       },
+      owners: [
+        {
+          id: 'owner-uuid',
+          org_id: 'uuid',
+          user_id: 'test-user',
+          last_update: new Date(),
+          assigned_date: new Date(),
+        },
+      ],
     };
     (prismaMock.organization.create as jest.Mock).mockResolvedValue(mockOrg);
 
@@ -161,11 +173,17 @@ describe('OrganizationRepository', () => {
             update_by: 'test-user',
           },
         },
+        owners: {
+          create: {
+            user_id: 'test-user',
+          },
+        },
       },
       include: {
         status: true,
         operation: true,
         registration: true,
+        owners: true,
       },
     });
   });
@@ -209,7 +227,10 @@ describe('OrganizationRepository', () => {
     ];
     (prismaMock.organization.findMany as jest.Mock).mockResolvedValue(mockOrgs);
 
-    const result = await repository.list({ category: 'NON_INDIVIDUAL', tax_classification: 'VAT' });
+    const result = await repository.list({
+      category: 'NON_INDIVIDUAL',
+      tax_classification: 'VAT',
+    });
     expect(result).toEqual(mockOrgs);
     expect(prismaMock.organization.findMany).toHaveBeenCalledWith({
       where: {
@@ -246,7 +267,9 @@ describe('OrganizationRepository', () => {
         updated_at: new Date(),
       },
     };
-    (prismaMock.organization.update as jest.Mock).mockResolvedValue(mockUpdatedOrg);
+    (prismaMock.organization.update as jest.Mock).mockResolvedValue(
+      mockUpdatedOrg,
+    );
 
     const result = await repository.update('1', updateData);
     expect(result).toEqual(mockUpdatedOrg);
@@ -280,10 +303,15 @@ describe('OrganizationRepository', () => {
       updated_at: new Date(),
       deleted_at: new Date(),
     };
-    (prismaMock.organization.update as jest.Mock).mockResolvedValue(mockDeletedOrg);
+    (prismaMock.organization.update as jest.Mock).mockResolvedValue(
+      mockDeletedOrg,
+    );
 
     const result = await repository.softDelete('1');
     expect(result).toEqual(mockDeletedOrg);
-    expect(prismaMock.organization.update).toHaveBeenCalledWith({ where: { id: '1' }, data: { deleted_at: expect.any(Date) } });
+    expect(prismaMock.organization.update).toHaveBeenCalledWith({
+      where: { id: '1' },
+      data: { deleted_at: expect.any(Date) },
+    });
   });
 });

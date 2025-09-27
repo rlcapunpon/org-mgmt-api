@@ -1,5 +1,11 @@
 import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiBody,
+} from '@nestjs/swagger';
 import { TaxObligationService } from '../services/tax-obligation.service';
 import { CreateTaxObligationRequestDto } from '../dto/create-tax-obligation.dto';
 import { TaxObligationResponseDto } from '../dto/tax-obligation-response.dto';
@@ -17,13 +23,16 @@ export class TaxObligationController {
   @UseGuards(AuthGuard, PermissionsGuard)
   @RequiresPermission('tax:configure')
   @ApiOperation({ summary: 'Create a new tax obligation' })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'Tax obligation created successfully',
-    type: TaxObligationResponseDto 
+    type: TaxObligationResponseDto,
   })
   @ApiResponse({ status: 400, description: 'Bad request - invalid data' })
-  @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - insufficient permissions',
+  })
   @ApiBody({ type: CreateTaxObligationRequestDto })
   async create(@Body() dto: CreateTaxObligationRequestDto) {
     const obligation = await this.service.create(dto);
@@ -32,10 +41,10 @@ export class TaxObligationController {
 
   @Get()
   @ApiOperation({ summary: 'List active tax obligations' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'List of active tax obligations',
-    type: [TaxObligationResponseDto] 
+    type: [TaxObligationResponseDto],
   })
   async listActive() {
     return this.service.listActive();

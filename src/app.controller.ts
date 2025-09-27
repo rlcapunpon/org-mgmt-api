@@ -10,10 +10,10 @@ export class AppController {
 
   @Get('health')
   @ApiOperation({ summary: 'Health check endpoint' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Application is healthy',
-    type: HealthResponseDto
+    type: HealthResponseDto,
   })
   getHealth(): HealthResponseDto {
     return this.appService.getHealth();

@@ -15,22 +15,27 @@ describe('Organization Management API Integration Tests', () => {
   beforeAll(async () => {
     // Ensure JWT_SECRET is set for testing
     process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-secret';
-    
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
     prisma = moduleFixture.get<PrismaService>(PrismaService);
-    
+
     // Configure Swagger documentation to match main.ts configuration
     const config = new DocumentBuilder()
       .setTitle('Organization Management API')
-      .setDescription('API for managing organizations, tax obligations, and compliance schedules')
+      .setDescription(
+        'API for managing organizations, tax obligations, and compliance schedules',
+      )
       .setVersion('1.0')
       .addTag('Organizations', 'Organization management endpoints')
       .addTag('Tax Obligations', 'Tax obligation management endpoints')
-      .addTag('Organization Obligations', 'Organization obligation management endpoints')
+      .addTag(
+        'Organization Obligations',
+        'Organization obligation management endpoints',
+      )
       .addTag('Schedules', 'Compliance schedule management endpoints')
       .addBearerAuth(
         {
@@ -47,7 +52,7 @@ describe('Organization Management API Integration Tests', () => {
 
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('docs', app, document);
-    
+
     // Configure global prefix to match main.ts configuration
     app.setGlobalPrefix('api/org', {
       exclude: [
@@ -56,7 +61,7 @@ describe('Organization Management API Integration Tests', () => {
         { path: 'docs-json', method: RequestMethod.GET },
       ],
     });
-    
+
     await app.init();
 
     // Generate test JWT token
@@ -65,7 +70,14 @@ describe('Organization Management API Integration Tests', () => {
       userId: 'test-user-id',
       username: 'testuser',
       isSuperAdmin: true,
-      permissions: ['resource:create', 'resource:read', 'resource:update', 'resource:delete', 'tax:configure', '*']
+      permissions: [
+        'resource:create',
+        'resource:read',
+        'resource:update',
+        'resource:delete',
+        'tax:configure',
+        '*',
+      ],
     };
     authToken = signPayload(payload, jwtSecret);
 
@@ -79,8 +91,13 @@ describe('Organization Management API Integration Tests', () => {
   });
 
   // Helper function to create authenticated requests
-  const authRequest = (method: 'get' | 'post' | 'put' | 'delete' | 'patch', url: string) => {
-    return request(app.getHttpServer())[method](url).set('Authorization', `Bearer ${authToken}`);
+  const authRequest = (
+    method: 'get' | 'post' | 'put' | 'delete' | 'patch',
+    url: string,
+  ) => {
+    return request(app.getHttpServer())
+      [method](url)
+      .set('Authorization', `Bearer ${authToken}`);
   };
 
   afterAll(async () => {
@@ -91,7 +108,7 @@ describe('Organization Management API Integration Tests', () => {
     await prisma.organizationObligation.deleteMany();
     await prisma.organization.deleteMany();
     await prisma.taxObligation.deleteMany();
-    
+
     await app.close();
   });
 
@@ -113,7 +130,7 @@ describe('Organization Management API Integration Tests', () => {
         .send({
           code: 'VAT_MONTHLY_E2E_001',
           name: 'Monthly VAT Filing',
-          frequency: "MONTHLY",
+          frequency: 'MONTHLY',
           due_rule: { day: 20 },
           status: 'MANDATORY',
         })
@@ -148,9 +165,9 @@ describe('Organization Management API Integration Tests', () => {
         .send({
           name: 'Test Corporation Ltd',
           tin: '123456789012',
-          category: "NON_INDIVIDUAL",
-          subcategory: "CORPORATION",
-          tax_classification: "VAT",
+          category: 'NON_INDIVIDUAL',
+          subcategory: 'CORPORATION',
+          tax_classification: 'VAT',
           registration_date: '2024-01-01T00:00:00.000Z',
           address: '123 Test Street, Test City',
           // Registration fields
@@ -167,7 +184,7 @@ describe('Organization Management API Integration Tests', () => {
           email_address: 'john.ceo@testcorp.com',
           tax_type: 'VAT',
           start_date: '2024-01-01T00:00:00.000Z',
-          reg_date: '2024-01-01T00:00:00.000Z'
+          reg_date: '2024-01-01T00:00:00.000Z',
         })
         .expect(201)
         .expect((res) => {
@@ -218,7 +235,10 @@ describe('Organization Management API Integration Tests', () => {
     });
 
     it('should get organization operation (GET)', () => {
-      return authRequest('get', `/api/org/organizations/${createdOrgId}/operation`)
+      return authRequest(
+        'get',
+        `/api/org/organizations/${createdOrgId}/operation`,
+      )
         .expect(200)
         .expect((res) => {
           expect(res.body).toHaveProperty('organization_id');
@@ -229,11 +249,14 @@ describe('Organization Management API Integration Tests', () => {
     });
 
     it('should update organization operation (PUT)', () => {
-      return authRequest('put', `/api/org/organizations/${createdOrgId}/operation`)
+      return authRequest(
+        'put',
+        `/api/org/organizations/${createdOrgId}/operation`,
+      )
         .send({
           has_employees: true,
           has_foreign: true,
-          accounting_method: "ACCRUAL",
+          accounting_method: 'ACCRUAL',
           is_bir_withholding_agent: true,
         })
         .expect(200)
@@ -261,7 +284,7 @@ describe('Organization Management API Integration Tests', () => {
       return authRequest('put', `/api/org/organizations/${createdOrgId}/status`)
         .send({
           status: 'ACTIVE',
-          reason: 'EXPIRED'
+          reason: 'EXPIRED',
         })
         .expect(200)
         .expect((res) => {
@@ -272,10 +295,13 @@ describe('Organization Management API Integration Tests', () => {
     });
 
     it('should partially update organization status (PATCH)', () => {
-      return authRequest('patch', `/api/org/organizations/${createdOrgId}/status`)
+      return authRequest(
+        'patch',
+        `/api/org/organizations/${createdOrgId}/status`,
+      )
         .send({
           status: 'INACTIVE',
-          reason: 'VIOLATIONS'
+          reason: 'VIOLATIONS',
         })
         .expect(200)
         .expect((res) => {
@@ -286,7 +312,10 @@ describe('Organization Management API Integration Tests', () => {
     });
 
     it('should get organization registration (GET)', () => {
-      return authRequest('get', `/api/org/organizations/${createdOrgId}/registration`)
+      return authRequest(
+        'get',
+        `/api/org/organizations/${createdOrgId}/registration`,
+      )
         .expect(200)
         .expect((res) => {
           expect(res.body).toHaveProperty('organization_id');
@@ -302,12 +331,15 @@ describe('Organization Management API Integration Tests', () => {
     });
 
     it('should update organization registration (PUT)', () => {
-      return authRequest('put', `/api/org/organizations/${createdOrgId}/registration`)
+      return authRequest(
+        'put',
+        `/api/org/organizations/${createdOrgId}/registration`,
+      )
         .send({
           first_name: 'Jane',
           last_name: 'Smith',
           email_address: 'jane.smith@testcorp.com',
-          contact_number: '+639876543210'
+          contact_number: '+639876543210',
         })
         .expect(200)
         .expect((res) => {
@@ -320,9 +352,12 @@ describe('Organization Management API Integration Tests', () => {
     });
 
     it('should partially update organization registration (PATCH)', () => {
-      return authRequest('patch', `/api/org/organizations/${createdOrgId}/registration`)
+      return authRequest(
+        'patch',
+        `/api/org/organizations/${createdOrgId}/registration`,
+      )
         .send({
-          contact_number: '+639111111111'
+          contact_number: '+639111111111',
         })
         .expect(200)
         .expect((res) => {
@@ -342,7 +377,7 @@ describe('Organization Management API Integration Tests', () => {
           data: {
             code: 'INCOME_TAX_001',
             name: 'Annual Income Tax',
-            frequency: "ANNUAL",
+            frequency: 'ANNUAL',
             due_rule: { month: 4, day: 15 },
             status: 'MANDATORY' as const,
           },
@@ -351,7 +386,10 @@ describe('Organization Management API Integration Tests', () => {
       });
 
       it('should assign obligation to organization (POST)', () => {
-        return authRequest('post', `/api/org/organizations/${createdOrgId}/obligations`)
+        return authRequest(
+          'post',
+          `/api/org/organizations/${createdOrgId}/obligations`,
+        )
           .send({
             obligation_id: taxObligationId,
             start_date: '2024-01-01',
@@ -369,7 +407,10 @@ describe('Organization Management API Integration Tests', () => {
       });
 
       it('should get organization obligations (GET)', () => {
-        return authRequest('get', `/api/org/organizations/${createdOrgId}/obligations`)
+        return authRequest(
+          'get',
+          `/api/org/organizations/${createdOrgId}/obligations`,
+        )
           .expect(200)
           .expect((res) => {
             expect(Array.isArray(res.body)).toBe(true);
@@ -384,27 +425,31 @@ describe('Organization Management API Integration Tests', () => {
 
     describe('/organizations/:id/schedules', () => {
       it('should get organization schedules (GET)', () => {
-        return authRequest('get', `/api/org/organizations/${createdOrgId}/schedules`)
-          .expect((res) => {
-            // Accept either 200 (success) or 500 (if organization has schedule issues)
-            expect([200, 500]).toContain(res.status);
-            if (res.status === 200) {
-              expect(Array.isArray(res.body)).toBe(true);
-              // May be empty if no schedules exist yet
-              if (res.body.length > 0) {
-                expect(res.body[0]).toHaveProperty('id');
-                expect(res.body[0]).toHaveProperty('org_obligation_id');
-                expect(res.body[0]).toHaveProperty('period');
-                expect(res.body[0]).toHaveProperty('status');
-              }
+        return authRequest(
+          'get',
+          `/api/org/organizations/${createdOrgId}/schedules`,
+        ).expect((res) => {
+          // Accept either 200 (success) or 500 (if organization has schedule issues)
+          expect([200, 500]).toContain(res.status);
+          if (res.status === 200) {
+            expect(Array.isArray(res.body)).toBe(true);
+            // May be empty if no schedules exist yet
+            if (res.body.length > 0) {
+              expect(res.body[0]).toHaveProperty('id');
+              expect(res.body[0]).toHaveProperty('org_obligation_id');
+              expect(res.body[0]).toHaveProperty('period');
+              expect(res.body[0]).toHaveProperty('status');
             }
-          });
+          }
+        });
       });
     });
 
     it('should soft delete organization (DELETE)', () => {
-      return authRequest('delete', `/api/org/organizations/${createdOrgId}`)
-        .expect(204); // DELETE typically returns 204 No Content
+      return authRequest(
+        'delete',
+        `/api/org/organizations/${createdOrgId}`,
+      ).expect(204); // DELETE typically returns 204 No Content
     });
 
     it('should not find deleted organization (GET)', () => {
@@ -416,10 +461,203 @@ describe('Organization Management API Integration Tests', () => {
     });
   });
 
+  describe('/organizations/:orgId/owners', () => {
+    let testOrgId: string;
+    const testUserId: string = 'test-owner-user-id';
+
+    beforeAll(async () => {
+      // Create a test organization for owner assignment
+      const org = await prisma.organization.create({
+        data: {
+          name: 'Owner Test Organization',
+          category: 'NON_INDIVIDUAL',
+          tax_classification: 'VAT',
+          status: {
+            create: {
+              status: 'PENDING_REG',
+            },
+          },
+          operation: {
+            create: {
+              fy_start: new Date('2024-01-01'),
+              fy_end: new Date('2024-12-31'),
+              vat_reg_effectivity: new Date('2024-01-01'),
+              registration_effectivity: new Date('2024-01-01'),
+              payroll_cut_off: ['15/30'],
+              payment_cut_off: ['15/30'],
+              quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
+              has_foreign: false,
+              has_employees: false,
+              is_ewt: false,
+              is_fwt: false,
+              is_bir_withholding_agent: false,
+              accounting_method: 'ACCRUAL',
+            },
+          },
+          registration: {
+            create: {
+              first_name: 'Test',
+              last_name: 'Owner',
+              line_of_business: '6201',
+              address_line: '123 Test St',
+              region: 'NCR',
+              city: 'Makati',
+              zip_code: '1223',
+              tin: '001234567890',
+              rdo_code: '001',
+              contact_number: '+639123456789',
+              email_address: 'test.owner@example.com',
+              tax_type: 'VAT',
+              start_date: new Date('2024-01-01'),
+              reg_date: new Date('2024-01-01'),
+              update_by: 'test-user-id',
+            },
+          },
+        },
+      });
+      testOrgId = org.id;
+    });
+
+    it('should assign owner to organization (POST) - super admin only', () => {
+      return authRequest('post', `/api/org/organizations/${testOrgId}/owners`)
+        .send({
+          org_id: testOrgId,
+          user_id: testUserId,
+        })
+        .expect(201)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('id');
+          expect(res.body.org_id).toBe(testOrgId);
+          expect(res.body.user_id).toBe(testUserId);
+          expect(res.body).toHaveProperty('last_update');
+          expect(res.body).toHaveProperty('assigned_date');
+        });
+    });
+
+    it('should get owners of organization (GET) - super admin only', () => {
+      return authRequest('get', `/api/org/organizations/${testOrgId}/owners`)
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('owners');
+          expect(Array.isArray(res.body.owners)).toBe(true);
+          expect(res.body.owners.length).toBeGreaterThan(0);
+          expect(res.body.owners[0]).toHaveProperty('id');
+          expect(res.body.owners[0].org_id).toBe(testOrgId);
+          expect(res.body.owners[0].user_id).toBe(testUserId);
+        });
+    });
+
+    it('should check ownership (GET) - any authenticated user', () => {
+      return authRequest('get', `/api/org/organizations/${testOrgId}/ownership`)
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('is_owner');
+          expect(res.body).toHaveProperty('org_id');
+          expect(res.body).toHaveProperty('user_id');
+          expect(res.body.org_id).toBe(testOrgId);
+          expect(res.body.user_id).toBe('test-user-id'); // From JWT payload
+          // Since the JWT user is super admin, they should be considered an owner
+          expect(res.body.is_owner).toBe(true);
+        });
+    });
+
+    it('should remove owner from organization (DELETE) - super admin only', () => {
+      return authRequest(
+        'delete',
+        `/api/org/organizations/${testOrgId}/owners/${testUserId}`,
+      )
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('id');
+          expect(res.body.org_id).toBe(testOrgId);
+          expect(res.body.user_id).toBe(testUserId);
+        });
+    });
+
+    it('should return empty owners list after removal (GET)', () => {
+      return authRequest('get', `/api/org/organizations/${testOrgId}/owners`)
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('owners');
+          expect(Array.isArray(res.body.owners)).toBe(true);
+          expect(res.body.owners.length).toBe(0);
+        });
+    });
+
+    it('should reject non-super-admin access to assign owner (POST)', () => {
+      // Create a non-super-admin token
+      const nonSuperAdminToken = signPayload(
+        {
+          userId: 'regular-user-id',
+          username: 'regularuser',
+          isSuperAdmin: false,
+          permissions: ['resource:read'],
+        },
+        process.env.JWT_SECRET || 'test-secret',
+      );
+
+      return request(app.getHttpServer())
+        .post(`/api/org/organizations/${testOrgId}/owners`)
+        .set('Authorization', `Bearer ${nonSuperAdminToken}`)
+        .send({
+          org_id: testOrgId,
+          user_id: 'another-user-id',
+        })
+        .expect(403)
+        .expect((res) => {
+          expect(res.body.message).toContain('Super admin access required');
+        });
+    });
+
+    it('should reject non-super-admin access to get owners (GET)', () => {
+      // Create a non-super-admin token
+      const nonSuperAdminToken = signPayload(
+        {
+          userId: 'regular-user-id',
+          username: 'regularuser',
+          isSuperAdmin: false,
+          permissions: ['resource:read'],
+        },
+        process.env.JWT_SECRET || 'test-secret',
+      );
+
+      return request(app.getHttpServer())
+        .get(`/api/org/organizations/${testOrgId}/owners`)
+        .set('Authorization', `Bearer ${nonSuperAdminToken}`)
+        .expect(403)
+        .expect((res) => {
+          expect(res.body.message).toContain('Super admin access required');
+        });
+    });
+
+    it('should reject non-super-admin access to remove owner (DELETE)', () => {
+      // Create a non-super-admin token
+      const nonSuperAdminToken = signPayload(
+        {
+          userId: 'regular-user-id',
+          username: 'regularuser',
+          isSuperAdmin: false,
+          permissions: ['resource:read'],
+        },
+        process.env.JWT_SECRET || 'test-secret',
+      );
+
+      return request(app.getHttpServer())
+        .delete(`/api/org/organizations/${testOrgId}/owners/${testUserId}`)
+        .set('Authorization', `Bearer ${nonSuperAdminToken}`)
+        .expect(403)
+        .expect((res) => {
+          expect(res.body.message).toContain('Super admin access required');
+        });
+    });
+  });
+
   describe('Error Handling', () => {
     it('should return 404 for non-existent organization', () => {
-      return authRequest('get', '/api/org/organizations/non-existent-id')
-        .expect(404);
+      return authRequest(
+        'get',
+        '/api/org/organizations/non-existent-id',
+      ).expect(404);
     });
 
     it('should return error for invalid organization data', () => {
@@ -443,7 +681,7 @@ describe('Organization Management API Integration Tests', () => {
         .send({
           code: 'VAT_MONTHLY_E2E_001', // Same code as previous test to trigger duplicate error
           name: 'Duplicate VAT Filing',
-          frequency: "MONTHLY",
+          frequency: 'MONTHLY',
           due_rule: { day: 20 },
           status: 'MANDATORY',
         })

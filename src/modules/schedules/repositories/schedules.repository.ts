@@ -6,7 +6,9 @@ import { OrganizationObligation } from '@prisma/client';
 export class SchedulesRepository {
   constructor(private prisma: PrismaService) {}
 
-  async getOrganizationObligationsWithTaxObligations(organizationId: string): Promise<OrganizationObligation[]> {
+  async getOrganizationObligationsWithTaxObligations(
+    organizationId: string,
+  ): Promise<OrganizationObligation[]> {
     return this.prisma.organizationObligation.findMany({
       where: {
         organization_id: organizationId,

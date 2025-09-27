@@ -16,9 +16,21 @@ export class OrganizationObligationResponseDto {
   @ApiProperty({ description: 'Obligation end date', required: false })
   end_date: Date | null;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Obligation status',
-    enum: ['NOT_APPLICABLE', 'ASSIGNED', 'ACTIVE', 'DUE', 'FILED', 'PAID', 'OVERDUE', 'LATE', 'EXEMPT', 'SUSPENDED', 'CLOSED']
+    enum: [
+      'NOT_APPLICABLE',
+      'ASSIGNED',
+      'ACTIVE',
+      'DUE',
+      'FILED',
+      'PAID',
+      'OVERDUE',
+      'LATE',
+      'EXEMPT',
+      'SUSPENDED',
+      'CLOSED',
+    ],
   })
   status: string;
 

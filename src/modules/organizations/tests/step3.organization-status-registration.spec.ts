@@ -83,7 +83,13 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
     await app.init();
   });
 
@@ -94,7 +100,15 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
   describe('Organization Status Endpoints', () => {
     describe('GET /organizations/:orgId/status', () => {
       it('should get organization status by organization id', async () => {
-        const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          {
+            userId: 'u1',
+            permissions: ['resource:read'],
+            isSuperAdmin: false,
+            role: 'User',
+          },
+          process.env.JWT_SECRET!,
+        );
 
         const res = await request(app.getHttpServer())
           .get('/organizations/1/status')
@@ -108,7 +122,15 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       });
 
       it('should return 404 for non-existent organization status', async () => {
-        const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          {
+            userId: 'u1',
+            permissions: ['resource:read'],
+            isSuperAdmin: false,
+            role: 'User',
+          },
+          process.env.JWT_SECRET!,
+        );
 
         const res = await request(app.getHttpServer())
           .get('/organizations/non-existent-id/status')
@@ -118,7 +140,10 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       });
 
       it('should deny access without proper permissions', async () => {
-        const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          { userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' },
+          process.env.JWT_SECRET!,
+        );
 
         const res = await request(app.getHttpServer())
           .get('/organizations/1/status')
@@ -130,14 +155,24 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
 
     describe('PUT /organizations/:orgId/status', () => {
       it('should update organization status', async () => {
-        const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          {
+            userId: 'u1',
+            permissions: ['resource:update'],
+            isSuperAdmin: false,
+            role: 'User',
+          },
+          process.env.JWT_SECRET!,
+        );
         const updateData = {
           status: BusinessStatus.ACTIVE,
-          reason: 'EXPIRED'
+          reason: 'EXPIRED',
         };
 
         const prismaService = app.get(PrismaService);
-        (prismaService.organizationStatus.update as jest.Mock).mockResolvedValueOnce({
+        (
+          prismaService.organizationStatus.update as jest.Mock
+        ).mockResolvedValueOnce({
           id: 'status-1',
           organization_id: '1',
           status: BusinessStatus.ACTIVE,
@@ -157,14 +192,24 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       });
 
       it('should return 404 when updating non-existent organization status', async () => {
-        const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          {
+            userId: 'u1',
+            permissions: ['resource:update'],
+            isSuperAdmin: false,
+            role: 'User',
+          },
+          process.env.JWT_SECRET!,
+        );
         const updateData = {
           status: BusinessStatus.ACTIVE,
-          reason: 'EXPIRED'
+          reason: 'EXPIRED',
         };
 
         const prismaService = app.get(PrismaService);
-        (prismaService.organizationStatus.update as jest.Mock).mockRejectedValueOnce({ code: 'P2025' });
+        (
+          prismaService.organizationStatus.update as jest.Mock
+        ).mockRejectedValueOnce({ code: 'P2025' });
 
         const res = await request(app.getHttpServer())
           .put('/organizations/non-existent-id/status')
@@ -175,10 +220,13 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       });
 
       it('should deny access without proper permissions', async () => {
-        const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          { userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' },
+          process.env.JWT_SECRET!,
+        );
         const updateData = {
           status: BusinessStatus.ACTIVE,
-          reason: 'EXPIRED'
+          reason: 'EXPIRED',
         };
 
         const res = await request(app.getHttpServer())
@@ -192,14 +240,24 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
 
     describe('PATCH /organizations/:orgId/status', () => {
       it('should partially update organization status', async () => {
-        const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          {
+            userId: 'u1',
+            permissions: ['resource:update'],
+            isSuperAdmin: false,
+            role: 'User',
+          },
+          process.env.JWT_SECRET!,
+        );
         const updateData = {
           status: BusinessStatus.CLOSED,
-          reason: 'VIOLATIONS'
+          reason: 'VIOLATIONS',
         };
 
         const prismaService = app.get(PrismaService);
-        (prismaService.organizationStatus.update as jest.Mock).mockResolvedValueOnce({
+        (
+          prismaService.organizationStatus.update as jest.Mock
+        ).mockResolvedValueOnce({
           id: 'status-1',
           organization_id: '1',
           status: BusinessStatus.CLOSED,
@@ -222,7 +280,15 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
   describe('Organization Registration Endpoints', () => {
     describe('GET /organizations/:orgId/registration', () => {
       it('should get organization registration by organization id', async () => {
-        const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          {
+            userId: 'u1',
+            permissions: ['resource:read'],
+            isSuperAdmin: false,
+            role: 'User',
+          },
+          process.env.JWT_SECRET!,
+        );
 
         const res = await request(app.getHttpServer())
           .get('/organizations/1/registration')
@@ -237,7 +303,15 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       });
 
       it('should return 404 for non-existent organization registration', async () => {
-        const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          {
+            userId: 'u1',
+            permissions: ['resource:read'],
+            isSuperAdmin: false,
+            role: 'User',
+          },
+          process.env.JWT_SECRET!,
+        );
 
         const res = await request(app.getHttpServer())
           .get('/organizations/non-existent-id/registration')
@@ -247,7 +321,10 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       });
 
       it('should deny access without proper permissions', async () => {
-        const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          { userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' },
+          process.env.JWT_SECRET!,
+        );
 
         const res = await request(app.getHttpServer())
           .get('/organizations/1/registration')
@@ -259,16 +336,26 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
 
     describe('PUT /organizations/:orgId/registration', () => {
       it('should update organization registration', async () => {
-        const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          {
+            userId: 'u1',
+            permissions: ['resource:update'],
+            isSuperAdmin: false,
+            role: 'User',
+          },
+          process.env.JWT_SECRET!,
+        );
         const updateData = {
           first_name: 'Jane',
           last_name: 'Smith',
           email_address: 'jane.smith@example.com',
-          contact_number: '+639876543210'
+          contact_number: '+639876543210',
         };
 
         const prismaService = app.get(PrismaService);
-        (prismaService.organizationRegistration.update as jest.Mock).mockResolvedValueOnce({
+        (
+          prismaService.organizationRegistration.update as jest.Mock
+        ).mockResolvedValueOnce({
           organization_id: '1',
           first_name: 'Jane',
           middle_name: null,
@@ -300,18 +387,31 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
         expect(res.status).toBe(200);
         expect(res.body).toHaveProperty('first_name', 'Jane');
         expect(res.body).toHaveProperty('last_name', 'Smith');
-        expect(res.body).toHaveProperty('email_address', 'jane.smith@example.com');
+        expect(res.body).toHaveProperty(
+          'email_address',
+          'jane.smith@example.com',
+        );
         expect(res.body).toHaveProperty('contact_number', '+639876543210');
       });
 
       it('should return 404 when updating non-existent organization registration', async () => {
-        const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          {
+            userId: 'u1',
+            permissions: ['resource:update'],
+            isSuperAdmin: false,
+            role: 'User',
+          },
+          process.env.JWT_SECRET!,
+        );
         const updateData = {
-          first_name: 'Updated Name'
+          first_name: 'Updated Name',
         };
 
         const prismaService = app.get(PrismaService);
-        (prismaService.organizationRegistration.update as jest.Mock).mockRejectedValueOnce({ code: 'P2025' });
+        (
+          prismaService.organizationRegistration.update as jest.Mock
+        ).mockRejectedValueOnce({ code: 'P2025' });
 
         const res = await request(app.getHttpServer())
           .put('/organizations/non-existent-id/registration')
@@ -322,9 +422,12 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       });
 
       it('should deny access without proper permissions', async () => {
-        const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          { userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' },
+          process.env.JWT_SECRET!,
+        );
         const updateData = {
-          first_name: 'Updated Name'
+          first_name: 'Updated Name',
         };
 
         const res = await request(app.getHttpServer())
@@ -338,13 +441,23 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
 
     describe('PATCH /organizations/:orgId/registration', () => {
       it('should partially update organization registration', async () => {
-        const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+        const token = signPayload(
+          {
+            userId: 'u1',
+            permissions: ['resource:update'],
+            isSuperAdmin: false,
+            role: 'User',
+          },
+          process.env.JWT_SECRET!,
+        );
         const updateData = {
-          contact_number: '+639111111111'
+          contact_number: '+639111111111',
         };
 
         const prismaService = app.get(PrismaService);
-        (prismaService.organizationRegistration.update as jest.Mock).mockResolvedValueOnce({
+        (
+          prismaService.organizationRegistration.update as jest.Mock
+        ).mockResolvedValueOnce({
           organization_id: '1',
           first_name: 'John',
           middle_name: null,
@@ -381,9 +494,17 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
 
   describe('Validation and Error Handling', () => {
     it('should validate status update payload', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:update'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
       const invalidUpdateData = {
-        status: 'INVALID_STATUS'
+        status: 'INVALID_STATUS',
       };
 
       const res = await request(app.getHttpServer())
@@ -395,9 +516,17 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
     });
 
     it('should validate registration update payload', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:update'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
       const invalidUpdateData = {
-        email_address: 'invalid-email'
+        email_address: 'invalid-email',
       };
 
       const res = await request(app.getHttpServer())

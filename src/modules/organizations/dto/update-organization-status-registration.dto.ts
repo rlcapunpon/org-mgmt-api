@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsOptional, IsIn, IsEmail } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsIn,
+  IsEmail,
+} from 'class-validator';
 
 export class UpdateOrganizationStatusDto {
   @IsString()

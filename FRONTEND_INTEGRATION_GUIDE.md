@@ -1,16 +1,31 @@
-# Organization Management API - Superadmin Frontend Integration Guide
+# Organization Management API - Frontend Integration Guide
 
-This guide provides comprehensive documentation for frontend applications integrating with the Organization Management API using a superadmin account. The API provides full access to organization management, tax obligations, and compliance schedules.
+This guide provides comprehensive documentation for frontend applications integrating with the Organization Management API. The API provides full access to organization management, tax obligations, compliance schedules, and business operations.
 
-## Authentication
+## 📋 API Documentation
 
-Superadmin accounts have unrestricted access to all API endpoints. Authentication is handled via JWT tokens with the following permissions:
-- `resource:create` - Create organizations and resources
-- `resource:read` - Read all organizations and resources
-- `resource:update` - Update organizations and resources
-- `resource:delete` - Delete organizations and resources
-- `tax:configure` - Configure tax obligations and settings
-- `*` - Wildcard permission for full access
+### OpenAPI Specification
+A complete OpenAPI 3.0 YAML specification is available at:
+```
+checkpoint/org-mgmt-api.yaml
+```
+
+This specification includes:
+- All API endpoints with detailed request/response schemas
+- Authentication requirements (JWT Bearer tokens)
+- Complete data models and enums
+- Error response definitions
+- Interactive examples for testing
+
+### Swagger UI Documentation
+Interactive API documentation is available via Swagger UI at:
+```
+http://localhost:3000/docs
+```
+
+## 🔐 Authentication
+
+All API endpoints require JWT authentication with Bearer token authorization. The API uses role-based access control (RBAC) with the following permission structure:
 
 ### JWT Token Structure
 ```json
@@ -28,20 +43,41 @@ Superadmin accounts have unrestricted access to all API endpoints. Authenticatio
 }
 ```
 
-## API Base URL
+### Authorization Header
 ```
-http://localhost:3000
+Authorization: Bearer <jwt_token>
 ```
 
-## API Endpoint Structure
+### Permission Levels
+- `resource:create` - Create organizations and assign obligations
+- `resource:read` - Read organizations, obligations, and schedules
+- `resource:update` - Update organization details and obligation status
+- `resource:delete` - Soft delete organizations
+- `tax:configure` - Create and manage tax obligations
+- `*` - Wildcard permission for full access (superadmin)
 
-All API endpoints use the `/api/org` prefix, except for health and documentation endpoints:
-- **Organization Management**: `/api/org/organizations`
-- **Tax Obligations**: `/api/org/tax-obligations`
-- **Organization Obligations**: `/api/org/organizations/{id}/obligations`
-- **Schedules**: `/api/org/organizations/{id}/schedules`
-- **Health Check**: `/health` (no prefix)
-- **API Documentation**: `/docs` (no prefix)
+## 🌐 API Base URL
+```
+http://localhost:3000/api/org
+```
+
+## 📡 API Endpoint Structure
+
+The API provides the following main endpoint categories:
+
+### Core Endpoints
+- **Health Check**: `GET /health` (excluded from global prefix)
+- **Organizations**: `GET|POST /organizations`, `GET|PUT|DELETE /organizations/{id}`
+- **Organization Operations**: `PUT /organizations/{id}/operation`
+- **Organization Status**: `PUT /organizations/{id}/status`
+- **Organization Registration**: `PUT /organizations/{id}/registration`
+
+### Tax Management
+- **Tax Obligations**: `GET|POST /tax-obligations`
+- **Organization Obligations**: `GET /organizations/{orgId}/obligations`, `POST /organization-obligations/{id}`
+
+### Compliance
+- **Schedules**: `GET /organizations/{id}/schedules`
 
 ## 1. View All Organizations
 
@@ -49,7 +85,7 @@ Retrieve a list of all organizations with optional filtering.
 
 ### Endpoint
 ```
-GET /api/org/organizations
+GET /organizations
 ```
 
 ### Headers
@@ -184,7 +220,7 @@ Create a new organization with all required and optional fields.
 
 ### Endpoint
 ```
-POST /api/org/organizations
+POST /organizations
 ```
 
 ### Headers
@@ -202,7 +238,23 @@ Content-Type: application/json
   "subcategory": "CORPORATION",
   "tax_classification": "VAT",
   "registration_date": "2024-01-01",
-  "address": "123 Main Street, Makati City, Philippines"
+  "address": "123 Main Street, Makati City, Philippines",
+  "first_name": "John",
+  "middle_name": "Michael",
+  "last_name": "Doe",
+  "trade_name": "XYZ Trading",
+  "line_of_business": "6201",
+  "address_line": "123 Main Street",
+  "region": "NCR",
+  "city": "Makati",
+  "zip_code": "1223",
+  "tin_registration": "001234567890",
+  "rdo_code": "001",
+  "contact_number": "+639123456789",
+  "email_address": "john.doe@example.com",
+  "tax_type": "VAT",
+  "start_date": "2024-01-01",
+  "reg_date": "2024-01-01"
 }
 ```
 
@@ -214,6 +266,13 @@ Content-Type: application/json
 - `tax_classification` (required): `VAT` or `NON_VAT`
 - `registration_date` (optional): Registration date (YYYY-MM-DD)
 - `address` (optional): Organization address
+- **Registration Fields** (all required for creation):
+  - `first_name`, `last_name`: Registrant name
+  - `line_of_business`: PSIC code
+  - `address_line`, `region`, `city`, `zip_code`: Address details
+  - `tin_registration`, `rdo_code`: BIR registration details
+  - `contact_number`, `email_address`: Contact information
+  - `tax_type`, `start_date`, `reg_date`: Tax registration details
 
 ### Example Request
 ```javascript
@@ -389,7 +448,7 @@ Update an existing organization's information.
 
 ### Endpoint
 ```
-PUT /api/org/organizations/{organization_id}
+PUT /organizations/{organization_id}
 ```
 
 ### Headers
@@ -535,7 +594,7 @@ Retrieve a list of all active tax obligations.
 
 ### Endpoint
 ```
-GET /api/org/tax-obligations
+GET /tax-obligations
 ```
 
 ### Headers
@@ -671,7 +730,7 @@ Retrieve compliance schedules for a specific organization's tax obligations.
 
 ### Endpoint
 ```
-GET /api/org/organizations/{organization_id}/schedules
+GET /organizations/{organization_id}/schedules
 ```
 
 ### Headers
@@ -868,6 +927,312 @@ function OrganizationSchedules({ organizationId }) {
 }
 ```
 
+## 7. Assign Tax Obligations to Organizations
+
+Assign specific tax obligations to organizations with custom start/end dates.
+
+### Endpoint
+```
+POST /organizations/{orgId}/obligations
+```
+
+### Headers
+```
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+```
+
+### Request Body
+```json
+{
+  "obligation_id": "tax-obligation-uuid",
+  "start_date": "2024-01-01",
+  "end_date": "2024-12-31",
+  "notes": "Assigned during initial setup"
+}
+```
+
+### Example Request
+```javascript
+const assignObligation = async (orgId, obligationData) => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/org/organizations/${orgId}/obligations`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(obligationData)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Obligation assigned:', result);
+      return result;
+    } else {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+  } catch (error) {
+    console.error('Failed to assign obligation:', error);
+    throw error;
+  }
+};
+```
+
+## 8. Update Organization Business Status
+
+Update an organization's business status (ACTIVE, INACTIVE, etc.).
+
+### Endpoint
+```
+PUT /organizations/{id}/status
+```
+
+### Headers
+```
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+```
+
+### Request Body
+```json
+{
+  "status": "ACTIVE",
+  "reason": "EXPIRED",
+  "description": "Organization license has expired"
+}
+```
+
+### Status Options
+- `REGISTERED` - Successfully registered with BIR
+- `PENDING_REG` - Application submitted but not completed
+- `ACTIVE` - Currently operating
+- `INACTIVE` - Temporarily not operating
+- `CESSATION` - Operations stopped, closing process ongoing
+- `CLOSED` - Deregistered / business officially closed
+- `NON_COMPLIANT` - Active but flagged for missed filings
+- `UNDER_AUDIT` - Under LOA / investigation by BIR
+- `SUSPENDED` - Temporarily suspended by regulatory order
+
+### Reason Options
+- `EXPIRED` - License/registration expired
+- `OPTED_OUT` - Voluntary cessation
+- `PAYMENT_PENDING` - Outstanding payments
+- `VIOLATIONS` - Regulatory violations
+
+### Example Request
+```javascript
+const updateOrganizationStatus = async (orgId, statusData) => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/org/organizations/${orgId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(statusData)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Status updated:', result);
+      return result;
+    } else {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+  } catch (error) {
+    console.error('Failed to update status:', error);
+    throw error;
+  }
+};
+```
+
+## 9. Update Organization Operation Details
+
+Update fiscal year settings, cut-off dates, and operational parameters.
+
+### Endpoint
+```
+PUT /organizations/{id}/operation
+```
+
+### Headers
+```
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+```
+
+### Request Body
+```json
+{
+  "fy_start": "2025-01-01",
+  "fy_end": "2025-12-31",
+  "vat_reg_effectivity": "2025-01-01",
+  "registration_effectivity": "2025-01-01",
+  "payroll_cut_off": ["15", "30"],
+  "payment_cut_off": ["10", "25"],
+  "quarter_closing": ["03-31", "06-30", "09-30", "12-31"],
+  "has_foreign": false,
+  "has_employees": true,
+  "is_ewt": false,
+  "is_fwt": false,
+  "is_bir_withholding_agent": false,
+  "accounting_method": "ACCRUAL"
+}
+```
+
+### Example Request
+```javascript
+const updateOrganizationOperation = async (orgId, operationData) => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/org/organizations/${orgId}/operation`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(operationData)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Operation updated:', result);
+      return result;
+    } else {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+  } catch (error) {
+    console.error('Failed to update operation:', error);
+    throw error;
+  }
+};
+```
+
+## 10. Update Organization Registration Details
+
+Update BIR registration information.
+
+### Endpoint
+```
+PUT /organizations/{id}/registration
+```
+
+### Headers
+```
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+```
+
+### Request Body
+```json
+{
+  "first_name": "John",
+  "middle_name": "Michael",
+  "last_name": "Doe",
+  "trade_name": "ABC Trading",
+  "line_of_business": "6201",
+  "address_line": "123 Main Street",
+  "region": "NCR",
+  "city": "Makati",
+  "zip_code": "1223",
+  "tin": "001234567890",
+  "rdo_code": "001",
+  "contact_number": "+639123456789",
+  "email_address": "john.doe@example.com",
+  "tax_type": "VAT",
+  "start_date": "2024-01-01",
+  "reg_date": "2024-01-01"
+}
+```
+
+### Example Request
+```javascript
+const updateOrganizationRegistration = async (orgId, registrationData) => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/org/organizations/${orgId}/registration`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(registrationData)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Registration updated:', result);
+      return result;
+    } else {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+  } catch (error) {
+    console.error('Failed to update registration:', error);
+    throw error;
+  }
+};
+```
+
+## 11. Create Tax Obligation
+
+Create a new tax obligation definition (admin only).
+
+### Endpoint
+```
+POST /tax-obligations
+```
+
+### Headers
+```
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+```
+
+### Request Body
+```json
+{
+  "code": "VAT_MONTHLY_001",
+  "name": "Monthly Value-Added Tax Return",
+  "frequency": "MONTHLY",
+  "due_rule": {
+    "day": 20,
+    "month_offset": 1
+  },
+  "status": "MANDATORY"
+}
+```
+
+### Example Request
+```javascript
+const createTaxObligation = async (obligationData) => {
+  try {
+    const response = await fetch('http://localhost:3000/api/org/tax-obligations', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(obligationData)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Tax obligation created:', result);
+      return result;
+    } else {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+  } catch (error) {
+    console.error('Failed to create tax obligation:', error);
+    throw error;
+  }
+};
+```
+
 ## Error Handling
 
 All API endpoints return appropriate HTTP status codes and error messages:
@@ -899,6 +1264,12 @@ All API endpoints return appropriate HTTP status codes and error messages:
 }
 
 {
+  "statusCode": 409,
+  "message": "Conflict - Resource already exists",
+  "error": "Conflict"
+}
+
+{
   "statusCode": 500,
   "message": "Internal Server Error",
   "error": "Internal Server Error"
@@ -908,27 +1279,48 @@ All API endpoints return appropriate HTTP status codes and error messages:
 ### Frontend Error Handling Example
 ```javascript
 const handleApiError = (error, response) => {
-  if (response.status === 401) {
-    // Redirect to login
-    redirectToLogin();
-  } else if (response.status === 403) {
-    alert('You do not have permission to perform this action');
-  } else if (response.status === 404) {
-    alert('The requested resource was not found');
-  } else {
-    alert(`Error: ${error.message}`);
+  switch (response.status) {
+    case 401:
+      // Redirect to login or refresh token
+      redirectToLogin();
+      break;
+    case 403:
+      alert('You do not have permission to perform this action');
+      break;
+    case 404:
+      alert('The requested resource was not found');
+      break;
+    case 409:
+      alert('This resource already exists');
+      break;
+    default:
+      alert(`Error: ${error.message || 'Unknown error occurred'}`);
   }
 };
 ```
 
 ## API Documentation
 
-Complete API documentation is available via Swagger UI at:
+### Complete OpenAPI Specification
+A comprehensive OpenAPI 3.0 YAML specification is available at:
+```
+checkpoint/org-mgmt-api.yaml
+```
+
+This specification includes:
+- All API endpoints with detailed request/response schemas
+- Authentication requirements (JWT Bearer tokens)
+- Complete data models and enums
+- Error response definitions
+- Interactive examples for testing
+
+### Swagger UI Documentation
+Interactive API documentation is available via Swagger UI at:
 ```
 http://localhost:3000/docs
 ```
 
-This provides interactive documentation where you can test all endpoints directly from the browser.
+This provides an interactive interface where you can test all endpoints directly from the browser.
 
 ## Additional Notes
 
@@ -936,6 +1328,10 @@ This provides interactive documentation where you can test all endpoints directl
 2. **Automatic Setup**: When creating an organization, the system automatically creates default operation settings and status
 3. **Tax Obligations**: Only active tax obligations are returned by the API
 4. **Schedule Generation**: Schedules are generated dynamically based on assigned tax obligations and their due rules
-5. **Date Formats**: Use ISO 8601 format (YYYY-MM-DD) for date fields
-6. **Permissions**: Superadmin accounts bypass all permission checks and have access to all resources</content>
+5. **Date Formats**: Use ISO 8601 format (YYYY-MM-DD) for date fields in requests
+6. **Permissions**: All endpoints require appropriate permissions based on the operation type
+7. **Validation**: All requests are validated using class-validator decorators
+8. **Relationships**: The API maintains proper relationships between organizations, obligations, and schedules
+9. **Enums**: All enum values are strictly validated - refer to the OpenAPI spec for valid values
+10. **JWT Tokens**: Tokens must be included in the Authorization header as `Bearer <token>`</content>
 <parameter name="filePath">c:\Users\Raenerys\Documents\Windbooks\org-mgmt-api\FRONTEND_INTEGRATION_GUIDE.md

@@ -8,16 +8,18 @@ import {
   Status,
   ScheduleStatus,
   AccountingMethod,
-  BusinessStatus
+  BusinessStatus,
 } from '@prisma/client';
 
 describe('Database Queries Tests', () => {
   let prisma: PrismaService;
-  let testData: any = {};
+  const testData: any = {};
 
   beforeAll(async () => {
     if (process.env.TEST_DEV_DB_CONNECTION !== 'true') {
-      console.log('⏭️  Skipping database queries tests - TEST_DEV_DB_CONNECTION is not true');
+      console.log(
+        '⏭️  Skipping database queries tests - TEST_DEV_DB_CONNECTION is not true',
+      );
       return;
     }
 
@@ -194,7 +196,8 @@ describe('Database Queries Tests', () => {
       expect(scheduleColumns).toBeDefined();
 
       // Check ScheduleStatus enum values
-      const enumValues = await prisma.$queryRaw`SELECT unnest(enum_range(NULL::"ScheduleStatus")) as values`;
+      const enumValues =
+        await prisma.$queryRaw`SELECT unnest(enum_range(NULL::"ScheduleStatus")) as values`;
 
       // Test OrganizationStatus table schema
       const statusColumns = await prisma.$queryRaw`
@@ -246,8 +249,8 @@ describe('Database Queries Tests', () => {
         where: { status: 'MANDATORY' },
       });
       expect(result.length).toBeGreaterThanOrEqual(2);
-      expect(result.some(item => item.code === 'TEST_VAT_001')).toBe(true);
-      expect(result.some(item => item.code === 'TEST_INCOME_001')).toBe(true);
+      expect(result.some((item) => item.code === 'TEST_VAT_001')).toBe(true);
+      expect(result.some((item) => item.code === 'TEST_INCOME_001')).toBe(true);
     });
 
     it('should update single row', async () => {
@@ -307,8 +310,12 @@ describe('Database Queries Tests', () => {
 
       const result = await prisma.organization.findMany();
       expect(result.length).toBeGreaterThanOrEqual(2);
-      expect(result.some(item => item.name === 'Test Organization 1')).toBe(true);
-      expect(result.some(item => item.name === 'Test Organization 2')).toBe(true);
+      expect(result.some((item) => item.name === 'Test Organization 1')).toBe(
+        true,
+      );
+      expect(result.some((item) => item.name === 'Test Organization 2')).toBe(
+        true,
+      );
     });
 
     it('should update single row', async () => {

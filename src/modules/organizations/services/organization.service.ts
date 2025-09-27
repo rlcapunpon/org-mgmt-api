@@ -1,6 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrganizationRepository } from '../repositories/organization.repository';
-import { CreateOrganizationRequestDto, UpdateOrganizationRequestDto, UpdateOrganizationOperationRequestDto, UpdateOrganizationStatusRequestDto, UpdateOrganizationRegistrationRequestDto } from '../dto/organization-request.dto';
+import {
+  CreateOrganizationRequestDto,
+  UpdateOrganizationRequestDto,
+  UpdateOrganizationOperationRequestDto,
+  UpdateOrganizationStatusRequestDto,
+  UpdateOrganizationRegistrationRequestDto,
+} from '../dto/organization-request.dto';
 import { Organization } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
@@ -8,12 +14,16 @@ import { Prisma } from '@prisma/client';
 export class OrganizationService {
   constructor(private repo: OrganizationRepository) {}
 
-  async create(data: CreateOrganizationRequestDto, userId: string): Promise<Organization> {
+  async create(
+    data: CreateOrganizationRequestDto,
+    userId: string,
+  ): Promise<Organization> {
     // Transform undefined subcategory to null for database compatibility
     const transformedData = {
       ...data,
       subcategory: data.subcategory ?? null,
       update_by: userId,
+      creator_user_id: userId, // Pass creator user ID for automatic owner assignment
     };
     return this.repo.create(transformedData);
   }
@@ -26,7 +36,10 @@ export class OrganizationService {
     return this.repo.getById(id);
   }
 
-  async update(id: string, data: UpdateOrganizationRequestDto): Promise<Organization> {
+  async update(
+    id: string,
+    data: UpdateOrganizationRequestDto,
+  ): Promise<Organization> {
     try {
       // Transform undefined subcategory to null for database compatibility
       const transformedData = {
@@ -35,7 +48,8 @@ export class OrganizationService {
       };
       return await this.repo.updateBasic(id, transformedData);
     } catch (error) {
-      if (error.code === 'P2025') { // Record not found
+      if (error.code === 'P2025') {
+        // Record not found
         throw new NotFoundException();
       }
       throw error;
@@ -46,14 +60,18 @@ export class OrganizationService {
     try {
       await this.repo.softDelete(id);
     } catch (error) {
-      if (error.code === 'P2025') { // Record not found
+      if (error.code === 'P2025') {
+        // Record not found
         throw new NotFoundException();
       }
       throw error;
     }
   }
 
-  async list(filters: { category?: string; tax_classification?: string }): Promise<Organization[]> {
+  async list(filters: {
+    category?: string;
+    tax_classification?: string;
+  }): Promise<Organization[]> {
     return this.repo.listBasic(filters);
   }
 
@@ -61,7 +79,10 @@ export class OrganizationService {
     return this.repo.getOperationByOrgId(id);
   }
 
-  async updateOperation(id: string, data: UpdateOrganizationOperationRequestDto) {
+  async updateOperation(
+    id: string,
+    data: UpdateOrganizationOperationRequestDto,
+  ) {
     return this.repo.updateOperation(id, data);
   }
 
@@ -69,14 +90,19 @@ export class OrganizationService {
     try {
       return await this.repo.getStatusByOrgId(id);
     } catch (error) {
-      if (error.code === 'P2025') { // Record not found
+      if (error.code === 'P2025') {
+        // Record not found
         throw new NotFoundException();
       }
       throw error;
     }
   }
 
-  async updateStatus(id: string, data: UpdateOrganizationStatusRequestDto, userId: string) {
+  async updateStatus(
+    id: string,
+    data: UpdateOrganizationStatusRequestDto,
+    userId: string,
+  ) {
     try {
       // Update the status
       const result = await this.repo.updateStatus(id, { status: data.status });
@@ -91,7 +117,8 @@ export class OrganizationService {
 
       return result;
     } catch (error) {
-      if (error.code === 'P2025') { // Record not found
+      if (error.code === 'P2025') {
+        // Record not found
         throw new NotFoundException();
       }
       throw error;
@@ -102,18 +129,23 @@ export class OrganizationService {
     try {
       return await this.repo.getRegistrationByOrgId(id);
     } catch (error) {
-      if (error.code === 'P2025') { // Record not found
+      if (error.code === 'P2025') {
+        // Record not found
         throw new NotFoundException();
       }
       throw error;
     }
   }
 
-  async updateRegistration(id: string, data: UpdateOrganizationRegistrationRequestDto) {
+  async updateRegistration(
+    id: string,
+    data: UpdateOrganizationRegistrationRequestDto,
+  ) {
     try {
       return await this.repo.updateRegistration(id, data);
     } catch (error) {
-      if (error.code === 'P2025') { // Record not found
+      if (error.code === 'P2025') {
+        // Record not found
         throw new NotFoundException();
       }
       throw error;

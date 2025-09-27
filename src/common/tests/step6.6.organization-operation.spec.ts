@@ -189,55 +189,69 @@ describe('Organization Business Operations (Step 6.7)', () => {
 
   describe('Organization Operation CRUD', () => {
     it('should create organization operation automatically when organization is created', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-      const payload = { name: 'Test Org', category: 'NON_INDIVIDUAL', tax_classification: 'VAT' };
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:create'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
+      const payload = {
+        name: 'Test Org',
+        category: 'NON_INDIVIDUAL',
+        tax_classification: 'VAT',
+      };
 
       // Mock the create to return operation data
       const prismaService = app.get(PrismaService);
-      (prismaService.organization.create as jest.Mock).mockImplementationOnce((args) => {
-        const now = new Date();
-        return Promise.resolve({
-          id: '1',
-          name: args.data.name,
-          category: args.data.category,
-          tax_classification: args.data.tax_classification,
-          tin: null,
-          subcategory: null,
-          registration_date: null,
-          address: null,
-          created_at: now,
-          updated_at: now,
-          deleted_at: null,
-          status: {
-            id: 'status-1',
-            organization_id: '1',
-            status: 'PENDING',
-            last_update: now,
+      (prismaService.organization.create as jest.Mock).mockImplementationOnce(
+        (args) => {
+          const now = new Date();
+          return Promise.resolve({
+            id: '1',
+            name: args.data.name,
+            category: args.data.category,
+            tax_classification: args.data.tax_classification,
+            tin: null,
+            subcategory: null,
+            registration_date: null,
+            address: null,
             created_at: now,
             updated_at: now,
-          },
-          operation: {
-            id: 'operation-1',
-            organization_id: '1',
-            fy_start: new Date('2025-01-01'),
-            fy_end: new Date('2025-12-31'),
-            vat_reg_effectivity: new Date('2025-01-01'),
-            registration_effectivity: new Date('2025-01-01'),
-            payroll_cut_off: ['15/30'],
-            payment_cut_off: ['15/30'],
-            quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
-            has_foreign: false,
-            has_employees: false,
-            is_ewt: false,
-            is_fwt: false,
-            is_bir_withholding_agent: false,
-            accounting_method: 'ACCRUAL',
-            last_update: now,
-            created_at: now,
-            updated_at: now,
-          },
-        });
-      });
+            deleted_at: null,
+            status: {
+              id: 'status-1',
+              organization_id: '1',
+              status: 'PENDING',
+              last_update: now,
+              created_at: now,
+              updated_at: now,
+            },
+            operation: {
+              id: 'operation-1',
+              organization_id: '1',
+              fy_start: new Date('2025-01-01'),
+              fy_end: new Date('2025-12-31'),
+              vat_reg_effectivity: new Date('2025-01-01'),
+              registration_effectivity: new Date('2025-01-01'),
+              payroll_cut_off: ['15/30'],
+              payment_cut_off: ['15/30'],
+              quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
+              has_foreign: false,
+              has_employees: false,
+              is_ewt: false,
+              is_fwt: false,
+              is_bir_withholding_agent: false,
+              accounting_method: 'ACCRUAL',
+              last_update: now,
+              created_at: now,
+              updated_at: now,
+            },
+          });
+        },
+      );
 
       const res = await request(app.getHttpServer())
         .post('/organizations')
@@ -259,7 +273,15 @@ describe('Organization Business Operations (Step 6.7)', () => {
     });
 
     it('should return organization without operation when getting organization by id', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:read'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       const res = await request(app.getHttpServer())
         .get('/organizations/1')
@@ -274,7 +296,15 @@ describe('Organization Business Operations (Step 6.7)', () => {
     });
 
     it('should return organizations without operation when listing organizations', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:read'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       const res = await request(app.getHttpServer())
         .get('/organizations')
@@ -289,7 +319,15 @@ describe('Organization Business Operations (Step 6.7)', () => {
     });
 
     it('should update organization without affecting operation data in response', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:update'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       const res = await request(app.getHttpServer())
         .put('/organizations/1')
@@ -303,7 +341,15 @@ describe('Organization Business Operations (Step 6.7)', () => {
     });
 
     it('should return operation data via dedicated operation endpoint', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:read'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       const res = await request(app.getHttpServer())
         .get('/organizations/1/operation')
@@ -320,7 +366,15 @@ describe('Organization Business Operations (Step 6.7)', () => {
     });
 
     it('should update organization operation via dedicated endpoint', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:update'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
       const updateData = {
         fy_start: '2025-04-01T00:00:00.000Z',
         fy_end: '2026-03-31T00:00:00.000Z',
@@ -328,7 +382,7 @@ describe('Organization Business Operations (Step 6.7)', () => {
         has_foreign: true,
         payroll_cut_off: ['25/10'],
         payment_cut_off: ['25/10'],
-        quarter_closing: ['06/30', '09/30', '12/31', '03/31']
+        quarter_closing: ['06/30', '09/30', '12/31', '03/31'],
       };
 
       const res = await request(app.getHttpServer())
@@ -345,7 +399,10 @@ describe('Organization Business Operations (Step 6.7)', () => {
 
   describe('Organization Operation Permissions', () => {
     it('should deny access to organization operation without proper read permission', async () => {
-      const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        { userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' },
+        process.env.JWT_SECRET!,
+      );
       const res = await request(app.getHttpServer())
         .get('/organizations/1')
         .set('Authorization', `Bearer ${token}`);
@@ -354,7 +411,15 @@ describe('Organization Business Operations (Step 6.7)', () => {
     });
 
     it('should allow super admin to access organization without operation data', async () => {
-      const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: true, role: 'Super Admin' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: [],
+          isSuperAdmin: true,
+          role: 'Super Admin',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       const res = await request(app.getHttpServer())
         .get('/organizations/1')
@@ -366,7 +431,10 @@ describe('Organization Business Operations (Step 6.7)', () => {
     });
 
     it('should deny access to operation endpoint without proper read permission', async () => {
-      const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        { userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' },
+        process.env.JWT_SECRET!,
+      );
       const res = await request(app.getHttpServer())
         .get('/organizations/1/operation')
         .set('Authorization', `Bearer ${token}`);
@@ -375,7 +443,10 @@ describe('Organization Business Operations (Step 6.7)', () => {
     });
 
     it('should deny access to operation update endpoint without proper update permission', async () => {
-      const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        { userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' },
+        process.env.JWT_SECRET!,
+      );
       const res = await request(app.getHttpServer())
         .put('/organizations/1/operation')
         .set('Authorization', `Bearer ${token}`)
@@ -387,55 +458,69 @@ describe('Organization Business Operations (Step 6.7)', () => {
 
   describe('Organization Operation Edge Cases', () => {
     it('should create operation with default values for INDIVIDUAL category organizations', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-      const payload = { name: 'Individual Org', category: 'INDIVIDUAL', tax_classification: 'NON_VAT' };
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:create'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
+      const payload = {
+        name: 'Individual Org',
+        category: 'INDIVIDUAL',
+        tax_classification: 'NON_VAT',
+      };
 
       // Mock the create to return operation data for create response
       const prismaService = app.get(PrismaService);
-      (prismaService.organization.create as jest.Mock).mockImplementationOnce((args) => {
-        const now = new Date();
-        return Promise.resolve({
-          id: '2',
-          name: args.data.name,
-          category: args.data.category,
-          tax_classification: args.data.tax_classification,
-          tin: null,
-          subcategory: null,
-          registration_date: null,
-          address: null,
-          created_at: now,
-          updated_at: now,
-          deleted_at: null,
-          status: {
-            id: 'status-2',
-            organization_id: '2',
-            status: 'PENDING',
-            last_update: now,
+      (prismaService.organization.create as jest.Mock).mockImplementationOnce(
+        (args) => {
+          const now = new Date();
+          return Promise.resolve({
+            id: '2',
+            name: args.data.name,
+            category: args.data.category,
+            tax_classification: args.data.tax_classification,
+            tin: null,
+            subcategory: null,
+            registration_date: null,
+            address: null,
             created_at: now,
             updated_at: now,
-          },
-          operation: {
-            id: 'operation-2',
-            organization_id: '2',
-            fy_start: new Date('2025-01-01'),
-            fy_end: new Date('2025-12-31'),
-            vat_reg_effectivity: new Date('2025-01-01'),
-            registration_effectivity: new Date('2025-01-01'),
-            payroll_cut_off: ['15/30'],
-            payment_cut_off: ['15/30'],
-            quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
-            has_foreign: false,
-            has_employees: false,
-            is_ewt: false,
-            is_fwt: false,
-            is_bir_withholding_agent: false,
-            accounting_method: 'ACCRUAL',
-            last_update: now,
-            created_at: now,
-            updated_at: now,
-          },
-        });
-      });
+            deleted_at: null,
+            status: {
+              id: 'status-2',
+              organization_id: '2',
+              status: 'PENDING',
+              last_update: now,
+              created_at: now,
+              updated_at: now,
+            },
+            operation: {
+              id: 'operation-2',
+              organization_id: '2',
+              fy_start: new Date('2025-01-01'),
+              fy_end: new Date('2025-12-31'),
+              vat_reg_effectivity: new Date('2025-01-01'),
+              registration_effectivity: new Date('2025-01-01'),
+              payroll_cut_off: ['15/30'],
+              payment_cut_off: ['15/30'],
+              quarter_closing: ['03/31', '06/30', '09/30', '12/31'],
+              has_foreign: false,
+              has_employees: false,
+              is_ewt: false,
+              is_fwt: false,
+              is_bir_withholding_agent: false,
+              accounting_method: 'ACCRUAL',
+              last_update: now,
+              created_at: now,
+              updated_at: now,
+            },
+          });
+        },
+      );
 
       const res = await request(app.getHttpServer())
         .post('/organizations')
@@ -449,7 +534,15 @@ describe('Organization Business Operations (Step 6.7)', () => {
     });
 
     it('should handle operation data with nullable fields via operation endpoint', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:read'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       const res = await request(app.getHttpServer())
         .get('/organizations/1/operation')
@@ -463,7 +556,15 @@ describe('Organization Business Operations (Step 6.7)', () => {
     });
 
     it('should maintain operation organization_id relationship via operation endpoint', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:read'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       const res = await request(app.getHttpServer())
         .get('/organizations/1/operation')
@@ -474,7 +575,15 @@ describe('Organization Business Operations (Step 6.7)', () => {
     });
 
     it('should handle multiple organizations without operation data in list', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:read'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       // Mock multiple organizations without operation data
       const prismaService = app.get(PrismaService);
@@ -538,12 +647,26 @@ describe('Organization Business Operations (Step 6.7)', () => {
 
   describe('Organization Operation Error Handling', () => {
     it('should handle database errors during organization creation with operation', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:create'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-      const payload = { name: 'Error Test Org', category: 'INDIVIDUAL', tax_classification: 'VAT' };
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:create'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
+      const payload = {
+        name: 'Error Test Org',
+        category: 'INDIVIDUAL',
+        tax_classification: 'VAT',
+      };
 
       // Mock database error
       const prismaService = app.get(PrismaService);
-      (prismaService.organization.create as jest.Mock).mockRejectedValueOnce(new Error('Database connection failed'));
+      (prismaService.organization.create as jest.Mock).mockRejectedValueOnce(
+        new Error('Database connection failed'),
+      );
 
       const res = await request(app.getHttpServer())
         .post('/organizations')
@@ -554,11 +677,21 @@ describe('Organization Business Operations (Step 6.7)', () => {
     });
 
     it('should handle database errors during organization update with operation', async () => {
-      const token = signPayload({ userId: 'u1', permissions: ['resource:update'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+      const token = signPayload(
+        {
+          userId: 'u1',
+          permissions: ['resource:update'],
+          isSuperAdmin: false,
+          role: 'User',
+        },
+        process.env.JWT_SECRET!,
+      );
 
       // Mock database error
       const prismaService = app.get(PrismaService);
-      (prismaService.organization.update as jest.Mock).mockRejectedValueOnce(new Error('Database update failed'));
+      (prismaService.organization.update as jest.Mock).mockRejectedValueOnce(
+        new Error('Database update failed'),
+      );
 
       const res = await request(app.getHttpServer())
         .put('/organizations/1')

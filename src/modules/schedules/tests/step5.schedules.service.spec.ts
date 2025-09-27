@@ -54,7 +54,11 @@ describe('SchedulesService', () => {
       const startDate = new Date(Date.UTC(2024, 0, 1));
       const endDate = new Date(Date.UTC(2024, 2, 31));
 
-      const schedules = service.generateSchedulesForObligation(mockObligation, startDate, endDate);
+      const schedules = service.generateSchedulesForObligation(
+        mockObligation,
+        startDate,
+        endDate,
+      );
 
       expect(schedules).toHaveLength(3);
       expect(schedules[0]).toMatchObject({
@@ -87,7 +91,11 @@ describe('SchedulesService', () => {
       const startDate = new Date(Date.UTC(2024, 0, 1));
       const endDate = new Date(Date.UTC(2024, 11, 31));
 
-      const schedules = service.generateSchedulesForObligation(quarterlyObligation, startDate, endDate);
+      const schedules = service.generateSchedulesForObligation(
+        quarterlyObligation,
+        startDate,
+        endDate,
+      );
 
       expect(schedules).toHaveLength(4);
       expect(schedules[0]).toMatchObject({
@@ -121,7 +129,11 @@ describe('SchedulesService', () => {
       const startDate = new Date(Date.UTC(2024, 0, 1));
       const endDate = new Date(Date.UTC(2026, 11, 31));
 
-      const schedules = service.generateSchedulesForObligation(annualObligation, startDate, endDate);
+      const schedules = service.generateSchedulesForObligation(
+        annualObligation,
+        startDate,
+        endDate,
+      );
 
       expect(schedules).toHaveLength(3);
       expect(schedules[0]).toMatchObject({
@@ -148,7 +160,11 @@ describe('SchedulesService', () => {
       };
 
       expect(() => {
-        service.generateSchedulesForObligation(invalidObligation, new Date(), new Date());
+        service.generateSchedulesForObligation(
+          invalidObligation,
+          new Date(),
+          new Date(),
+        );
       }).toThrow('Unsupported frequency: daily');
     });
 
@@ -162,7 +178,11 @@ describe('SchedulesService', () => {
       };
 
       expect(() => {
-        service.generateSchedulesForObligation(invalidObligation, new Date(), new Date());
+        service.generateSchedulesForObligation(
+          invalidObligation,
+          new Date(),
+          new Date(),
+        );
       }).toThrow('Unsupported due rule format: invalid rule');
     });
   });

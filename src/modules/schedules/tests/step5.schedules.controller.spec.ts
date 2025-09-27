@@ -39,18 +39,33 @@ describe('Schedules Controller (e2e)', () => {
   });
 
   it('GET /organizations/:id/schedules without JWT -> 401', async () => {
-    const res = await request(app.getHttpServer()).get('/organizations/1/schedules');
+    const res = await request(app.getHttpServer()).get(
+      '/organizations/1/schedules',
+    );
     expect(res.status).toBe(401);
   });
 
   it('GET /organizations/:id/schedules with JWT but lacking permission -> 403', async () => {
-    const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-    const res = await request(app.getHttpServer()).get('/organizations/1/schedules').set('Authorization', `Bearer ${token}`);
+    const token = signPayload(
+      { userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' },
+      process.env.JWT_SECRET!,
+    );
+    const res = await request(app.getHttpServer())
+      .get('/organizations/1/schedules')
+      .set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(403);
   });
 
   it('GET /organizations/:id/schedules returns schedules when authorized', async () => {
-    const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
+    const token = signPayload(
+      {
+        userId: 'u1',
+        permissions: ['resource:read'],
+        isSuperAdmin: false,
+        role: 'User',
+      },
+      process.env.JWT_SECRET!,
+    );
     const mockObligations = [
       {
         id: 'obl1',
@@ -84,11 +99,15 @@ describe('Schedules Controller (e2e)', () => {
       },
     ];
 
-    mockRepository.getOrganizationObligationsWithTaxObligations.mockResolvedValue(mockObligations);
+    mockRepository.getOrganizationObligationsWithTaxObligations.mockResolvedValue(
+      mockObligations,
+    );
     mockService.generateSchedulesForObligation.mockReturnValue(mockSchedules);
 
     const res = await request(app.getHttpServer())
-      .get('/organizations/org1/schedules?start_date=2024-01-01&end_date=2024-12-31')
+      .get(
+        '/organizations/org1/schedules?start_date=2024-01-01&end_date=2024-12-31',
+      )
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).toBe(200);
@@ -103,8 +122,18 @@ describe('Schedules Controller (e2e)', () => {
   });
 
   it('GET /organizations/:id/schedules uses default dates when not provided', async () => {
-    const token = signPayload({ userId: 'u1', permissions: ['resource:read'], isSuperAdmin: false, role: 'User' }, process.env.JWT_SECRET!);
-    mockRepository.getOrganizationObligationsWithTaxObligations.mockResolvedValue([]);
+    const token = signPayload(
+      {
+        userId: 'u1',
+        permissions: ['resource:read'],
+        isSuperAdmin: false,
+        role: 'User',
+      },
+      process.env.JWT_SECRET!,
+    );
+    mockRepository.getOrganizationObligationsWithTaxObligations.mockResolvedValue(
+      [],
+    );
     mockService.generateSchedulesForObligation.mockReturnValue([]);
 
     const res = await request(app.getHttpServer())
@@ -112,12 +141,24 @@ describe('Schedules Controller (e2e)', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).toBe(200);
-    expect(mockRepository.getOrganizationObligationsWithTaxObligations).toHaveBeenCalledWith('org1');
+    expect(
+      mockRepository.getOrganizationObligationsWithTaxObligations,
+    ).toHaveBeenCalledWith('org1');
   });
 
   it('superAdmin can access schedules endpoint without specific permissions', async () => {
-    const token = signPayload({ userId: 'u1', permissions: [], isSuperAdmin: true, role: 'Super Admin' }, process.env.JWT_SECRET!);
-    mockRepository.getOrganizationObligationsWithTaxObligations.mockResolvedValue([]);
+    const token = signPayload(
+      {
+        userId: 'u1',
+        permissions: [],
+        isSuperAdmin: true,
+        role: 'Super Admin',
+      },
+      process.env.JWT_SECRET!,
+    );
+    mockRepository.getOrganizationObligationsWithTaxObligations.mockResolvedValue(
+      [],
+    );
     mockService.generateSchedulesForObligation.mockReturnValue([]);
 
     const res = await request(app.getHttpServer())

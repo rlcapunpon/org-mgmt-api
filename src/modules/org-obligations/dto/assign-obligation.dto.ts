@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, IsOptional, IsDateString, IsEnum } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsDateString,
+  IsEnum,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 import { OrganizationTaxObligationStatus } from '@prisma/client';
 

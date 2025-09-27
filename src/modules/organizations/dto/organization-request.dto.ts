@@ -1,14 +1,31 @@
-import { IsNotEmpty, IsEnum, IsOptional, IsString, IsDateString, IsEmail, Length, IsBoolean, IsArray, IsDate, IsIn } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsDateString,
+  IsEmail,
+  Length,
+  IsBoolean,
+  IsArray,
+  IsDate,
+  IsIn,
+} from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Category, SubCategory, TaxClassification, AccountingMethod } from '@prisma/client';
+import {
+  Category,
+  SubCategory,
+  TaxClassification,
+  AccountingMethod,
+} from '@prisma/client';
 import { BusinessStatus } from '@prisma/client';
 
 // Create Organization Request DTO
 export class CreateOrganizationRequestDto {
   @ApiProperty({
     description: 'Organization name',
-    example: 'ABC Corporation'
+    example: 'ABC Corporation',
   })
   @IsNotEmpty()
   @IsString()
@@ -16,7 +33,7 @@ export class CreateOrganizationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Tax Identification Number',
-    example: '001234567890'
+    example: '001234567890',
   })
   @IsOptional()
   @IsString()
@@ -26,7 +43,7 @@ export class CreateOrganizationRequestDto {
   @ApiProperty({
     description: 'Organization category',
     enum: Category,
-    example: Category.INDIVIDUAL
+    example: Category.INDIVIDUAL,
   })
   @IsNotEmpty()
   @IsEnum(Category)
@@ -35,7 +52,7 @@ export class CreateOrganizationRequestDto {
   @ApiPropertyOptional({
     description: 'Organization subcategory',
     enum: SubCategory,
-    example: SubCategory.SELF_EMPLOYED
+    example: SubCategory.SELF_EMPLOYED,
   })
   @IsOptional()
   @IsEnum(SubCategory)
@@ -44,7 +61,7 @@ export class CreateOrganizationRequestDto {
   @ApiProperty({
     description: 'Tax classification',
     enum: TaxClassification,
-    example: TaxClassification.VAT
+    example: TaxClassification.VAT,
   })
   @IsNotEmpty()
   @IsEnum(TaxClassification)
@@ -52,15 +69,15 @@ export class CreateOrganizationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Registration date',
-    example: '2024-01-01'
+    example: '2024-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => value ? new Date(value) : null)
+  @Transform(({ value }) => (value ? new Date(value) : null))
   registration_date: Date | null;
 
   @ApiPropertyOptional({
     description: 'Organization address',
-    example: 'Makati City, Philippines'
+    example: 'Makati City, Philippines',
   })
   @IsOptional()
   @IsString()
@@ -70,7 +87,7 @@ export class CreateOrganizationRequestDto {
   // OrganizationRegistration fields
   @ApiProperty({
     description: 'First name of the registrant',
-    example: 'John'
+    example: 'John',
   })
   @IsNotEmpty()
   @IsString()
@@ -78,7 +95,7 @@ export class CreateOrganizationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Middle name of the registrant',
-    example: 'Michael'
+    example: 'Michael',
   })
   @IsOptional()
   @IsString()
@@ -87,7 +104,7 @@ export class CreateOrganizationRequestDto {
 
   @ApiProperty({
     description: 'Last name of the registrant',
-    example: 'Doe'
+    example: 'Doe',
   })
   @IsNotEmpty()
   @IsString()
@@ -95,7 +112,7 @@ export class CreateOrganizationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Trade name of the business',
-    example: 'ABC Trading'
+    example: 'ABC Trading',
   })
   @IsOptional()
   @IsString()
@@ -104,7 +121,7 @@ export class CreateOrganizationRequestDto {
 
   @ApiProperty({
     description: 'Line of business (PSIC code)',
-    example: '6201'
+    example: '6201',
   })
   @IsNotEmpty()
   @IsString()
@@ -112,7 +129,7 @@ export class CreateOrganizationRequestDto {
 
   @ApiProperty({
     description: 'Address line',
-    example: '123 Main Street'
+    example: '123 Main Street',
   })
   @IsNotEmpty()
   @IsString()
@@ -120,7 +137,7 @@ export class CreateOrganizationRequestDto {
 
   @ApiProperty({
     description: 'Region',
-    example: 'NCR'
+    example: 'NCR',
   })
   @IsNotEmpty()
   @IsString()
@@ -128,7 +145,7 @@ export class CreateOrganizationRequestDto {
 
   @ApiProperty({
     description: 'City',
-    example: 'Makati'
+    example: 'Makati',
   })
   @IsNotEmpty()
   @IsString()
@@ -136,7 +153,7 @@ export class CreateOrganizationRequestDto {
 
   @ApiProperty({
     description: 'ZIP code',
-    example: '1223'
+    example: '1223',
   })
   @IsNotEmpty()
   @IsString()
@@ -144,7 +161,7 @@ export class CreateOrganizationRequestDto {
 
   @ApiProperty({
     description: '12-digit TIN',
-    example: '001234567890'
+    example: '001234567890',
   })
   @IsNotEmpty()
   @IsString()
@@ -153,7 +170,7 @@ export class CreateOrganizationRequestDto {
 
   @ApiProperty({
     description: 'RDO code',
-    example: '001'
+    example: '001',
   })
   @IsNotEmpty()
   @IsString()
@@ -161,7 +178,7 @@ export class CreateOrganizationRequestDto {
 
   @ApiProperty({
     description: 'Contact number',
-    example: '+639123456789'
+    example: '+639123456789',
   })
   @IsNotEmpty()
   @IsString()
@@ -169,7 +186,7 @@ export class CreateOrganizationRequestDto {
 
   @ApiProperty({
     description: 'Email address',
-    example: 'john.doe@example.com'
+    example: 'john.doe@example.com',
   })
   @IsNotEmpty()
   @IsEmail()
@@ -178,7 +195,7 @@ export class CreateOrganizationRequestDto {
   @ApiProperty({
     description: 'Tax type for registration',
     enum: TaxClassification,
-    example: TaxClassification.VAT
+    example: TaxClassification.VAT,
   })
   @IsNotEmpty()
   @IsEnum(TaxClassification)
@@ -186,7 +203,7 @@ export class CreateOrganizationRequestDto {
 
   @ApiProperty({
     description: 'Start date',
-    example: '2024-01-01'
+    example: '2024-01-01',
   })
   @IsNotEmpty()
   @Transform(({ value }) => new Date(value))
@@ -194,7 +211,7 @@ export class CreateOrganizationRequestDto {
 
   @ApiProperty({
     description: 'Registration date for MCIT calculation',
-    example: '2024-01-01'
+    example: '2024-01-01',
   })
   @IsNotEmpty()
   @Transform(({ value }) => new Date(value))
@@ -205,7 +222,7 @@ export class CreateOrganizationRequestDto {
 export class UpdateOrganizationRequestDto {
   @ApiPropertyOptional({
     description: 'Organization name',
-    example: 'ABC Corporation'
+    example: 'ABC Corporation',
   })
   @IsOptional()
   @IsString()
@@ -213,7 +230,7 @@ export class UpdateOrganizationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Tax Identification Number',
-    example: '123-456-789-000'
+    example: '123-456-789-000',
   })
   @IsOptional()
   @IsString()
@@ -222,7 +239,7 @@ export class UpdateOrganizationRequestDto {
   @ApiPropertyOptional({
     description: 'Organization category',
     enum: Category,
-    example: Category.NON_INDIVIDUAL
+    example: Category.NON_INDIVIDUAL,
   })
   @IsOptional()
   @IsEnum(Category)
@@ -231,7 +248,7 @@ export class UpdateOrganizationRequestDto {
   @ApiPropertyOptional({
     description: 'Organization subcategory',
     enum: SubCategory,
-    example: SubCategory.CORPORATION
+    example: SubCategory.CORPORATION,
   })
   @IsOptional()
   @IsEnum(SubCategory)
@@ -240,7 +257,7 @@ export class UpdateOrganizationRequestDto {
   @ApiPropertyOptional({
     description: 'Tax classification',
     enum: TaxClassification,
-    example: TaxClassification.VAT
+    example: TaxClassification.VAT,
   })
   @IsOptional()
   @IsEnum(TaxClassification)
@@ -248,15 +265,15 @@ export class UpdateOrganizationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Registration date',
-    example: '2025-01-01'
+    example: '2025-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => value ? new Date(value) : null)
+  @Transform(({ value }) => (value ? new Date(value) : null))
   registration_date?: Date;
 
   @ApiPropertyOptional({
     description: 'Organization address',
-    example: '123 Main Street, City, Province 1234'
+    example: '123 Main Street, City, Province 1234',
   })
   @IsOptional()
   @IsString()
@@ -267,40 +284,40 @@ export class UpdateOrganizationRequestDto {
 export class UpdateOrganizationOperationRequestDto {
   @ApiPropertyOptional({
     description: 'Fiscal year start date',
-    example: '2025-01-01'
+    example: '2025-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => value ? new Date(value) : undefined)
+  @Transform(({ value }) => (value ? new Date(value) : undefined))
   fy_start?: Date;
 
   @ApiPropertyOptional({
     description: 'Fiscal year end date',
-    example: '2025-12-31'
+    example: '2025-12-31',
   })
   @IsOptional()
-  @Transform(({ value }) => value ? new Date(value) : undefined)
+  @Transform(({ value }) => (value ? new Date(value) : undefined))
   fy_end?: Date;
 
   @ApiPropertyOptional({
     description: 'VAT registration effectivity date',
-    example: '2025-01-01'
+    example: '2025-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => value ? new Date(value) : undefined)
+  @Transform(({ value }) => (value ? new Date(value) : undefined))
   vat_reg_effectivity?: Date;
 
   @ApiPropertyOptional({
     description: 'Registration effectivity date',
-    example: '2025-01-01'
+    example: '2025-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => value ? new Date(value) : undefined)
+  @Transform(({ value }) => (value ? new Date(value) : undefined))
   registration_effectivity?: Date;
 
   @ApiPropertyOptional({
     description: 'Payroll cut-off dates',
     example: ['15', '30'],
-    type: [String]
+    type: [String],
   })
   @IsOptional()
   @IsArray()
@@ -310,7 +327,7 @@ export class UpdateOrganizationOperationRequestDto {
   @ApiPropertyOptional({
     description: 'Payment cut-off dates',
     example: ['10', '25'],
-    type: [String]
+    type: [String],
   })
   @IsOptional()
   @IsArray()
@@ -320,7 +337,7 @@ export class UpdateOrganizationOperationRequestDto {
   @ApiPropertyOptional({
     description: 'Quarter closing dates',
     example: ['03-31', '06-30', '09-30', '12-31'],
-    type: [String]
+    type: [String],
   })
   @IsOptional()
   @IsArray()
@@ -329,7 +346,7 @@ export class UpdateOrganizationOperationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Has foreign transactions',
-    example: false
+    example: false,
   })
   @IsOptional()
   @IsBoolean()
@@ -337,7 +354,7 @@ export class UpdateOrganizationOperationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Has employees',
-    example: true
+    example: true,
   })
   @IsOptional()
   @IsBoolean()
@@ -345,7 +362,7 @@ export class UpdateOrganizationOperationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Is expanded withholding tax',
-    example: false
+    example: false,
   })
   @IsOptional()
   @IsBoolean()
@@ -353,7 +370,7 @@ export class UpdateOrganizationOperationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Is final withholding tax',
-    example: false
+    example: false,
   })
   @IsOptional()
   @IsBoolean()
@@ -361,7 +378,7 @@ export class UpdateOrganizationOperationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Is BIR withholding agent',
-    example: false
+    example: false,
   })
   @IsOptional()
   @IsBoolean()
@@ -370,7 +387,7 @@ export class UpdateOrganizationOperationRequestDto {
   @ApiPropertyOptional({
     description: 'Accounting method',
     enum: AccountingMethod,
-    example: AccountingMethod.ACCRUAL
+    example: AccountingMethod.ACCRUAL,
   })
   @IsOptional()
   @IsEnum(AccountingMethod)
@@ -383,7 +400,7 @@ export class UpdateOrganizationStatusRequestDto {
     description: 'Organization status',
     example: 'ACTIVE',
     enum: BusinessStatus,
-    enumName: 'BusinessStatus'
+    enumName: 'BusinessStatus',
   })
   @IsNotEmpty()
   @IsEnum(BusinessStatus)
@@ -392,7 +409,7 @@ export class UpdateOrganizationStatusRequestDto {
   @ApiProperty({
     description: 'Reason for status change',
     example: 'EXPIRED',
-    enum: ['EXPIRED', 'OPTED_OUT', 'PAYMENT_PENDING', 'VIOLATIONS']
+    enum: ['EXPIRED', 'OPTED_OUT', 'PAYMENT_PENDING', 'VIOLATIONS'],
   })
   @IsNotEmpty()
   @IsString()
@@ -401,7 +418,7 @@ export class UpdateOrganizationStatusRequestDto {
 
   @ApiPropertyOptional({
     description: 'Optional description for the status change',
-    example: 'Organization license has expired'
+    example: 'Organization license has expired',
   })
   @IsOptional()
   @IsString()
@@ -412,7 +429,7 @@ export class UpdateOrganizationStatusRequestDto {
 export class UpdateOrganizationRegistrationRequestDto {
   @ApiPropertyOptional({
     description: 'First name of the registrant',
-    example: 'John'
+    example: 'John',
   })
   @IsOptional()
   @IsString()
@@ -420,7 +437,7 @@ export class UpdateOrganizationRegistrationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Middle name of the registrant',
-    example: 'Michael'
+    example: 'Michael',
   })
   @IsOptional()
   @IsString()
@@ -428,7 +445,7 @@ export class UpdateOrganizationRegistrationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Last name of the registrant',
-    example: 'Doe'
+    example: 'Doe',
   })
   @IsOptional()
   @IsString()
@@ -436,7 +453,7 @@ export class UpdateOrganizationRegistrationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Trade name of the business',
-    example: 'ABC Trading'
+    example: 'ABC Trading',
   })
   @IsOptional()
   @IsString()
@@ -444,7 +461,7 @@ export class UpdateOrganizationRegistrationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Line of business (PSIC code)',
-    example: '6201'
+    example: '6201',
   })
   @IsOptional()
   @IsString()
@@ -452,7 +469,7 @@ export class UpdateOrganizationRegistrationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Address line',
-    example: '123 Main Street'
+    example: '123 Main Street',
   })
   @IsOptional()
   @IsString()
@@ -460,7 +477,7 @@ export class UpdateOrganizationRegistrationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Region',
-    example: 'NCR'
+    example: 'NCR',
   })
   @IsOptional()
   @IsString()
@@ -468,7 +485,7 @@ export class UpdateOrganizationRegistrationRequestDto {
 
   @ApiPropertyOptional({
     description: 'City',
-    example: 'Makati'
+    example: 'Makati',
   })
   @IsOptional()
   @IsString()
@@ -476,7 +493,7 @@ export class UpdateOrganizationRegistrationRequestDto {
 
   @ApiPropertyOptional({
     description: 'ZIP code',
-    example: '1223'
+    example: '1223',
   })
   @IsOptional()
   @IsString()
@@ -484,7 +501,7 @@ export class UpdateOrganizationRegistrationRequestDto {
 
   @ApiPropertyOptional({
     description: '12-digit TIN',
-    example: '001234567890'
+    example: '001234567890',
   })
   @IsOptional()
   @IsString()
@@ -493,7 +510,7 @@ export class UpdateOrganizationRegistrationRequestDto {
 
   @ApiPropertyOptional({
     description: 'RDO code',
-    example: '001'
+    example: '001',
   })
   @IsOptional()
   @IsString()
@@ -501,7 +518,7 @@ export class UpdateOrganizationRegistrationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Contact number',
-    example: '+639123456789'
+    example: '+639123456789',
   })
   @IsOptional()
   @IsString()
@@ -509,7 +526,7 @@ export class UpdateOrganizationRegistrationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Email address',
-    example: 'john.doe@example.com'
+    example: 'john.doe@example.com',
   })
   @IsOptional()
   @IsString()
@@ -519,7 +536,7 @@ export class UpdateOrganizationRegistrationRequestDto {
   @ApiPropertyOptional({
     description: 'Tax type for registration',
     enum: TaxClassification,
-    example: TaxClassification.VAT
+    example: TaxClassification.VAT,
   })
   @IsOptional()
   @IsEnum(TaxClassification)
@@ -527,17 +544,17 @@ export class UpdateOrganizationRegistrationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Start date',
-    example: '2024-01-01'
+    example: '2024-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => value ? new Date(value) : undefined)
+  @Transform(({ value }) => (value ? new Date(value) : undefined))
   start_date?: Date;
 
   @ApiPropertyOptional({
     description: 'Registration date for MCIT calculation',
-    example: '2024-01-01'
+    example: '2024-01-01',
   })
   @IsOptional()
-  @Transform(({ value }) => value ? new Date(value) : undefined)
+  @Transform(({ value }) => (value ? new Date(value) : undefined))
   reg_date?: Date;
 }

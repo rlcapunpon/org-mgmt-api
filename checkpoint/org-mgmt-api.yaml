@@ -1,0 +1,1467 @@
+openapi: 3.0.0
+info:
+  title: Organization Management API
+  description: |
+    Comprehensive API for managing organizations, tax obligations, compliance schedules, and business operations.
+    This API provides full CRUD operations for organizations with support for tax classification,
+    business status tracking, operation details, and compliance management.
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@windbooks.com
+
+servers:
+  - url: http://localhost:3000/api/org
+    description: Development server
+  - url: https://api.windbooks.com/api/org
+    description: Production server
+
+security:
+  - JWT-auth: []
+
+paths:
+  # Health Check
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check endpoint
+      description: Check if the API is running and healthy
+      operationId: getHealth
+      responses:
+        '200':
+          description: Application is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponseDto'
+
+  # Organization Management
+  /organizations:
+    post:
+      tags:
+        - Organizations
+      summary: Create a new organization
+      description: Create a new organization with complete registration details
+      operationId: createOrganization
+      security:
+        - JWT-auth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrganizationRequestDto'
+      responses:
+        '201':
+          description: Organization created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationResponseDto'
+        '400':
+          description: Bad request - invalid data
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - insufficient permissions
+        '409':
+          description: Conflict - organization with this TIN already exists
+
+    get:
+      tags:
+        - Organizations
+      summary: Get all organizations
+      description: Retrieve a list of all organizations
+      operationId: getAllOrganizations
+      security:
+        - JWT-auth: []
+      responses:
+        '200':
+          description: List of organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationListResponseDto'
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - insufficient permissions
+
+  /organizations/{id}:
+    get:
+      tags:
+        - Organizations
+      summary: Get organization by ID
+      description: Retrieve a specific organization by its ID
+      operationId: getOrganizationById
+      security:
+        - JWT-auth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Organization ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Organization details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationResponseDto'
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - insufficient permissions
+        '404':
+          description: Organization not found
+
+    put:
+      tags:
+        - Organizations
+      summary: Update organization
+      description: Update an existing organization's details
+      operationId: updateOrganization
+      security:
+        - JWT-auth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Organization ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrganizationRequestDto'
+      responses:
+        '200':
+          description: Organization updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationResponseDto'
+        '400':
+          description: Bad request - invalid data
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - insufficient permissions
+        '404':
+          description: Organization not found
+
+    delete:
+      tags:
+        - Organizations
+      summary: Delete organization
+      description: Soft delete an organization (sets deleted_at timestamp)
+      operationId: deleteOrganization
+      security:
+        - JWT-auth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Organization ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Organization deleted successfully
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - insufficient permissions
+        '404':
+          description: Organization not found
+
+  /organizations/{id}/operation:
+    put:
+      tags:
+        - Organizations
+      summary: Update organization operation details
+      description: Update fiscal year, cut-off dates, and operational settings
+      operationId: updateOrganizationOperation
+      security:
+        - JWT-auth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Organization ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrganizationOperationRequestDto'
+      responses:
+        '200':
+          description: Organization operation updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationOperationResponseDto'
+        '400':
+          description: Bad request - invalid data
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - insufficient permissions
+        '404':
+          description: Organization not found
+
+  /organizations/{id}/status:
+    put:
+      tags:
+        - Organizations
+      summary: Update organization status
+      description: Update the business status of an organization
+      operationId: updateOrganizationStatus
+      security:
+        - JWT-auth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Organization ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrganizationStatusRequestDto'
+      responses:
+        '200':
+          description: Organization status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationStatusResponseDto'
+        '400':
+          description: Bad request - invalid data
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - insufficient permissions
+        '404':
+          description: Organization not found
+
+  /organizations/{id}/registration:
+    put:
+      tags:
+        - Organizations
+      summary: Update organization registration details
+      description: Update BIR registration information
+      operationId: updateOrganizationRegistration
+      security:
+        - JWT-auth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Organization ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrganizationRegistrationRequestDto'
+      responses:
+        '200':
+          description: Organization registration updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationRegistrationResponseDto'
+        '400':
+          description: Bad request - invalid data
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - insufficient permissions
+        '404':
+          description: Organization not found
+
+  # Tax Obligations
+  /tax-obligations:
+    post:
+      tags:
+        - Tax Obligations
+      summary: Create tax obligation
+      description: Create a new tax obligation definition
+      operationId: createTaxObligation
+      security:
+        - JWT-auth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaxObligationRequestDto'
+      responses:
+        '201':
+          description: Tax obligation created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxObligationResponseDto'
+        '400':
+          description: Bad request - invalid data
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - insufficient permissions
+        '409':
+          description: Conflict - tax obligation with this code already exists
+
+    get:
+      tags:
+        - Tax Obligations
+      summary: Get active tax obligations
+      description: Retrieve all active tax obligations
+      operationId: getActiveTaxObligations
+      security:
+        - JWT-auth: []
+      responses:
+        '200':
+          description: List of active tax obligations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaxObligationResponseDto'
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - insufficient permissions
+
+  # Organization Obligations
+  /organizations/{orgId}/obligations:
+    post:
+      tags:
+        - Organization Obligations
+      summary: Assign tax obligation to organization
+      description: Assign a tax obligation to an organization with start/end dates
+      operationId: assignObligation
+      security:
+        - JWT-auth: []
+      parameters:
+        - name: orgId
+          in: path
+          required: true
+          description: Organization ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignObligationRequestDto'
+      responses:
+        '201':
+          description: Obligation assigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationObligationResponseDto'
+        '400':
+          description: Bad request - invalid data
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - insufficient permissions
+        '404':
+          description: Organization or obligation not found
+
+    get:
+      tags:
+        - Organization Obligations
+      summary: Get obligations for organization
+      description: Retrieve all tax obligations assigned to an organization
+      operationId: getObligationsByOrgId
+      security:
+        - JWT-auth: []
+      parameters:
+        - name: orgId
+          in: path
+          required: true
+          description: Organization ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of organization obligations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrganizationObligationResponseDto'
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - insufficient permissions
+        '404':
+          description: Organization not found
+
+  /organization-obligations/{id}:
+    put:
+      tags:
+        - Organization Obligations
+      summary: Update obligation status
+      description: Update the status of an organization obligation
+      operationId: updateObligationStatus
+      security:
+        - JWT-auth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Organization obligation ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateObligationStatusRequestDto'
+      responses:
+        '200':
+          description: Obligation status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationObligationResponseDto'
+        '400':
+          description: Bad request - invalid data
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - insufficient permissions
+        '404':
+          description: Obligation not found
+
+  # Organization Owners
+  /organizations/{orgId}/owners:
+    post:
+      tags:
+        - Organization Owners
+      summary: Assign owner to organization
+      description: Assign a user as an owner of an organization (Super Admin only)
+      operationId: assignOrganizationOwner
+      security:
+        - JWT-auth: []
+      parameters:
+        - name: orgId
+          in: path
+          required: true
+          description: Organization ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignOrganizationOwnerRequestDto'
+      responses:
+        '201':
+          description: Owner assigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationOwnerResponseDto'
+        '400':
+          description: Bad request - invalid data
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - Super admin access required
+        '409':
+          description: Conflict - User is already an owner
+
+    get:
+      tags:
+        - Organization Owners
+      summary: Get all owners of an organization
+      description: Retrieve all owners assigned to an organization (Super Admin only)
+      operationId: getOrganizationOwners
+      security:
+        - JWT-auth: []
+      parameters:
+        - name: orgId
+          in: path
+          required: true
+          description: Organization ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of organization owners
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationOwnerListResponseDto'
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - Super admin access required
+
+  /organizations/{orgId}/owners/{userId}:
+    delete:
+      tags:
+        - Organization Owners
+      summary: Remove owner from organization
+      description: Remove a user as an owner of an organization (Super Admin only)
+      operationId: removeOrganizationOwner
+      security:
+        - JWT-auth: []
+      parameters:
+        - name: orgId
+          in: path
+          required: true
+          description: Organization ID
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          description: User ID to remove as owner
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Owner removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationOwnerResponseDto'
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - Super admin access required
+        '404':
+          description: Owner assignment not found
+
+  /organization-owners/{id}:
+    delete:
+      tags:
+        - Organization Owners
+      summary: Remove owner assignment by ID
+      description: Remove an owner assignment by its ID (Super Admin only)
+      operationId: removeOrganizationOwnerById
+      security:
+        - JWT-auth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Owner assignment ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Owner assignment removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationOwnerResponseDto'
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - Super admin access required
+        '404':
+          description: Owner assignment not found
+
+  /organizations/{orgId}/ownership:
+    get:
+      tags:
+        - Organization Owners
+      summary: Check if current user is owner of organization
+      description: Check if the authenticated user is an owner of the specified organization
+      operationId: checkOrganizationOwnership
+      security:
+        - JWT-auth: []
+      parameters:
+        - name: orgId
+          in: path
+          required: true
+          description: Organization ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ownership check result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckOwnershipResponseDto'
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+    get:
+      tags:
+        - Schedules
+      summary: Get compliance schedules for organization
+      description: Generate and retrieve compliance schedules based on assigned obligations
+      operationId: getSchedules
+      security:
+        - JWT-auth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Organization ID
+          schema:
+            type: string
+        - name: start_date
+          in: query
+          required: false
+          description: Start date for schedule generation (defaults to today)
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          required: false
+          description: End date for schedule generation (defaults to 1 year from now)
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: List of compliance schedules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScheduleResponseDto'
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - insufficient permissions
+        '404':
+          description: Organization not found
+
+components:
+  securitySchemes:
+    JWT-auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Authorization header using the Bearer scheme
+
+  schemas:
+    # Health Response
+    HealthResponseDto:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Health check status
+          example: ok
+
+    # Organization Schemas
+    OrganizationResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Organization unique identifier
+        name:
+          type: string
+          description: Organization name
+        tin:
+          type: string
+          nullable: true
+          description: Tax identification number
+        category:
+          type: string
+          enum: [INDIVIDUAL, NON_INDIVIDUAL]
+          description: Organization category
+        subcategory:
+          type: string
+          nullable: true
+          enum: [SELF_EMPLOYED, SOLE_PROPRIETOR, FREELANCER, CORPORATION, PARTNERSHIP, OTHERS]
+          description: Organization subcategory
+        tax_classification:
+          type: string
+          enum: [VAT, NON_VAT]
+          description: Tax classification
+        registration_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Registration date
+        address:
+          type: string
+          nullable: true
+          description: Organization address
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Deletion timestamp
+
+    OrganizationListResponseDto:
+      type: object
+      properties:
+        organizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizationResponseDto'
+          description: Array of organizations
+
+    OrganizationOperationResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Operation unique identifier
+        organization_id:
+          type: string
+          description: Organization ID
+        fy_start:
+          type: string
+          format: date-time
+          description: Fiscal year start date
+        fy_end:
+          type: string
+          format: date-time
+          description: Fiscal year end date
+        vat_reg_effectivity:
+          type: string
+          format: date-time
+          description: VAT registration effectivity date
+        registration_effectivity:
+          type: string
+          format: date-time
+          description: Registration effectivity date
+        payroll_cut_off:
+          type: array
+          items:
+            type: string
+          description: Payroll cut-off dates
+        payment_cut_off:
+          type: array
+          items:
+            type: string
+          description: Payment cut-off dates
+        quarter_closing:
+          type: array
+          items:
+            type: string
+          description: Quarter closing dates
+        has_foreign:
+          type: boolean
+          description: Has foreign transactions
+        has_employees:
+          type: boolean
+          description: Has employees
+        is_ewt:
+          type: boolean
+          description: Is expanded withholding tax
+        is_fwt:
+          type: boolean
+          description: Is final withholding tax
+        is_bir_withholding_agent:
+          type: boolean
+          description: Is BIR withholding agent
+        accounting_method:
+          type: string
+          enum: [ACCRUAL, CASH, OTHERS]
+          description: Accounting method
+        last_update:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Update timestamp
+
+    OrganizationStatusResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Status unique identifier
+        organization_id:
+          type: string
+          description: Organization ID
+        status:
+          type: string
+          enum: [REGISTERED, PENDING_REG, ACTIVE, INACTIVE, CESSATION, CLOSED, NON_COMPLIANT, UNDER_AUDIT, SUSPENDED]
+          description: Organization business status
+        last_update:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Update timestamp
+
+    OrganizationRegistrationResponseDto:
+      type: object
+      properties:
+        organization_id:
+          type: string
+          description: Organization ID (foreign key)
+        first_name:
+          type: string
+          description: First name of the registrant
+        middle_name:
+          type: string
+          nullable: true
+          description: Middle name of the registrant
+        last_name:
+          type: string
+          description: Last name of the registrant
+        trade_name:
+          type: string
+          nullable: true
+          description: Trade name of the business
+        line_of_business:
+          type: string
+          description: Line of business (PSIC code)
+        address_line:
+          type: string
+          description: Address line
+        region:
+          type: string
+          description: Region
+        city:
+          type: string
+          description: City
+        zip_code:
+          type: string
+          description: ZIP code
+        tin:
+          type: string
+          description: 12-digit TIN
+        rdo_code:
+          type: string
+          description: RDO code
+        contact_number:
+          type: string
+          description: Contact number
+        email_address:
+          type: string
+          description: Email address
+        tax_type:
+          type: string
+          enum: [VAT, NON_VAT, EXCEMPT]
+          description: Tax type for registration
+        start_date:
+          type: string
+          format: date-time
+          description: Start date
+        reg_date:
+          type: string
+          format: date-time
+          description: Registration date for MCIT calculation
+        update_date:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        update_by:
+          type: string
+          description: User who last updated the record
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+
+    CreateOrganizationRequestDto:
+      type: object
+      required:
+        - name
+        - category
+        - tax_classification
+        - first_name
+        - last_name
+        - line_of_business
+        - address_line
+        - region
+        - city
+        - zip_code
+        - tin_registration
+        - rdo_code
+        - contact_number
+        - email_address
+        - tax_type
+        - start_date
+        - reg_date
+      properties:
+        name:
+          type: string
+          description: Organization name
+          example: ABC Corporation
+        tin:
+          type: string
+          nullable: true
+          description: Tax Identification Number
+          example: "001234567890"
+        category:
+          type: string
+          enum: [INDIVIDUAL, NON_INDIVIDUAL]
+          description: Organization category
+          example: INDIVIDUAL
+        subcategory:
+          type: string
+          nullable: true
+          enum: [SELF_EMPLOYED, SOLE_PROPRIETOR, FREELANCER, CORPORATION, PARTNERSHIP, OTHERS]
+          description: Organization subcategory
+          example: SELF_EMPLOYED
+        tax_classification:
+          type: string
+          enum: [VAT, NON_VAT]
+          description: Tax classification
+          example: VAT
+        registration_date:
+          type: string
+          format: date
+          nullable: true
+          description: Registration date
+          example: "2024-01-01"
+        address:
+          type: string
+          nullable: true
+          description: Organization address
+          example: "Makati City, Philippines"
+        first_name:
+          type: string
+          description: First name of the registrant
+          example: John
+        middle_name:
+          type: string
+          nullable: true
+          description: Middle name of the registrant
+          example: Michael
+        last_name:
+          type: string
+          description: Last name of the registrant
+          example: Doe
+        trade_name:
+          type: string
+          nullable: true
+          description: Trade name of the business
+          example: "ABC Trading"
+        line_of_business:
+          type: string
+          description: Line of business (PSIC code)
+          example: "6201"
+        address_line:
+          type: string
+          description: Address line
+          example: "123 Main Street"
+        region:
+          type: string
+          description: Region
+          example: NCR
+        city:
+          type: string
+          description: City
+          example: Makati
+        zip_code:
+          type: string
+          description: ZIP code
+          example: "1223"
+        tin_registration:
+          type: string
+          description: 12-digit TIN
+          example: "001234567890"
+        rdo_code:
+          type: string
+          description: RDO code
+          example: "001"
+        contact_number:
+          type: string
+          description: Contact number
+          example: "+639123456789"
+        email_address:
+          type: string
+          format: email
+          description: Email address
+          example: john.doe@example.com
+        tax_type:
+          type: string
+          enum: [VAT, NON_VAT, EXCEMPT]
+          description: Tax type for registration
+          example: VAT
+        start_date:
+          type: string
+          format: date
+          description: Start date
+          example: "2024-01-01"
+        reg_date:
+          type: string
+          format: date
+          description: Registration date for MCIT calculation
+          example: "2024-01-01"
+
+    UpdateOrganizationRequestDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Organization name
+          example: ABC Corporation
+        tin:
+          type: string
+          description: Tax Identification Number
+          example: "123-456-789-000"
+        category:
+          type: string
+          enum: [INDIVIDUAL, NON_INDIVIDUAL]
+          description: Organization category
+          example: NON_INDIVIDUAL
+        subcategory:
+          type: string
+          enum: [SELF_EMPLOYED, SOLE_PROPRIETOR, FREELANCER, CORPORATION, PARTNERSHIP, OTHERS]
+          description: Organization subcategory
+          example: CORPORATION
+        tax_classification:
+          type: string
+          enum: [VAT, NON_VAT]
+          description: Tax classification
+          example: VAT
+        registration_date:
+          type: string
+          format: date
+          description: Registration date
+          example: "2025-01-01"
+        address:
+          type: string
+          description: Organization address
+          example: "123 Main Street, City, Province 1234"
+
+    UpdateOrganizationOperationRequestDto:
+      type: object
+      properties:
+        fy_start:
+          type: string
+          format: date
+          description: Fiscal year start date
+          example: "2025-01-01"
+        fy_end:
+          type: string
+          format: date
+          description: Fiscal year end date
+          example: "2025-12-31"
+        vat_reg_effectivity:
+          type: string
+          format: date
+          description: VAT registration effectivity date
+          example: "2025-01-01"
+        registration_effectivity:
+          type: string
+          format: date
+          description: Registration effectivity date
+          example: "2025-01-01"
+        payroll_cut_off:
+          type: array
+          items:
+            type: string
+          description: Payroll cut-off dates
+          example: ["15", "30"]
+        payment_cut_off:
+          type: array
+          items:
+            type: string
+          description: Payment cut-off dates
+          example: ["10", "25"]
+        quarter_closing:
+          type: array
+          items:
+            type: string
+          description: Quarter closing dates
+          example: ["03-31", "06-30", "09-30", "12-31"]
+        has_foreign:
+          type: boolean
+          description: Has foreign transactions
+          example: false
+        has_employees:
+          type: boolean
+          description: Has employees
+          example: true
+        is_ewt:
+          type: boolean
+          description: Is expanded withholding tax
+          example: false
+        is_fwt:
+          type: boolean
+          description: Is final withholding tax
+          example: false
+        is_bir_withholding_agent:
+          type: boolean
+          description: Is BIR withholding agent
+          example: false
+        accounting_method:
+          type: string
+          enum: [ACCRUAL, CASH, OTHERS]
+          description: Accounting method
+          example: ACCRUAL
+
+    UpdateOrganizationStatusRequestDto:
+      type: object
+      required:
+        - status
+        - reason
+      properties:
+        status:
+          type: string
+          enum: [REGISTERED, PENDING_REG, ACTIVE, INACTIVE, CESSATION, CLOSED, NON_COMPLIANT, UNDER_AUDIT, SUSPENDED]
+          description: Organization status
+          example: ACTIVE
+        reason:
+          type: string
+          enum: [EXPIRED, OPTED_OUT, PAYMENT_PENDING, VIOLATIONS]
+          description: Reason for status change
+          example: EXPIRED
+        description:
+          type: string
+          description: Optional description for the status change
+          example: "Organization license has expired"
+
+    UpdateOrganizationRegistrationRequestDto:
+      type: object
+      properties:
+        first_name:
+          type: string
+          description: First name of the registrant
+          example: John
+        middle_name:
+          type: string
+          description: Middle name of the registrant
+          example: Michael
+        last_name:
+          type: string
+          description: Last name of the registrant
+          example: Doe
+        trade_name:
+          type: string
+          description: Trade name of the business
+          example: "ABC Trading"
+        line_of_business:
+          type: string
+          description: Line of business (PSIC code)
+          example: "6201"
+        address_line:
+          type: string
+          description: Address line
+          example: "123 Main Street"
+        region:
+          type: string
+          description: Region
+          example: NCR
+        city:
+          type: string
+          description: City
+          example: Makati
+        zip_code:
+          type: string
+          description: ZIP code
+          example: "1223"
+        tin:
+          type: string
+          description: 12-digit TIN
+          example: "001234567890"
+        rdo_code:
+          type: string
+          description: RDO code
+          example: "001"
+        contact_number:
+          type: string
+          description: Contact number
+          example: "+639123456789"
+        email_address:
+          type: string
+          format: email
+          description: Email address
+          example: john.doe@example.com
+        tax_type:
+          type: string
+          enum: [VAT, NON_VAT, EXCEMPT]
+          description: Tax type for registration
+          example: VAT
+        start_date:
+          type: string
+          format: date
+          description: Start date
+          example: "2024-01-01"
+        reg_date:
+          type: string
+          format: date
+          description: Registration date for MCIT calculation
+          example: "2024-01-01"
+
+    # Tax Obligation Schemas
+    TaxObligationResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Tax obligation unique identifier
+        code:
+          type: string
+          description: Tax obligation code
+        name:
+          type: string
+          description: Tax obligation name
+        frequency:
+          type: string
+          enum: [MONTHLY, QUARTERLY, ANNUAL, ONE_TIME]
+          description: Filing frequency
+        due_rule:
+          type: object
+          description: Due date rules configuration (JSON object)
+          example: { day: 20, month_offset: 1 }
+        status:
+          type: string
+          enum: [MANDATORY, OPTIONAL, EXEMPT, CONDITIONAL, ONE_TIME, RETIRED]
+          description: Tax obligation status
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+
+    CreateTaxObligationRequestDto:
+      type: object
+      required:
+        - code
+        - name
+        - frequency
+        - due_rule
+      properties:
+        code:
+          type: string
+          description: Tax obligation code
+          example: VAT-1606
+        name:
+          type: string
+          description: Tax obligation name
+          example: Monthly Value-Added Tax Return
+        frequency:
+          type: string
+          enum: [MONTHLY, QUARTERLY, ANNUAL, ONE_TIME]
+          description: Filing frequency
+          example: MONTHLY
+        due_rule:
+          type: object
+          description: Due date rules configuration (JSON object)
+          example: { day: 20, month_offset: 1 }
+        status:
+          type: string
+          enum: [MANDATORY, OPTIONAL, EXEMPT, CONDITIONAL, ONE_TIME, RETIRED]
+          description: Tax obligation status
+          example: MANDATORY
+
+    # Organization Obligation Schemas
+    OrganizationObligationResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Organization obligation unique identifier
+        organization_id:
+          type: string
+          description: Organization ID
+        obligation_id:
+          type: string
+          description: Tax obligation ID
+        start_date:
+          type: string
+          format: date-time
+          description: Obligation start date
+        end_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Obligation end date
+        status:
+          type: string
+          enum: [NOT_APPLICABLE, ASSIGNED, ACTIVE, DUE, FILED, PAID, OVERDUE, LATE, EXEMPT, SUSPENDED, CLOSED]
+          description: Obligation status
+        notes:
+          type: string
+          nullable: true
+          description: Notes about the obligation
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+
+    AssignObligationRequestDto:
+      type: object
+      required:
+        - obligation_id
+        - start_date
+      properties:
+        obligation_id:
+          type: string
+          description: Tax obligation ID to assign
+          example: "clx123abc456def"
+        start_date:
+          type: string
+          format: date
+          description: Obligation start date
+          example: "2024-01-01"
+        end_date:
+          type: string
+          format: date
+          description: Obligation end date (optional)
+          example: "2024-12-31"
+        notes:
+          type: string
+          description: Notes about the obligation assignment
+          example: "Assigned during initial setup"
+
+    UpdateObligationStatusRequestDto:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [NOT_APPLICABLE, ASSIGNED, ACTIVE, DUE, FILED, PAID, OVERDUE, LATE, EXEMPT, SUSPENDED, CLOSED]
+          description: New obligation status
+          example: ACTIVE
+
+    # Schedule Schemas
+    ScheduleResponseDto:
+      type: object
+      properties:
+        org_obligation_id:
+          type: string
+          description: Organization obligation ID
+        period:
+          type: string
+          description: Reporting period
+          example: "2024-Q1"
+        due_date:
+          type: string
+          format: date-time
+          description: Due date for filing
+        status:
+          type: string
+          enum: [DUE, FILED, LATE, EXEMPT]
+          description: Filing status
+        filed_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Date when filed
+
+    # Organization Owner Schemas
+    CheckOwnershipResponseDto:
+      type: object
+      properties:
+        isOwner:
+          type: boolean
+          description: Whether the current user is an owner of the organization
+        orgId:
+          type: string
+          description: Organization ID
+        userId:
+          type: string
+          description: User ID
+      required:
+        - isOwner
+        - orgId
+        - userId
+
+    AssignOrganizationOwnerRequestDto:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: User ID to assign as owner
+      required:
+        - userId
+
+    OrganizationOwnerResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Owner assignment ID
+        orgId:
+          type: string
+          description: Organization ID
+        userId:
+          type: string
+          description: User ID
+        assignedDate:
+          type: string
+          format: date-time
+          description: Date when the owner was assigned
+        lastUpdate:
+          type: string
+          format: date-time
+          description: Last update timestamp
+      required:
+        - id
+        - orgId
+        - userId
+        - assignedDate
+        - lastUpdate
+
+    OrganizationOwnerListResponseDto:
+      type: object
+      properties:
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizationOwnerResponseDto'
+          description: List of organization owners
+        total:
+          type: integer
+          description: Total number of owners
+      required:
+        - owners
+        - total
