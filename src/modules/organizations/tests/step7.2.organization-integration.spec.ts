@@ -61,6 +61,7 @@ describe('Organization Integration Tests (e2e)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:create'],
           isSuperAdmin: false,
           role: 'User',
@@ -68,7 +69,6 @@ describe('Organization Integration Tests (e2e)', () => {
         process.env.JWT_SECRET!,
       );
       const payload = {
-        registered_name: 'John Doe Self Employed',
         category: 'INDIVIDUAL',
         subcategory: 'SELF_EMPLOYED',
         tax_classification: 'NON_VAT',
@@ -90,7 +90,7 @@ describe('Organization Integration Tests (e2e)', () => {
 
       const mockOrg = {
         id: '1',
-        name: 'John Doe Self Employed', // Should be the registered_name
+        name: 'John Doe', // Constructed from first_name + last_name for INDIVIDUAL
         category: Category.INDIVIDUAL,
         subcategory: SubCategory.SELF_EMPLOYED,
         tax_classification: TaxClassification.NON_VAT,
@@ -140,7 +140,7 @@ describe('Organization Integration Tests (e2e)', () => {
       expect(res.status).toBe(201);
       expect(res.body).toMatchObject({
         id: '1',
-        name: 'John Doe Self Employed',
+        name: 'John Doe',
         category: 'INDIVIDUAL',
         subcategory: 'SELF_EMPLOYED',
         tax_classification: 'NON_VAT',
@@ -153,6 +153,7 @@ describe('Organization Integration Tests (e2e)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:create'],
           isSuperAdmin: false,
           role: 'User',
@@ -160,7 +161,6 @@ describe('Organization Integration Tests (e2e)', () => {
         process.env.JWT_SECRET!,
       );
       const payload = {
-        registered_name: 'Jane Smith Sole Proprietor',
         category: 'INDIVIDUAL',
         subcategory: 'SOLE_PROPRIETOR',
         tax_classification: 'VAT',
@@ -182,7 +182,7 @@ describe('Organization Integration Tests (e2e)', () => {
 
       const mockOrg = {
         id: '2',
-        name: 'Jane Smith Sole Proprietor',
+        name: 'Jane Smith',
         category: Category.INDIVIDUAL,
         subcategory: SubCategory.SOLE_PROPRIETOR,
         tax_classification: TaxClassification.VAT,
@@ -232,7 +232,7 @@ describe('Organization Integration Tests (e2e)', () => {
       expect(res.status).toBe(201);
       expect(res.body).toMatchObject({
         id: '2',
-        name: 'Jane Smith Sole Proprietor',
+        name: 'Jane Smith',
         category: 'INDIVIDUAL',
         subcategory: 'SOLE_PROPRIETOR',
         tax_classification: 'VAT',
@@ -245,6 +245,7 @@ describe('Organization Integration Tests (e2e)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:create'],
           isSuperAdmin: false,
           role: 'User',
@@ -252,7 +253,6 @@ describe('Organization Integration Tests (e2e)', () => {
         process.env.JWT_SECRET!,
       );
       const payload = {
-        registered_name: 'Bob Freelancer',
         category: 'INDIVIDUAL',
         subcategory: 'FREELANCER',
         tax_classification: 'NON_VAT',
@@ -496,6 +496,7 @@ describe('Organization Integration Tests (e2e)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:create'],
           isSuperAdmin: false,
           role: 'User',
@@ -503,7 +504,6 @@ describe('Organization Integration Tests (e2e)', () => {
         process.env.JWT_SECRET!,
       );
       const payload = {
-        registered_name: 'Invalid Subcategory Org',
         category: 'INDIVIDUAL',
         subcategory: 'INVALID_SUBCATEGORY',
         tax_classification: 'VAT',
@@ -536,6 +536,7 @@ describe('Organization Integration Tests (e2e)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:create'],
           isSuperAdmin: false,
           role: 'User',
@@ -543,7 +544,6 @@ describe('Organization Integration Tests (e2e)', () => {
         process.env.JWT_SECRET!,
       );
       const payload = {
-        registered_name: 'Invalid Tax Classification Org',
         category: 'INDIVIDUAL',
         subcategory: 'SELF_EMPLOYED',
         tax_classification: 'INVALID_TAX_CLASS',

@@ -247,7 +247,9 @@ describe('Organization Status (Step 6.5)', () => {
   describe('Organization Status Permissions', () => {
     it('should deny access to organization status without proper read permission', async () => {
       const token = signPayload(
-        { userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' },
+        { userId: 'u1',
+          username: 'testuser',
+          permissions: [], isSuperAdmin: false, role: 'User' },
         process.env.JWT_SECRET!,
       );
       const res = await request(app.getHttpServer())
@@ -290,7 +292,6 @@ describe('Organization Status (Step 6.5)', () => {
         process.env.JWT_SECRET!,
       );
       const payload = {
-        registered_name: 'Individual Org',
         category: 'INDIVIDUAL',
         tax_classification: 'NON_VAT',
         tin: '001234567890',
@@ -438,7 +439,6 @@ describe('Organization Status (Step 6.5)', () => {
         process.env.JWT_SECRET!,
       );
       const payload = {
-        registered_name: 'Timestamp Test Org',
         category: 'INDIVIDUAL',
         tax_classification: 'VAT',
         tin: '001234567890',
@@ -493,6 +493,7 @@ describe('Organization Status (Step 6.5)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:read'],
           isSuperAdmin: false,
           role: 'User',
@@ -518,6 +519,7 @@ describe('Organization Status (Step 6.5)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:read'],
           isSuperAdmin: false,
           role: 'User',
@@ -539,6 +541,7 @@ describe('Organization Status (Step 6.5)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:read'],
           isSuperAdmin: false,
           role: 'User',
@@ -615,6 +618,7 @@ describe('Organization Status (Step 6.5)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:create'],
           isSuperAdmin: false,
           role: 'User',
@@ -645,6 +649,7 @@ describe('Organization Status (Step 6.5)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:update'],
           isSuperAdmin: false,
           role: 'User',

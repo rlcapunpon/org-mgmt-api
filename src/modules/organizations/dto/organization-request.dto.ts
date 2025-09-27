@@ -23,13 +23,16 @@ import {
 
 // Create Organization Request DTO
 export class CreateOrganizationRequestDto {
-  @ApiProperty({
-    description: 'Registered name of the business',
+  @ApiPropertyOptional({
+    description: 'Registered name of the business (required for NON_INDIVIDUAL category)',
     example: 'ABC Corporation Inc.',
   })
+  @ValidateIf(
+    (obj: { category?: Category }) => obj.category === Category.NON_INDIVIDUAL,
+  )
   @IsNotEmpty()
   @IsString()
-  registered_name: string;
+  registered_name?: string;
 
   @ApiProperty({
     description: 'Tax Identification Number',

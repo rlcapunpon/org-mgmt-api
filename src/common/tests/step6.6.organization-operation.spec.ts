@@ -414,7 +414,9 @@ describe('Organization Business Operations (Step 6.7)', () => {
   describe('Organization Operation Permissions', () => {
     it('should deny access to organization operation without proper read permission', async () => {
       const token = signPayload(
-        { userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' },
+        { userId: 'u1',
+          username: 'testuser',
+          permissions: [], isSuperAdmin: false, role: 'User' },
         process.env.JWT_SECRET!,
       );
       const res = await request(app.getHttpServer())
@@ -446,7 +448,9 @@ describe('Organization Business Operations (Step 6.7)', () => {
 
     it('should deny access to operation endpoint without proper read permission', async () => {
       const token = signPayload(
-        { userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' },
+        { userId: 'u1',
+          username: 'testuser',
+          permissions: [], isSuperAdmin: false, role: 'User' },
         process.env.JWT_SECRET!,
       );
       const res = await request(app.getHttpServer())
@@ -458,7 +462,9 @@ describe('Organization Business Operations (Step 6.7)', () => {
 
     it('should deny access to operation update endpoint without proper update permission', async () => {
       const token = signPayload(
-        { userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' },
+        { userId: 'u1',
+          username: 'testuser',
+          permissions: [], isSuperAdmin: false, role: 'User' },
         process.env.JWT_SECRET!,
       );
       const res = await request(app.getHttpServer())
@@ -482,7 +488,6 @@ describe('Organization Business Operations (Step 6.7)', () => {
         process.env.JWT_SECRET!,
       );
       const payload = {
-        registered_name: 'Individual Org',
         category: 'INDIVIDUAL',
         tax_classification: 'NON_VAT',
         tin: '001234567890',

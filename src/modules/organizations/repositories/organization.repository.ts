@@ -12,7 +12,7 @@ interface CreateOrganizationData
   first_name?: string;
   middle_name?: string | null;
   last_name?: string;
-  registered_name: string; // Now mandatory for all categories
+  registered_name?: string; // Now optional, required based on category
   trade_name?: string | null;
   line_of_business: string;
   address_line: string;
@@ -94,12 +94,8 @@ export class OrganizationRepository {
           'first_name and last_name are required for INDIVIDUAL category',
         );
       }
-      if (!registered_name) {
-        throw new Error(
-          'registered_name is required for all categories',
-        );
-      }
-      organizationName = registered_name;
+      // For INDIVIDUAL, construct name from first_name + middle_name + last_name
+      organizationName = [first_name, middle_name, last_name].filter(Boolean).join(' ');
     } else if (data.category === 'NON_INDIVIDUAL') {
       // For NON_INDIVIDUAL, registered_name is required and used as organization name
       if (!registered_name) {
@@ -168,7 +164,7 @@ export class OrganizationRepository {
             first_name: first_name || '',
             middle_name,
             last_name: last_name || '',
-            registered_name: finalRegisteredName,
+            registered_name: finalRegisteredName || '',
             trade_name,
             line_of_business,
             address_line,
