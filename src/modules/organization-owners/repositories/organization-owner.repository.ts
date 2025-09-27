@@ -84,4 +84,10 @@ export class OrganizationOwnerRepository {
       where: { id },
     });
   }
+
+  async getOwnersByUserId(user_id: string): Promise<OrganizationOwner[]> {
+    return this.prisma.organizationOwner.findMany({
+      where: { user_id },
+    });
+  }
 }

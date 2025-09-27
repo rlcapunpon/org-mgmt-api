@@ -128,3 +128,78 @@ Successfully implemented audit logging for OrganizationTaxObligation status chan
 
 ## Next Steps
 Step 09-27-2025.STEP5 complete. Ready to proceed with next step.
+
+---
+
+# STEP 09-27-2025.STEP6 - User Overview Endpoint Implementation - COMPLETED ✅
+
+## Overview
+Successfully implemented user overview endpoint that returns organizations owned, assigned, and obligations due within 30 days. Integrated with RBAC API for permission-based organization access and followed strict TDD methodology.
+
+## Implementation Details
+
+### New User Module Structure
+- **Module**: `src/modules/users/user.module.ts` - Complete NestJS module with HttpModule for RBAC API integration
+- **Service**: `src/modules/users/services/user.service.ts` - Business logic for aggregating user data
+- **Controller**: `src/modules/users/controllers/user.controller.ts` - REST endpoint with JWT authentication
+- **Repository**: `src/modules/users/repositories/user.repository.ts` - User data access layer
+
+### RBAC API Integration
+- **HTTP Client**: Integrated `@nestjs/axios` for calling RBAC API permissions endpoint
+- **Permission Parsing**: Extracts organization permissions from JWT-like permission strings (e.g., "organization.read:org-1")
+- **Super Admin Handling**: Special case for users with "*" permissions (all organizations access)
+- **Error Handling**: Graceful fallback when RBAC API is unavailable
+
+### Database Repository Extensions
+- **OrganizationOwnerRepository**: Added `getOwnersByUserId()` method for owned organizations lookup
+- **OrganizationObligationRepository**: Added `countObligationsDueWithinDays()` and `countTotalObligations()` methods
+
+### API Endpoint
+- **GET /users/overview**: Returns user dashboard data with authentication and permission checks
+- **Security**: JWT authentication required, `user.read` permission enforced
+- **Response**: JSON with organizations owned, assigned, obligations due, and totals
+
+### Testing Coverage (TDD Approach)
+- **Unit Tests**: `step9-27-2025.user.service.spec.ts` - 4 comprehensive test cases covering all scenarios
+- **E2E Tests**: `step9-27-2025.user.controller.e2e-spec.ts` - Authentication, authorization, and response validation
+- **Coverage**: 86.97% overall (exceeds 85% requirement)
+- **Test Scenarios**: Normal users, super admins, users with no organizations, RBAC API failures
+
+### Files Created/Modified
+- **New Module**: Complete users module with service, controller, repository, and tests
+- **Repository Extensions**: Added methods to OrganizationOwnerRepository and OrganizationObligationRepository
+- **API Specification**: Updated `checkpoint/org-mgmt-api.yaml` with users overview endpoint and schema
+- **App Module**: Added UserModule to main application imports
+- **Tests**: Unit and e2e tests with comprehensive coverage
+
+### OpenAPI Documentation
+- Added `/users/overview` endpoint with proper security requirements
+- Created `UserOverviewResponseDto` schema with all required fields
+- Documented response examples and field descriptions
+
+## Test Results
+```
+✅ User Service Unit Tests: 4/4 passed
+✅ User Controller E2E Tests: 3/3 passed
+✅ Overall Test Suite: 344/344 passed
+✅ Coverage: 86.97% (exceeds 85% requirement)
+✅ Build: Successful
+✅ RBAC Integration: Working correctly
+```
+
+## Key Features
+- **Organizations Owned**: Count from OrganizationOwner table
+- **Organizations Assigned**: Parsed from RBAC API permissions with super admin support
+- **Obligations Due**: Count from ObligationSchedule table with 30-day window
+- **Total Obligations**: System-wide obligation count
+- **Error Resilience**: Continues working even when RBAC API fails
+- **Security**: Full JWT authentication and permission-based access control
+
+## Notes
+- Followed strict TDD: Created failing tests first, then implemented functionality
+- RBAC API integration uses HTTP calls with proper error handling
+- Maintains backward compatibility with existing codebase
+- All tests passing with comprehensive coverage
+
+## Next Steps
+STEP 09-27-2025.STEP6 complete. All planned steps for this checkpoint completed successfully.

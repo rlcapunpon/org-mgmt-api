@@ -658,6 +658,28 @@ paths:
         '404':
           description: Organization not found
 
+  # User Management
+  /users/overview:
+    get:
+      tags:
+        - Users
+      summary: Get user overview
+      description: Get an overview of user's organizations and obligations
+      operationId: getUserOverview
+      security:
+        - JWT-auth: []
+      responses:
+        '200':
+          description: User overview data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOverviewResponseDto'
+        '401':
+          description: Unauthorized - invalid or missing JWT token
+        '403':
+          description: Forbidden - insufficient permissions
+
 components:
   securitySchemes:
     JWT-auth:
@@ -1469,3 +1491,29 @@ components:
       required:
         - owners
         - total
+
+    # User Schemas
+    UserOverviewResponseDto:
+      type: object
+      properties:
+        organizationsOwned:
+          type: integer
+          description: Number of organizations owned by the user
+          example: 2
+        organizationsAssigned:
+          type: integer
+          description: Number of organizations assigned to the user (or -1 for super admin with all access)
+          example: 3
+        obligationsDueWithin30Days:
+          type: integer
+          description: Number of obligations due within the next 30 days
+          example: 5
+        totalObligations:
+          type: integer
+          description: Total number of obligations across all organizations
+          example: 15
+      required:
+        - organizationsOwned
+        - organizationsAssigned
+        - obligationsDueWithin30Days
+        - totalObligations

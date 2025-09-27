@@ -24,6 +24,18 @@ enum SubCategory {
   FREELANCER
   CORPORATION
   PARTNERSHIP
+  BMBE
+  MIXED_INCOME
+  ESTATE
+  DONOR
+  FOREIGN_CORP
+  COOPERATIVE
+  NGO
+  GOVERNMENT
+  GOCC
+  REAL_ESTATE_DEV
+  IMPORTER
+  EXPORTER
   OTHERS
 }
 
@@ -124,6 +136,32 @@ model Organization {
   owners            OrganizationOwner[]
 }
 
+model OrganizationRegistration {
+  organization_id  String   @id
+  first_name       String
+  middle_name      String?
+  last_name        String
+  trade_name       String?
+  line_of_business String
+  address_line     String
+  region           String
+  city             String
+  zip_code         String
+  tin              String   @db.VarChar(12)
+  rdo_code         String
+  contact_number   String
+  email_address    String
+  tax_type         TaxClassification
+  start_date       DateTime
+  reg_date         DateTime
+  update_date      DateTime @default(now())
+  update_by        String
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  organization     Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+}
+
 model TaxObligation {
   id         String    @id @default(cuid())
   code       String    @unique
@@ -202,32 +240,6 @@ model OrganizationOperation {
   updated_at                DateTime  @updatedAt
 
   organization              Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-}
-
-model OrganizationRegistration {
-  organization_id  String   @id
-  first_name       String
-  middle_name      String?
-  last_name        String
-  trade_name       String?
-  line_of_business String
-  address_line     String
-  region           String
-  city             String
-  zip_code         String
-  tin              String   @db.VarChar(12)
-  rdo_code         String
-  contact_number   String
-  email_address    String
-  tax_type         TaxClassification
-  start_date       DateTime
-  reg_date         DateTime
-  update_date      DateTime @default(now())
-  update_by        String
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
-
-  organization     Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
 }
 
 model OrganizationStatusChangeReason {

@@ -7,6 +7,7 @@ import { OrgObligationsModule } from './modules/org-obligations/org-obligations.
 import { SchedulesModule } from './modules/schedules/schedules.module';
 import { OrganizationOwnersModule } from './modules/organization-owners/organization-owners.module';
 import { AuthModule } from './auth/auth.module';
+import { UserModule } from './modules/users/user.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from './auth/auth.module';
     SchedulesModule,
     OrganizationOwnersModule,
     AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -39,4 +39,25 @@ export class OrganizationObligationRepository {
       include: { obligation: true, organization: true },
     });
   }
+
+  async countObligationsDueWithinDays(days: number): Promise<number> {
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + days);
+
+    return this.prisma.obligationSchedule.count({
+      where: {
+        due_date: {
+          lte: futureDate,
+          gte: new Date(),
+        },
+        status: {
+          in: ['DUE', 'LATE'], // Only count obligations that are still due or late
+        },
+      },
+    });
+  }
+
+  async countTotalObligations(): Promise<number> {
+    return this.prisma.organizationObligation.count();
+  }
 }
