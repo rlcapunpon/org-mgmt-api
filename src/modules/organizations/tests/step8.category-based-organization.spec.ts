@@ -109,7 +109,9 @@ describe('OrganizationRepository - Step 10: Category-based registered_name requi
       expect(result).toEqual(mockOrg);
       expect(result.name).toBe('John Michael Doe');
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect((result as any).registration.registered_name).toBe('John Doe Enterprises');
+      expect((result as any).registration.registered_name).toBe(
+        'John Doe Enterprises',
+      );
     });
 
     it('should create organization with name from first_name + last_name when middle_name is null', async () => {
@@ -189,7 +191,9 @@ describe('OrganizationRepository - Step 10: Category-based registered_name requi
       expect(result).toEqual(mockOrg);
       expect(result.name).toBe('John Doe');
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect((result as any).registration.registered_name).toBe('John Doe Freelance');
+      expect((result as any).registration.registered_name).toBe(
+        'John Doe Freelance',
+      );
     });
 
     it('should create organization with name from first_name + last_name when registered_name is not provided', async () => {

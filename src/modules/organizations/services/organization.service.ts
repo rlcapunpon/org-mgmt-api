@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument */
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 import { OrganizationRepository } from '../repositories/organization.repository';
 import {
   CreateOrganizationRequestDto,
@@ -11,11 +14,15 @@ import { Organization } from '@prisma/client';
 
 @Injectable()
 export class OrganizationService {
-  constructor(private repo: OrganizationRepository) {}
+  constructor(
+    private repo: OrganizationRepository,
+    private httpService: HttpService,
+  ) {}
 
   async create(
     data: CreateOrganizationRequestDto,
     userId: string,
+    jwtToken?: string,
   ): Promise<Organization> {
     // Transform undefined subcategory to null for database compatibility
     const transformedData = {
@@ -23,7 +30,33 @@ export class OrganizationService {
       subcategory: data.subcategory ?? null,
       update_by: userId,
     };
-    return this.repo.create(transformedData);
+    const organization = await this.repo.create(transformedData);
+
+    // Call RBAC API to create resource if JWT token is provided and not in test environment
+    if (jwtToken && process.env.NODE_ENV !== 'test') {
+      try {
+        await firstValueFrom(
+          this.httpService.post(
+            `${process.env.RBAC_API_URL}/resources`,
+            {
+              name: organization.name,
+              description: `Organization ${organization.name} (${organization.tin})`,
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${jwtToken}`,
+              },
+            },
+          ),
+        );
+      } catch (error) {
+        // Log the error but don't fail the organization creation
+        console.error('Failed to create resource in RBAC API:', error);
+      }
+    }
+
+    return organization;
   }
 
   async findById(id: string): Promise<Organization | null> {
@@ -78,24 +111,43 @@ export class OrganizationService {
       } = transformedData;
 
       // Handle organization name update based on category
-      let finalOrgData: any = { ...orgData };
+      const finalOrgData: any = { ...orgData };
 
       // If category is being updated or if we have name-related fields, recalculate the name
-      if (orgData.category || first_name || middle_name || last_name || data.registered_name) {
-        const category = orgData.category || (await this.repo.getByIdBasic(id))?.category;
+      if (
+        orgData.category ||
+        first_name ||
+        middle_name ||
+        last_name ||
+        data.registered_name
+      ) {
+        const category =
+          orgData.category || (await this.repo.getByIdBasic(id))?.category;
         const registeredName = data.registered_name;
 
         if (category === 'INDIVIDUAL') {
           // For INDIVIDUAL, construct name from first_name + middle_name + last_name
-          const currentRegistration = await this.repo.getRegistrationByOrgId(id);
-          const finalFirstName = first_name || currentRegistration?.first_name || '';
-          const finalMiddleName = middle_name !== undefined ? middle_name : currentRegistration?.middle_name || '';
-          const finalLastName = last_name || currentRegistration?.last_name || '';
-          finalOrgData.name = [finalFirstName, finalMiddleName, finalLastName].filter(Boolean).join(' ');
+          const currentRegistration =
+            await this.repo.getRegistrationByOrgId(id);
+          const finalFirstName =
+            first_name || (currentRegistration as any)?.first_name || '';
+          const finalMiddleName =
+            middle_name !== undefined
+              ? middle_name
+              : (currentRegistration as any)?.middle_name || '';
+          const finalLastName =
+            last_name || (currentRegistration as any)?.last_name || '';
+          finalOrgData.name = [finalFirstName, finalMiddleName, finalLastName]
+            .filter(Boolean)
+            .join(' ');
         } else if (category === 'NON_INDIVIDUAL') {
           // For NON_INDIVIDUAL, use registered_name as organization name
-          const currentRegistration = await this.repo.getRegistrationByOrgId(id);
-          finalOrgData.name = registeredName || currentRegistration?.registered_name || 'TBD';
+          const currentRegistration =
+            await this.repo.getRegistrationByOrgId(id);
+          finalOrgData.name =
+            registeredName ||
+            (currentRegistration as any)?.registered_name ||
+            'TBD';
         }
       }
 

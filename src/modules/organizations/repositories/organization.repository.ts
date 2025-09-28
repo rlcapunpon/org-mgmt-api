@@ -95,7 +95,9 @@ export class OrganizationRepository {
         );
       }
       // For INDIVIDUAL, construct name from first_name + middle_name + last_name
-      organizationName = [first_name, middle_name, last_name].filter(Boolean).join(' ');
+      organizationName = [first_name, middle_name, last_name]
+        .filter(Boolean)
+        .join(' ');
     } else if (data.category === 'NON_INDIVIDUAL') {
       // For NON_INDIVIDUAL, registered_name is required and used as organization name
       if (!registered_name) {
@@ -267,7 +269,7 @@ export class OrganizationRepository {
     });
 
     if (!organization) {
-      throw { code: 'P2025' }; // Organization not found
+      throw new Error('Organization not found');
     }
 
     // Check if operation exists
@@ -374,7 +376,10 @@ export class OrganizationRepository {
     });
 
     if (!organization) {
-      throw { code: 'P2025' }; // Organization not found
+      // Use P2025 error format to match Prisma's "Record not found" error
+      const error = new Error('Record to update not found.');
+      (error as any).code = 'P2025';
+      throw error;
     }
 
     // Check if registration exists

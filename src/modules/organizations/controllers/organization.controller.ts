@@ -64,7 +64,11 @@ export class OrganizationController {
   @ApiBody({ type: CreateOrganizationRequestDto })
   async create(@Body() dto: CreateOrganizationRequestDto, @Req() req: Request) {
     const user = req.user as { userId: string };
-    const org = await this.service.create(dto, user.userId);
+    const authHeader = req.headers.authorization;
+    const jwtToken = authHeader?.startsWith('Bearer ')
+      ? authHeader.substring(7)
+      : undefined;
+    const org = await this.service.create(dto, user.userId, jwtToken);
     return org;
   }
 

@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, RequestMethod } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import request from 'supertest';
+import nock from 'nock';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/database/prisma.service';
 import { signPayload } from '../src/test-utils/token';
@@ -83,6 +84,12 @@ describe('Organization Management API Integration Tests', () => {
     };
     authToken = signPayload(payload, jwtSecret);
 
+    // Mock RBAC API calls
+    nock('http://localhost:3000')
+      .persist()
+      .post('/api/resources')
+      .reply(201, { id: 'mock-resource-id' });
+
     // Clean up any existing test data
     await prisma.organizationOperation.deleteMany();
     await prisma.organizationStatus.deleteMany();
@@ -110,6 +117,9 @@ describe('Organization Management API Integration Tests', () => {
     await prisma.organizationObligation.deleteMany();
     await prisma.organization.deleteMany();
     await prisma.taxObligation.deleteMany();
+
+    // Clean up nock mocks
+    nock.cleanAll();
 
     await app.close();
   });

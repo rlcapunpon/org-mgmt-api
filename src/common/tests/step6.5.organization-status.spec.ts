@@ -247,9 +247,13 @@ describe('Organization Status (Step 6.5)', () => {
   describe('Organization Status Permissions', () => {
     it('should deny access to organization status without proper read permission', async () => {
       const token = signPayload(
-        { userId: 'u1',
+        {
+          userId: 'u1',
           username: 'testuser',
-          permissions: [], isSuperAdmin: false, role: 'User' },
+          permissions: [],
+          isSuperAdmin: false,
+          role: 'User',
+        },
         process.env.JWT_SECRET!,
       );
       const res = await request(app.getHttpServer())

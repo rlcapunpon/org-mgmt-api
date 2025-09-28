@@ -71,7 +71,9 @@ describe('CreateOrganizationRequestDto', () => {
 
         const errors = await validate(dto);
         expect(errors.length).toBeGreaterThan(0);
-        expect(errors.some((error) => error.property === 'first_name')).toBe(true);
+        expect(errors.some((error) => error.property === 'first_name')).toBe(
+          true,
+        );
       });
 
       it('should fail validation when last_name is missing for INDIVIDUAL category', async () => {
@@ -95,7 +97,9 @@ describe('CreateOrganizationRequestDto', () => {
 
         const errors = await validate(dto);
         expect(errors.length).toBeGreaterThan(0);
-        expect(errors.some((error) => error.property === 'last_name')).toBe(true);
+        expect(errors.some((error) => error.property === 'last_name')).toBe(
+          true,
+        );
       });
     });
 
@@ -140,7 +144,9 @@ describe('CreateOrganizationRequestDto', () => {
 
         const errors = await validate(dto);
         expect(errors.length).toBeGreaterThan(0);
-        expect(errors.some((error) => error.property === 'registered_name')).toBe(true);
+        expect(
+          errors.some((error) => error.property === 'registered_name'),
+        ).toBe(true);
       });
 
       it('should validate successfully when first_name and last_name are not provided for NON_INDIVIDUAL category', async () => {

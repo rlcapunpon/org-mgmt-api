@@ -24,7 +24,8 @@ import {
 // Create Organization Request DTO
 export class CreateOrganizationRequestDto {
   @ApiPropertyOptional({
-    description: 'Registered name of the business (required for NON_INDIVIDUAL category)',
+    description:
+      'Registered name of the business (required for NON_INDIVIDUAL category)',
     example: 'ABC Corporation Inc.',
   })
   @ValidateIf(
@@ -316,7 +317,8 @@ export class CreateOrganizationRequestDto {
 // Update Organization Request DTO
 export class UpdateOrganizationRequestDto {
   @ApiPropertyOptional({
-    description: 'Registered name of the business (required for NON_INDIVIDUAL category)',
+    description:
+      'Registered name of the business (required for NON_INDIVIDUAL category)',
     example: 'ABC Corporation Inc.',
   })
   @ValidateIf(

@@ -414,9 +414,13 @@ describe('Organization Business Operations (Step 6.7)', () => {
   describe('Organization Operation Permissions', () => {
     it('should deny access to organization operation without proper read permission', async () => {
       const token = signPayload(
-        { userId: 'u1',
+        {
+          userId: 'u1',
           username: 'testuser',
-          permissions: [], isSuperAdmin: false, role: 'User' },
+          permissions: [],
+          isSuperAdmin: false,
+          role: 'User',
+        },
         process.env.JWT_SECRET!,
       );
       const res = await request(app.getHttpServer())
@@ -448,9 +452,13 @@ describe('Organization Business Operations (Step 6.7)', () => {
 
     it('should deny access to operation endpoint without proper read permission', async () => {
       const token = signPayload(
-        { userId: 'u1',
+        {
+          userId: 'u1',
           username: 'testuser',
-          permissions: [], isSuperAdmin: false, role: 'User' },
+          permissions: [],
+          isSuperAdmin: false,
+          role: 'User',
+        },
         process.env.JWT_SECRET!,
       );
       const res = await request(app.getHttpServer())
@@ -462,9 +470,13 @@ describe('Organization Business Operations (Step 6.7)', () => {
 
     it('should deny access to operation update endpoint without proper update permission', async () => {
       const token = signPayload(
-        { userId: 'u1',
+        {
+          userId: 'u1',
           username: 'testuser',
-          permissions: [], isSuperAdmin: false, role: 'User' },
+          permissions: [],
+          isSuperAdmin: false,
+          role: 'User',
+        },
         process.env.JWT_SECRET!,
       );
       const res = await request(app.getHttpServer())

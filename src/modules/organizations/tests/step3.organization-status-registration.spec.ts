@@ -2,7 +2,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import request from 'supertest';
+import { of } from 'rxjs';
 import { AppModule } from '../../../app.module';
 import { signPayload } from '../../../test-utils/token';
 import { TaxClassification, BusinessStatus } from '@prisma/client';
@@ -12,9 +14,15 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
+    const mockHttpService = {
+      post: jest.fn().mockReturnValue(of({ data: { id: 'mock-resource-id' } })),
+    };
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
+      .overrideProvider(HttpService)
+      .useValue(mockHttpService)
       .overrideProvider(PrismaService)
       .useValue({
         $connect: jest.fn(),
@@ -119,7 +127,8 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       it('should get organization status by organization id', async () => {
         const token = signPayload(
           {
-            userId: 'u1',
+            userId: 'u1', username: 'user1@example.com',
+            username: 'user1@example.com',
             permissions: ['resource:read'],
             isSuperAdmin: false,
             role: 'User',
@@ -141,7 +150,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       it('should return 404 for non-existent organization status', async () => {
         const token = signPayload(
           {
-            userId: 'u1',
+            userId: 'u1', username: 'user1@example.com',
             permissions: ['resource:read'],
             isSuperAdmin: false,
             role: 'User',
@@ -158,7 +167,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
 
       it('should deny access without proper permissions', async () => {
         const token = signPayload(
-          { userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' },
+          { userId: 'u1', username: 'user1@example.com', permissions: [], isSuperAdmin: false, role: 'User' },
           process.env.JWT_SECRET!,
         );
 
@@ -174,7 +183,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       it('should update organization status', async () => {
         const token = signPayload(
           {
-            userId: 'u1',
+            userId: 'u1', username: 'user1@example.com',
             permissions: ['resource:update'],
             isSuperAdmin: false,
             role: 'User',
@@ -211,7 +220,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       it('should return 404 when updating non-existent organization status', async () => {
         const token = signPayload(
           {
-            userId: 'u1',
+            userId: 'u1', username: 'user1@example.com',
             permissions: ['resource:update'],
             isSuperAdmin: false,
             role: 'User',
@@ -238,7 +247,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
 
       it('should deny access without proper permissions', async () => {
         const token = signPayload(
-          { userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' },
+          { userId: 'u1', username: 'user1@example.com', permissions: [], isSuperAdmin: false, role: 'User' },
           process.env.JWT_SECRET!,
         );
         const updateData = {
@@ -259,7 +268,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       it('should partially update organization status', async () => {
         const token = signPayload(
           {
-            userId: 'u1',
+            userId: 'u1', username: 'user1@example.com',
             permissions: ['resource:update'],
             isSuperAdmin: false,
             role: 'User',
@@ -299,7 +308,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       it('should get organization registration by organization id', async () => {
         const token = signPayload(
           {
-            userId: 'u1',
+            userId: 'u1', username: 'user1@example.com',
             permissions: ['resource:read'],
             isSuperAdmin: false,
             role: 'User',
@@ -322,7 +331,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       it('should return 404 for non-existent organization registration', async () => {
         const token = signPayload(
           {
-            userId: 'u1',
+            userId: 'u1', username: 'user1@example.com',
             permissions: ['resource:read'],
             isSuperAdmin: false,
             role: 'User',
@@ -339,7 +348,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
 
       it('should deny access without proper permissions', async () => {
         const token = signPayload(
-          { userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' },
+          { userId: 'u1', username: 'user1@example.com', permissions: [], isSuperAdmin: false, role: 'User' },
           process.env.JWT_SECRET!,
         );
 
@@ -355,7 +364,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       it('should update organization registration', async () => {
         const token = signPayload(
           {
-            userId: 'u1',
+            userId: 'u1', username: 'user1@example.com',
             permissions: ['resource:update'],
             isSuperAdmin: false,
             role: 'User',
@@ -414,7 +423,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       it('should return 404 when updating non-existent organization registration', async () => {
         const token = signPayload(
           {
-            userId: 'u1',
+            userId: 'u1', username: 'user1@example.com',
             permissions: ['resource:update'],
             isSuperAdmin: false,
             role: 'User',
@@ -440,7 +449,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
 
       it('should deny access without proper permissions', async () => {
         const token = signPayload(
-          { userId: 'u1', permissions: [], isSuperAdmin: false, role: 'User' },
+          { userId: 'u1', username: 'user1@example.com', permissions: [], isSuperAdmin: false, role: 'User' },
           process.env.JWT_SECRET!,
         );
         const updateData = {
@@ -460,7 +469,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
       it('should partially update organization registration', async () => {
         const token = signPayload(
           {
-            userId: 'u1',
+            userId: 'u1', username: 'user1@example.com',
             permissions: ['resource:update'],
             isSuperAdmin: false,
             role: 'User',
@@ -513,7 +522,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
     it('should validate status update payload', async () => {
       const token = signPayload(
         {
-          userId: 'u1',
+          userId: 'u1', username: 'user1@example.com',
           permissions: ['resource:update'],
           isSuperAdmin: false,
           role: 'User',
@@ -535,7 +544,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
     it('should validate registration update payload', async () => {
       const token = signPayload(
         {
-          userId: 'u1',
+          userId: 'u1', username: 'user1@example.com',
           permissions: ['resource:update'],
           isSuperAdmin: false,
           role: 'User',
