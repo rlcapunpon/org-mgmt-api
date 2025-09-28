@@ -44,7 +44,121 @@ export class OrganizationService {
         ...data,
         subcategory: data.subcategory ?? null,
       };
-      return await this.repo.updateBasic(id, transformedData);
+
+      // Separate organization data from related data
+      const {
+        first_name,
+        middle_name,
+        last_name,
+        trade_name,
+        line_of_business,
+        address_line,
+        region,
+        city,
+        zip_code,
+        tin: registrationTin,
+        rdo_code,
+        contact_number,
+        email_address,
+        start_date,
+        fy_start,
+        fy_end,
+        vat_reg_effectivity,
+        registration_effectivity,
+        payroll_cut_off,
+        payment_cut_off,
+        quarter_closing,
+        has_foreign,
+        has_employees,
+        is_ewt,
+        is_fwt,
+        is_bir_withholding_agent,
+        accounting_method,
+        ...orgData
+      } = transformedData;
+
+      // Handle organization name update based on category
+      let finalOrgData: any = { ...orgData };
+
+      // If category is being updated or if we have name-related fields, recalculate the name
+      if (orgData.category || first_name || middle_name || last_name || data.registered_name) {
+        const category = orgData.category || (await this.repo.getByIdBasic(id))?.category;
+        const registeredName = data.registered_name;
+
+        if (category === 'INDIVIDUAL') {
+          // For INDIVIDUAL, construct name from first_name + middle_name + last_name
+          const currentRegistration = await this.repo.getRegistrationByOrgId(id);
+          const finalFirstName = first_name || currentRegistration?.first_name || '';
+          const finalMiddleName = middle_name !== undefined ? middle_name : currentRegistration?.middle_name || '';
+          const finalLastName = last_name || currentRegistration?.last_name || '';
+          finalOrgData.name = [finalFirstName, finalMiddleName, finalLastName].filter(Boolean).join(' ');
+        } else if (category === 'NON_INDIVIDUAL') {
+          // For NON_INDIVIDUAL, use registered_name as organization name
+          const currentRegistration = await this.repo.getRegistrationByOrgId(id);
+          finalOrgData.name = registeredName || currentRegistration?.registered_name || 'TBD';
+        }
+      }
+
+      // Update organization basic data
+      const updatedOrg = await this.repo.updateBasic(id, finalOrgData);
+
+      // Update organization registration if registration fields are provided
+      const registrationData = {
+        first_name,
+        middle_name,
+        last_name,
+        registered_name: data.registered_name,
+        trade_name,
+        line_of_business,
+        address_line,
+        region,
+        city,
+        zip_code,
+        tin: registrationTin,
+        rdo_code,
+        contact_number,
+        email_address,
+        start_date,
+        reg_date: orgData.registration_date,
+        tax_type: orgData.tax_classification,
+      };
+
+      // Only update registration if at least one field is provided
+      const hasRegistrationData = Object.values(registrationData).some(
+        (value) => value !== undefined && value !== null,
+      );
+
+      if (hasRegistrationData) {
+        await this.repo.updateRegistration(id, registrationData);
+      }
+
+      // Update organization operation if operation fields are provided
+      const operationData = {
+        fy_start,
+        fy_end,
+        vat_reg_effectivity,
+        registration_effectivity,
+        payroll_cut_off,
+        payment_cut_off,
+        quarter_closing,
+        has_foreign,
+        has_employees,
+        is_ewt,
+        is_fwt,
+        is_bir_withholding_agent,
+        accounting_method,
+      };
+
+      // Only update operation if at least one field is provided
+      const hasOperationData = Object.values(operationData).some(
+        (value) => value !== undefined && value !== null,
+      );
+
+      if (hasOperationData) {
+        await this.repo.updateOperation(id, operationData);
+      }
+
+      return updatedOrg;
     } catch (error) {
       if ((error as { code?: string }).code === 'P2025') {
         // Record not found

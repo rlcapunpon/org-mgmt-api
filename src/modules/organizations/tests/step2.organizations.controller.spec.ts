@@ -191,6 +191,76 @@ describe('Organizations Controller (e2e)', () => {
     expect(res.body.name).toBe('Updated Org');
   });
 
+  it('PUT /organizations/:id should accept all fields available in POST /organizations', async () => {
+    const token = signPayload(
+      {
+        userId: 'u1',
+        permissions: ['resource:update'],
+        isSuperAdmin: false,
+        role: 'User',
+      },
+      process.env.JWT_SECRET!,
+    );
+    const updatePayload = {
+      category: Category.INDIVIDUAL,
+      tax_classification: TaxClassification.VAT,
+      tin: '001234567890',
+      registration_date: '2024-01-01',
+      first_name: 'John',
+      middle_name: 'Michael',
+      last_name: 'Doe',
+      registered_name: 'ABC Corporation',
+      trade_name: 'ABC Trading',
+      line_of_business: '6201',
+      address_line: '123 Main Street',
+      region: 'NCR',
+      city: 'Makati',
+      zip_code: '1223',
+      rdo_code: '001',
+      contact_number: '+639123456789',
+      email_address: 'john.doe@example.com',
+      start_date: '2024-01-01',
+      fy_start: '2024-01-01',
+      fy_end: '2024-12-31',
+      vat_reg_effectivity: '2024-01-01',
+      registration_effectivity: '2024-01-01',
+      payroll_cut_off: ['15', '30'],
+      payment_cut_off: ['10', '25'],
+      quarter_closing: ['03-31', '06-30', '09-30', '12-31'],
+      has_foreign: false,
+      has_employees: true,
+      is_ewt: false,
+      is_fwt: false,
+      is_bir_withholding_agent: false,
+      accounting_method: 'ACCRUAL',
+    };
+    const updatedOrg = {
+      id: '1',
+      name: 'John Michael Doe',
+      category: Category.INDIVIDUAL,
+      tax_classification: TaxClassification.VAT,
+      tin: '001234567890',
+      subcategory: null,
+      registration_date: new Date('2024-01-01'),
+      address: '123 Main Street, Makati, NCR, 1223',
+      created_at: new Date(),
+      updated_at: new Date(),
+      deleted_at: null,
+    };
+    mockService.update.mockResolvedValue(updatedOrg);
+    const res = await request(app.getHttpServer())
+      .put('/organizations/1')
+      .set('Authorization', `Bearer ${token}`)
+      .send(updatePayload);
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      id: '1',
+      name: 'John Michael Doe',
+      category: 'INDIVIDUAL',
+      tax_classification: 'VAT',
+    });
+  });
+
   it('DELETE /organizations/:id sets deleted_at and returns 204', async () => {
     const token = signPayload(
       {

@@ -261,13 +261,39 @@ export class OrganizationRepository {
   }
 
   async updateOperation(id: string, data: any) {
-    return this.prisma.organizationOperation.update({
-      where: { organization_id: id },
-      data: {
-        ...data,
-        last_update: new Date(),
-      },
+    // First check if the organization exists
+    const organization = await this.prisma.organization.findUnique({
+      where: { id },
     });
+
+    if (!organization) {
+      throw { code: 'P2025' }; // Organization not found
+    }
+
+    // Check if operation exists
+    const existing = await this.prisma.organizationOperation.findUnique({
+      where: { organization_id: id },
+    });
+
+    if (existing) {
+      // Update existing record
+      return this.prisma.organizationOperation.update({
+        where: { organization_id: id },
+        data: {
+          ...data,
+          last_update: new Date(),
+        },
+      });
+    } else {
+      // Create new record
+      return this.prisma.organizationOperation.create({
+        data: {
+          organization_id: id,
+          ...data,
+          last_update: new Date(),
+        },
+      });
+    }
   }
 
   async softDelete(id: string): Promise<Organization> {
@@ -342,13 +368,39 @@ export class OrganizationRepository {
   }
 
   async updateRegistration(id: string, data: any) {
-    return this.prisma.organizationRegistration.update({
-      where: { organization_id: id },
-      data: {
-        ...data,
-        update_date: new Date(),
-      },
+    // First check if the organization exists
+    const organization = await this.prisma.organization.findUnique({
+      where: { id },
     });
+
+    if (!organization) {
+      throw { code: 'P2025' }; // Organization not found
+    }
+
+    // Check if registration exists
+    const existing = await this.prisma.organizationRegistration.findUnique({
+      where: { organization_id: id },
+    });
+
+    if (existing) {
+      // Update existing record
+      return this.prisma.organizationRegistration.update({
+        where: { organization_id: id },
+        data: {
+          ...data,
+          update_date: new Date(),
+        },
+      });
+    } else {
+      // Create new record
+      return this.prisma.organizationRegistration.create({
+        data: {
+          organization_id: id,
+          ...data,
+          update_date: new Date(),
+        },
+      });
+    }
   }
 
   async createStatusChangeReason(data: {

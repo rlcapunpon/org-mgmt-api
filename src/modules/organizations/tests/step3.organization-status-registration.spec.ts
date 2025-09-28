@@ -23,7 +23,23 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
           create: jest.fn(),
           findMany: jest.fn(),
           update: jest.fn(),
-          findUnique: jest.fn(),
+          findUnique: jest.fn().mockImplementation((args) => {
+            if (args.where.id === 'non-existent-id') {
+              return Promise.resolve(null);
+            }
+            return Promise.resolve({
+              id: '1',
+              name: 'Test Organization',
+              tin: '123456789012',
+              category: 'INDIVIDUAL',
+              subcategory: 'SELF_EMPLOYED',
+              tax_classification: 'VAT',
+              registration_date: new Date('2024-01-01'),
+              created_at: new Date(),
+              updated_at: new Date(),
+              deleted_at: null,
+            });
+          }),
         },
         organizationStatus: {
           create: jest.fn(),

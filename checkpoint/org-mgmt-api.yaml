@@ -171,7 +171,14 @@ paths:
       tags:
         - Organizations
       summary: Update organization
-      description: Update an existing organization's details
+      description: |
+        Update an existing organization's details. This endpoint accepts the same comprehensive fields as the POST endpoint for creating organizations, allowing full updates to organization data, registration information, and operational settings.
+        
+        **Field Requirements by Category:**
+        - **INDIVIDUAL**: Requires `first_name`, `last_name` (optional: `middle_name`). Organization name is constructed from personal names.
+        - **NON_INDIVIDUAL**: Requires `registered_name`. Organization name uses the registered name.
+        
+        All categories support: `category`, `tax_classification`, `tin`, `registration_date`, `line_of_business`, `address_line`, `region`, `city`, `zip_code`, `rdo_code`, `contact_number`, `email_address`, `start_date`, plus optional operational fields.
       operationId: updateOrganization
       security:
         - JWT-auth: []
@@ -188,6 +195,48 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateOrganizationRequestDto'
+            examples:
+              individual:
+                summary: Update Individual Organization
+                description: Example payload for updating an INDIVIDUAL category organization
+                value:
+                  category: INDIVIDUAL
+                  subcategory: SELF_EMPLOYED
+                  tax_classification: VAT
+                  tin: "001234567890"
+                  registration_date: "2024-01-01"
+                  first_name: "Jane"
+                  middle_name: "Michael"
+                  last_name: "Smith"
+                  line_of_business: "6201"
+                  address_line: "456 New Street"
+                  region: "NCR"
+                  city: "Makati"
+                  zip_code: "1223"
+                  rdo_code: "001"
+                  contact_number: "+639876543210"
+                  email_address: "jane.smith@example.com"
+                  start_date: "2024-01-01"
+              non_individual:
+                summary: Update Non-Individual Organization
+                description: Example payload for updating a NON_INDIVIDUAL category organization
+                value:
+                  category: NON_INDIVIDUAL
+                  subcategory: CORPORATION
+                  tax_classification: VAT
+                  tin: "001234567890"
+                  registration_date: "2024-01-01"
+                  registered_name: "XYZ Corporation Inc."
+                  trade_name: "XYZ Trading"
+                  line_of_business: "6201"
+                  address_line: "789 Business Ave"
+                  region: "NCR"
+                  city: "Makati"
+                  zip_code: "1223"
+                  rdo_code: "001"
+                  contact_number: "+639123456789"
+                  email_address: "contact@xyz-corp.com"
+                  start_date: "2024-01-01"
       responses:
         '200':
           description: Organization updated successfully
@@ -1000,10 +1049,6 @@ components:
           type: string
           description: Registered name of the business (required for NON_INDIVIDUAL category)
           example: ABC Corporation Inc.
-        name:
-          type: string
-          description: Organization name (computed from personal names for INDIVIDUAL or registered_name for NON_INDIVIDUAL)
-          example: ABC Corporation
         tin:
           type: string
           description: Tax Identification Number
@@ -1153,24 +1198,25 @@ components:
     UpdateOrganizationRequestDto:
       type: object
       properties:
-        name:
+        registered_name:
           type: string
-          description: Organization name
-          example: ABC Corporation
+          description: Registered name of the business (required for NON_INDIVIDUAL category)
+          example: ABC Corporation Inc.
         tin:
           type: string
           description: Tax Identification Number
-          example: "123-456-789-000"
+          example: "001234567890"
         category:
           type: string
           enum: [INDIVIDUAL, NON_INDIVIDUAL]
           description: Organization category
-          example: NON_INDIVIDUAL
+          example: INDIVIDUAL
         subcategory:
           type: string
+          nullable: true
           enum: [SELF_EMPLOYED, SOLE_PROPRIETOR, FREELANCER, CORPORATION, PARTNERSHIP, OTHERS]
           description: Organization subcategory
-          example: CORPORATION
+          example: SELF_EMPLOYED
         tax_classification:
           type: string
           enum: [VAT, NON_VAT, EXCEMPT]
@@ -1180,11 +1226,128 @@ components:
           type: string
           format: date
           description: Registration date
-          example: "2025-01-01"
-        address:
+          example: "2024-01-01"
+        # OrganizationRegistration fields
+        first_name:
           type: string
-          description: Organization address
-          example: "123 Main Street, City, Province 1234"
+          description: First name of the registrant (required for INDIVIDUAL category)
+          example: John
+        middle_name:
+          type: string
+          nullable: true
+          description: Middle name of the registrant
+          example: Michael
+        last_name:
+          type: string
+          description: Last name of the registrant (required for INDIVIDUAL category)
+          example: Doe
+        trade_name:
+          type: string
+          nullable: true
+          description: Trade name of the business
+          example: "ABC Trading"
+        line_of_business:
+          type: string
+          description: Line of business (PSIC code)
+          example: "6201"
+        address_line:
+          type: string
+          description: Address line
+          example: "123 Main Street"
+        region:
+          type: string
+          description: Region
+          example: NCR
+        city:
+          type: string
+          description: City
+          example: Makati
+        zip_code:
+          type: string
+          description: ZIP code
+          example: "1223"
+        rdo_code:
+          type: string
+          description: RDO code
+          example: "001"
+        contact_number:
+          type: string
+          description: Contact number
+          example: "+639123456789"
+        email_address:
+          type: string
+          format: email
+          description: Email address
+          example: john.doe@example.com
+        start_date:
+          type: string
+          format: date
+          description: Start date
+          example: "2024-01-01"
+        # OrganizationOperation fields (optional)
+        fy_start:
+          type: string
+          format: date
+          description: Fiscal year start date
+          example: "2024-01-01"
+        fy_end:
+          type: string
+          format: date
+          description: Fiscal year end date
+          example: "2024-12-31"
+        vat_reg_effectivity:
+          type: string
+          format: date
+          description: VAT registration effectivity date
+          example: "2024-01-01"
+        registration_effectivity:
+          type: string
+          format: date
+          description: Registration effectivity date
+          example: "2024-01-01"
+        payroll_cut_off:
+          type: array
+          items:
+            type: string
+          description: Payroll cut-off dates
+          example: ["15", "30"]
+        payment_cut_off:
+          type: array
+          items:
+            type: string
+          description: Payment cut-off dates
+          example: ["10", "25"]
+        quarter_closing:
+          type: array
+          items:
+            type: string
+          description: Quarter closing dates
+          example: ["03-31", "06-30", "09-30", "12-31"]
+        has_foreign:
+          type: boolean
+          description: Has foreign transactions
+          example: false
+        has_employees:
+          type: boolean
+          description: Has employees
+          example: true
+        is_ewt:
+          type: boolean
+          description: Is expanded withholding tax
+          example: false
+        is_fwt:
+          type: boolean
+          description: Is final withholding tax
+          example: false
+        is_bir_withholding_agent:
+          type: boolean
+          description: Is BIR withholding agent
+          example: false
+        accounting_method:
+          type: string
+          enum: [ACCRUAL, CASH, OTHERS]
+          description: Accounting method
+          example: ACCRUAL
 
     UpdateOrganizationOperationRequestDto:
       type: object
