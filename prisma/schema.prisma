@@ -72,6 +72,8 @@ enum AccountingMethod {
 }
 
 enum OrganizationStatusChangeReasonEnum {
+  APPROVED
+  REMOVED
   EXPIRED
   OPTED_OUT
   PAYMENT_PENDING
@@ -79,8 +81,8 @@ enum OrganizationStatusChangeReasonEnum {
 }
 
 enum BusinessStatus {
-  REGISTERED       // Successfully registered with BIR (active taxpayer)
   PENDING_REG      // Application submitted but not yet completed
+  REGISTERED       // Successfully registered with BIR (active taxpayer)
   ACTIVE           // Currently operating, obligations ongoing
   INACTIVE         // Temporarily not operating (filed for suspension)
   CESSATION        // Operations stopped, closing process ongoing
