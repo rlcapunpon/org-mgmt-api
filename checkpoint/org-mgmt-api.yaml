@@ -1429,7 +1429,7 @@ components:
           example: ACTIVE
         reason:
           type: string
-          enum: [EXPIRED, OPTED_OUT, PAYMENT_PENDING, VIOLATIONS]
+          enum: [APPROVED, REMOVED, EXPIRED, OPTED_OUT, PAYMENT_PENDING, VIOLATIONS]
           description: Reason for status change
           example: EXPIRED
         description:

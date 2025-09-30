@@ -13,7 +13,7 @@ import {
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { BusinessStatus } from '@prisma/client';
+import { BusinessStatus, OrganizationStatusChangeReasonEnum } from '@prisma/client';
 import {
   Category,
   SubCategory,
@@ -736,12 +736,12 @@ export class UpdateOrganizationStatusRequestDto {
   @ApiProperty({
     description: 'Reason for status change',
     example: 'EXPIRED',
-    enum: ['EXPIRED', 'OPTED_OUT', 'PAYMENT_PENDING', 'VIOLATIONS'],
+    enum: OrganizationStatusChangeReasonEnum,
+    enumName: 'OrganizationStatusChangeReasonEnum',
   })
   @IsNotEmpty()
-  @IsString()
-  @IsIn(['EXPIRED', 'OPTED_OUT', 'PAYMENT_PENDING', 'VIOLATIONS'])
-  reason: string;
+  @IsEnum(OrganizationStatusChangeReasonEnum)
+  reason: OrganizationStatusChangeReasonEnum;
 
   @ApiPropertyOptional({
     description: 'Optional description for the status change',

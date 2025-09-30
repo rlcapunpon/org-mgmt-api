@@ -6,7 +6,7 @@ import { AppModule } from '../../../app.module';
 import { signPayload } from '../../../test-utils/token';
 import { OrganizationService } from '../services/organization.service';
 import { OrganizationRepository } from '../repositories/organization.repository';
-import { BusinessStatus } from '@prisma/client';
+import { BusinessStatus, OrganizationStatusChangeReasonEnum } from '@prisma/client';
 
 /* eslint-disable @typescript-eslint/unbound-method */
 
@@ -74,7 +74,7 @@ describe('Organization Status Change Reason (Step 4)', () => {
       it('should update organization status and create change reason record', async () => {
         const updateData = {
           status: BusinessStatus.ACTIVE,
-          reason: 'EXPIRED',
+          reason: OrganizationStatusChangeReasonEnum.EXPIRED,
           description:
             'Approving organization after initial setup verification',
         };
@@ -85,6 +85,7 @@ describe('Organization Status Change Reason (Step 4)', () => {
         const token = signPayload(
           {
             userId: 'user-123',
+            username: 'user123@example.com',
             permissions: ['resource:update'],
             isSuperAdmin: false,
           },
@@ -108,7 +109,7 @@ describe('Organization Status Change Reason (Step 4)', () => {
       it('should update organization status with reason but no description', async () => {
         const updateData = {
           status: BusinessStatus.CLOSED,
-          reason: 'OPTED_OUT',
+          reason: OrganizationStatusChangeReasonEnum.OPTED_OUT,
         };
 
         // Mock status update service call
@@ -121,6 +122,7 @@ describe('Organization Status Change Reason (Step 4)', () => {
         const token = signPayload(
           {
             userId: 'user-123',
+            username: 'user123@example.com',
             permissions: ['resource:update'],
             isSuperAdmin: false,
           },
@@ -149,6 +151,7 @@ describe('Organization Status Change Reason (Step 4)', () => {
         const token = signPayload(
           {
             userId: 'user-123',
+            username: 'user123@example.com',
             permissions: ['resource:update'],
             isSuperAdmin: false,
           },
@@ -162,16 +165,24 @@ describe('Organization Status Change Reason (Step 4)', () => {
         expect(res.status).toBe(400);
       });
 
-      it('should return 400 when reason is invalid', async () => {
+      it('should update organization status with APPROVED reason', async () => {
         const updateData = {
-          status: BusinessStatus.ACTIVE,
-          reason: 'INVALID_REASON', // Not in allowed enum values
-          description: 'Test description',
+          status: BusinessStatus.REGISTERED,
+          reason: OrganizationStatusChangeReasonEnum.APPROVED,
+          description: 'Organization approved for registration',
         };
+
+        // Mock status update service call
+        const mockApprovedStatus = {
+          ...mockOrganizationStatus,
+          status: BusinessStatus.REGISTERED,
+        };
+        mockService.updateStatus.mockResolvedValue(mockApprovedStatus);
 
         const token = signPayload(
           {
             userId: 'user-123',
+            username: 'user123@example.com',
             permissions: ['resource:update'],
             isSuperAdmin: false,
           },
@@ -182,7 +193,50 @@ describe('Organization Status Change Reason (Step 4)', () => {
           .set('Authorization', `Bearer ${token}`)
           .send(updateData);
 
-        expect(res.status).toBe(400);
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty('status', BusinessStatus.REGISTERED);
+        expect(mockService.updateStatus).toHaveBeenCalledWith(
+          '1',
+          updateData,
+          'user-123',
+        );
+      });
+
+      it('should update organization status with REMOVED reason', async () => {
+        const updateData = {
+          status: BusinessStatus.INACTIVE,
+          reason: OrganizationStatusChangeReasonEnum.REMOVED,
+          description: 'Organization removed from active status',
+        };
+
+        // Mock status update service call
+        const mockRemovedStatus = {
+          ...mockOrganizationStatus,
+          status: BusinessStatus.INACTIVE,
+        };
+        mockService.updateStatus.mockResolvedValue(mockRemovedStatus);
+
+        const token = signPayload(
+          {
+            userId: 'user-123',
+            username: 'user123@example.com',
+            permissions: ['resource:update'],
+            isSuperAdmin: false,
+          },
+          process.env.JWT_SECRET!,
+        );
+        const res = await request(app.getHttpServer())
+          .put('/api/org/organizations/1/status')
+          .set('Authorization', `Bearer ${token}`)
+          .send(updateData);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty('status', BusinessStatus.INACTIVE);
+        expect(mockService.updateStatus).toHaveBeenCalledWith(
+          '1',
+          updateData,
+          'user-123',
+        );
       });
     });
 
@@ -190,7 +244,7 @@ describe('Organization Status Change Reason (Step 4)', () => {
       it('should partially update organization status and create change reason record', async () => {
         const updateData = {
           status: BusinessStatus.SUSPENDED,
-          reason: 'PAYMENT_PENDING',
+          reason: OrganizationStatusChangeReasonEnum.PAYMENT_PENDING,
           description: 'Temporarily suspending due to business restructuring',
         };
 
@@ -204,6 +258,7 @@ describe('Organization Status Change Reason (Step 4)', () => {
         const token = signPayload(
           {
             userId: 'user-123',
+            username: 'user123@example.com',
             permissions: ['resource:update'],
             isSuperAdmin: false,
           },

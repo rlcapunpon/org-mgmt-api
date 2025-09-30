@@ -8,6 +8,7 @@ import nock from 'nock';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/database/prisma.service';
 import { signPayload } from '../src/test-utils/token';
+import { BusinessStatus, OrganizationStatusChangeReasonEnum } from '@prisma/client';
 // Using string literals for enums to avoid import issues
 
 describe('Organization Management API Integration Tests', () => {
@@ -293,8 +294,8 @@ describe('Organization Management API Integration Tests', () => {
     it('should update organization status (PUT)', () => {
       return authRequest('put', `/api/org/organizations/${createdOrgId}/status`)
         .send({
-          status: 'ACTIVE',
-          reason: 'EXPIRED',
+          status: BusinessStatus.ACTIVE,
+          reason: OrganizationStatusChangeReasonEnum.EXPIRED,
         })
         .expect(200)
         .expect((res) => {
@@ -310,8 +311,8 @@ describe('Organization Management API Integration Tests', () => {
         `/api/org/organizations/${createdOrgId}/status`,
       )
         .send({
-          status: 'INACTIVE',
-          reason: 'VIOLATIONS',
+          status: BusinessStatus.INACTIVE,
+          reason: OrganizationStatusChangeReasonEnum.VIOLATIONS,
         })
         .expect(200)
         .expect((res) => {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../database/prisma.service';
-import { Organization, BusinessStatus } from '@prisma/client';
+import { Organization, BusinessStatus, OrganizationStatusChangeReasonEnum } from '@prisma/client';
 
 interface CreateOrganizationData
   extends Omit<
@@ -410,15 +410,14 @@ export class OrganizationRepository {
 
   async createStatusChangeReason(data: {
     organization_id: string;
-    reason: string;
+    reason: OrganizationStatusChangeReasonEnum;
     description?: string;
     updated_by: string;
   }) {
     return this.prisma.organizationStatusChangeReason.create({
       data: {
         organization_id: data.organization_id,
-
-        reason: data.reason as any,
+        reason: data.reason,
         description: data.description,
         updated_by: data.updated_by,
       },

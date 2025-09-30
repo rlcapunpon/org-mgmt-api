@@ -7,7 +7,7 @@ import request from 'supertest';
 import { of } from 'rxjs';
 import { AppModule } from '../../../app.module';
 import { signPayload } from '../../../test-utils/token';
-import { TaxClassification, BusinessStatus } from '@prisma/client';
+import { TaxClassification, BusinessStatus, OrganizationStatusChangeReasonEnum } from '@prisma/client';
 import { PrismaService } from '../../../database/prisma.service';
 
 describe('Organization Status and Registration Endpoints (Step 3)', () => {
@@ -192,7 +192,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
         );
         const updateData = {
           status: BusinessStatus.ACTIVE,
-          reason: 'EXPIRED',
+          reason: OrganizationStatusChangeReasonEnum.EXPIRED,
         };
 
         const prismaService = app.get(PrismaService);
@@ -229,7 +229,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
         );
         const updateData = {
           status: BusinessStatus.ACTIVE,
-          reason: 'EXPIRED',
+          reason: OrganizationStatusChangeReasonEnum.EXPIRED,
         };
 
         const prismaService = app.get(PrismaService);
@@ -277,7 +277,7 @@ describe('Organization Status and Registration Endpoints (Step 3)', () => {
         );
         const updateData = {
           status: BusinessStatus.CLOSED,
-          reason: 'VIOLATIONS',
+          reason: OrganizationStatusChangeReasonEnum.VIOLATIONS,
         };
 
         const prismaService = app.get(PrismaService);
