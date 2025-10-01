@@ -238,6 +238,188 @@ describe('Organization Status Change Reason (Step 4)', () => {
           'user-123',
         );
       });
+
+      it('should allow SUPERADMIN to update organization status without specific permissions', async () => {
+        const updateData = {
+          status: BusinessStatus.ACTIVE,
+          reason: OrganizationStatusChangeReasonEnum.APPROVED,
+          description: 'SUPERADMIN updating status',
+        };
+
+        // Mock status update service call
+        mockService.updateStatus.mockResolvedValue(mockUpdatedStatus);
+
+        const token = signPayload(
+          {
+            userId: 'super-admin-123',
+            username: 'superadmin@example.com',
+            isSuperAdmin: true,
+            permissions: ['*'], // SUPERADMIN has wildcard permission
+          },
+          process.env.JWT_SECRET!,
+        );
+        const res = await request(app.getHttpServer())
+          .put('/api/org/organizations/1/status')
+          .set('Authorization', `Bearer ${token}`)
+          .send(updateData);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty('status', BusinessStatus.ACTIVE);
+        expect(mockService.updateStatus).toHaveBeenCalledWith(
+          '1',
+          updateData,
+          'super-admin-123',
+        );
+      });
+
+      it('should allow SUPERADMIN with role string to update organization status', async () => {
+        const updateData = {
+          status: BusinessStatus.CLOSED,
+          reason: OrganizationStatusChangeReasonEnum.REMOVED,
+          description: 'SUPERADMIN with role string updating status',
+        };
+
+        // Mock status update service call
+        const mockClosedStatus = {
+          ...mockOrganizationStatus,
+          status: BusinessStatus.CLOSED,
+        };
+        mockService.updateStatus.mockResolvedValue(mockClosedStatus);
+
+        const token = signPayload(
+          {
+            userId: 'super-admin-role-123',
+            username: 'superadminrole@example.com',
+            isSuperAdmin: false, // Not using boolean, but role string
+            role: 'Super Admin',
+            permissions: [],
+          },
+          process.env.JWT_SECRET!,
+        );
+        const res = await request(app.getHttpServer())
+          .put('/api/org/organizations/1/status')
+          .set('Authorization', `Bearer ${token}`)
+          .send(updateData);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty('status', BusinessStatus.CLOSED);
+        expect(mockService.updateStatus).toHaveBeenCalledWith(
+          '1',
+          updateData,
+          'super-admin-role-123',
+        );
+      });
+
+      it('should allow user with wildcard permission to update organization status', async () => {
+        const updateData = {
+          status: BusinessStatus.REGISTERED,
+          reason: OrganizationStatusChangeReasonEnum.APPROVED,
+          description: 'User with wildcard permission updating status',
+        };
+
+        // Mock status update service call
+        const mockRegisteredStatus = {
+          ...mockOrganizationStatus,
+          status: BusinessStatus.REGISTERED,
+        };
+        mockService.updateStatus.mockResolvedValue(mockRegisteredStatus);
+
+        const token = signPayload(
+          {
+            userId: 'wildcard-user-123',
+            username: 'wildcard@example.com',
+            isSuperAdmin: false,
+            permissions: ['*'], // Wildcard permission
+          },
+          process.env.JWT_SECRET!,
+        );
+        const res = await request(app.getHttpServer())
+          .put('/api/org/organizations/1/status')
+          .set('Authorization', `Bearer ${token}`)
+          .send(updateData);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty('status', BusinessStatus.REGISTERED);
+        expect(mockService.updateStatus).toHaveBeenCalledWith(
+          '1',
+          updateData,
+          'wildcard-user-123',
+        );
+      });
+
+      it('should reject user with incorrect SUPERADMIN role string', async () => {
+        const updateData = {
+          status: BusinessStatus.ACTIVE,
+          reason: OrganizationStatusChangeReasonEnum.EXPIRED,
+        };
+
+        const token = signPayload(
+          {
+            userId: 'wrong-role-user-123',
+            username: 'wrongrole@example.com',
+            isSuperAdmin: false,
+            role: 'SUPERADMIN', // Wrong case, should be 'Super Admin'
+            permissions: [],
+          },
+          process.env.JWT_SECRET!,
+        );
+        const res = await request(app.getHttpServer())
+          .put('/api/org/organizations/1/status')
+          .set('Authorization', `Bearer ${token}`)
+          .send(updateData);
+
+        expect(res.status).toBe(403); // Forbidden due to insufficient permissions
+      });
+
+      it('should reject non-SUPERADMIN users without proper permissions', async () => {
+        const updateData = {
+          status: BusinessStatus.ACTIVE,
+          reason: OrganizationStatusChangeReasonEnum.EXPIRED,
+        };
+
+        const token = signPayload(
+          {
+            userId: 'regular-user-123',
+            username: 'regular@example.com',
+            isSuperAdmin: false,
+            permissions: [], // No permissions
+          },
+          process.env.JWT_SECRET!,
+        );
+        const res = await request(app.getHttpServer())
+          .put('/api/org/organizations/1/status')
+          .set('Authorization', `Bearer ${token}`)
+          .send(updateData);
+
+        expect(res.status).toBe(403); // Forbidden due to insufficient permissions
+      });
+
+      it('should reject invalid JWT tokens', async () => {
+        const updateData = {
+          status: BusinessStatus.ACTIVE,
+          reason: OrganizationStatusChangeReasonEnum.EXPIRED,
+        };
+
+        const res = await request(app.getHttpServer())
+          .put('/api/org/organizations/1/status')
+          .set('Authorization', 'Bearer invalid-token')
+          .send(updateData);
+
+        expect(res.status).toBe(401); // Unauthorized due to invalid token
+      });
+
+      it('should reject requests without Authorization header', async () => {
+        const updateData = {
+          status: BusinessStatus.ACTIVE,
+          reason: OrganizationStatusChangeReasonEnum.EXPIRED,
+        };
+
+        const res = await request(app.getHttpServer())
+          .put('/api/org/organizations/1/status')
+          .send(updateData);
+
+        expect(res.status).toBe(401); // Unauthorized due to missing token
+      });
     });
 
     describe('PATCH /organizations/:orgId/status', () => {

@@ -305,6 +305,151 @@ describe('Organization Management API Integration Tests', () => {
         });
     });
 
+    describe('SUPERADMIN Status Update Tests', () => {
+      it('should allow SUPERADMIN with isSuperAdmin: true to update status', () => {
+        const superAdminToken = signPayload(
+          {
+            userId: 'superadmin-user-123',
+            username: 'superadmin@example.com',
+            isSuperAdmin: true,
+            role: 'Super Admin',
+            permissions: [],
+          },
+          process.env.JWT_SECRET || 'test-secret',
+        );
+
+        return request(app.getHttpServer())
+          .put(`/api/org/organizations/${createdOrgId}/status`)
+          .set('Authorization', `Bearer ${superAdminToken}`)
+          .send({
+            status: BusinessStatus.ACTIVE,
+            reason: OrganizationStatusChangeReasonEnum.EXPIRED,
+          })
+          .expect(200)
+          .expect((res) => {
+            expect(res.body.organization_id).toBe(createdOrgId);
+            expect(res.body.status).toBe('ACTIVE');
+          });
+      });
+
+      it('should allow SUPERADMIN with role: "Super Admin" to update status', () => {
+        const superAdminToken = signPayload(
+          {
+            userId: 'superadmin-role-user-123',
+            username: 'superadminrole@example.com',
+            isSuperAdmin: false,
+            role: 'Super Admin',
+            permissions: [],
+          },
+          process.env.JWT_SECRET || 'test-secret',
+        );
+
+        return request(app.getHttpServer())
+          .put(`/api/org/organizations/${createdOrgId}/status`)
+          .set('Authorization', `Bearer ${superAdminToken}`)
+          .send({
+            status: BusinessStatus.INACTIVE,
+            reason: OrganizationStatusChangeReasonEnum.VIOLATIONS,
+          })
+          .expect(200)
+          .expect((res) => {
+            expect(res.body.organization_id).toBe(createdOrgId);
+            expect(res.body.status).toBe('INACTIVE');
+          });
+      });
+
+      it('should allow SUPERADMIN with wildcard permissions to update status', () => {
+        const superAdminToken = signPayload(
+          {
+            userId: 'superadmin-wildcard-user-123',
+            username: 'superadminwildcard@example.com',
+            isSuperAdmin: false,
+            role: 'Manager',
+            permissions: ['*'],
+          },
+          process.env.JWT_SECRET || 'test-secret',
+        );
+
+        return request(app.getHttpServer())
+          .put(`/api/org/organizations/${createdOrgId}/status`)
+          .set('Authorization', `Bearer ${superAdminToken}`)
+          .send({
+            status: BusinessStatus.PENDING_REG,
+            reason: OrganizationStatusChangeReasonEnum.APPROVED,
+          })
+          .expect(200)
+          .expect((res) => {
+            expect(res.body.organization_id).toBe(createdOrgId);
+            expect(res.body.status).toBe('PENDING_REG');
+          });
+      });
+
+      it('should reject user with incorrect SUPERADMIN role string', () => {
+        const invalidSuperAdminToken = signPayload(
+          {
+            userId: 'wrong-role-user-123',
+            username: 'wrongrole@example.com',
+            isSuperAdmin: false,
+            role: 'SUPERADMIN', // Wrong case
+            permissions: [],
+          },
+          process.env.JWT_SECRET || 'test-secret',
+        );
+
+        return request(app.getHttpServer())
+          .put(`/api/org/organizations/${createdOrgId}/status`)
+          .set('Authorization', `Bearer ${invalidSuperAdminToken}`)
+          .send({
+            status: BusinessStatus.ACTIVE,
+            reason: OrganizationStatusChangeReasonEnum.EXPIRED,
+          })
+          .expect(403);
+      });
+
+      it('should reject non-SUPERADMIN users without proper permissions', () => {
+        const regularUserToken = signPayload(
+          {
+            userId: 'regular-user-123',
+            username: 'regular@example.com',
+            isSuperAdmin: false,
+            role: 'User',
+            permissions: ['organization:read'], // Missing resource:update permission
+          },
+          process.env.JWT_SECRET || 'test-secret',
+        );
+
+        return request(app.getHttpServer())
+          .put(`/api/org/organizations/${createdOrgId}/status`)
+          .set('Authorization', `Bearer ${regularUserToken}`)
+          .send({
+            status: BusinessStatus.ACTIVE,
+            reason: OrganizationStatusChangeReasonEnum.EXPIRED,
+          })
+          .expect(403);
+      });
+
+      it('should reject requests with invalid JWT', () => {
+        return request(app.getHttpServer())
+          .put(`/api/org/organizations/${createdOrgId}/status`)
+          .set('Authorization', 'Bearer invalid-jwt-token')
+          .send({
+            status: BusinessStatus.ACTIVE,
+            reason: OrganizationStatusChangeReasonEnum.EXPIRED,
+          })
+          .expect(401);
+      });
+
+      it('should reject requests without Authorization header', () => {
+        return request(app.getHttpServer())
+          .put(`/api/org/organizations/${createdOrgId}/status`)
+          .send({
+            status: BusinessStatus.ACTIVE,
+            reason: OrganizationStatusChangeReasonEnum.EXPIRED,
+          })
+          .expect(401);
+      });
+    });
+
     it('should partially update organization status (PATCH)', () => {
       return authRequest(
         'patch',
