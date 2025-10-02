@@ -47,11 +47,21 @@ export class RbacUtilityService {
    */
   async getUserResources(userId: string, token: string): Promise<UserResourcesResponse> {
     try {
+      // For user-specific resource access, use /auth/me endpoint
+      // This endpoint returns user profile with resources the user has access to
       const rbacApiUrl = process.env.RBAC_API_URL || 'http://localhost:3000/api';
       const url = `${rbacApiUrl}/auth/me`;
 
-      this.logger.debug(`Fetching user resources for userId: ${userId} from ${url}`);
+      // Debug log the request details
+      this.logger.debug(`[GET /organizations] RBAC: Making API request for user ${userId}:`);
+      this.logger.debug(`[GET /organizations] RBAC: URL: ${url}`);
+      this.logger.debug(`[GET /organizations] RBAC: Method: GET`);
+      this.logger.debug(`[GET /organizations] RBAC: Headers: Authorization: Bearer ${token.substring(0, 20)}... (masked)`);
+      this.logger.debug(`[GET /organizations] RBAC: RBAC_API_URL env var: ${process.env.RBAC_API_URL || 'not set (using default)'}`);
 
+      this.logger.debug(`[GET /organizations] RBAC: Fetching user resources for userId: ${userId} from ${url}`);
+
+      const startTime = Date.now();
       const response = await firstValueFrom(
         this.httpService.get(url, {
           headers: {
@@ -59,18 +69,67 @@ export class RbacUtilityService {
           },
         })
       );
+      const endTime = Date.now();
+
+      this.logger.debug(`[GET /organizations] RBAC: API request completed in ${endTime - startTime}ms`);
+      this.logger.debug(`[GET /organizations] RBAC: Response status: ${response.status}`);
 
       const userData = response.data;
-      const resources: UserResource[] = userData.resources || [];
 
-      this.logger.debug(`Retrieved ${resources.length} resources for user ${userId}`);
+      this.logger.debug(`[GET /organizations] RBAC: Raw response data structure:`, Object.keys(userData));
+      this.logger.debug(`[GET /organizations] RBAC: Response data type for 'resources' field: ${Array.isArray(userData.resources) ? 'array' : typeof userData.resources}`);
 
-      return {
-        resources,
-        totalCount: resources.length,
+      // Handle the RBAC API /auth/me response format
+      let resources: UserResource[] = [];
+
+      if (userData.resources && Array.isArray(userData.resources)) {
+        this.logger.debug(`[GET /organizations] RBAC: Processing ${userData.resources.length} total resources from RBAC API`);
+
+        // /auth/me returns user-accessible resources directly in resources array
+        // All resources in this array are already user-specific, no additional filtering needed
+        resources = userData.resources.map((item: any) => ({
+          resourceId: item.resourceId,
+          role: item.role,
+        }));
+
+        this.logger.log(`[GET /organizations] RBAC: Found ${resources.length} resources for user from /auth/me endpoint`);
+      } else {
+        this.logger.warn(`[GET /organizations] RBAC: Unexpected RBAC API response format for user ${userId}:`, userData);
+        this.logger.warn(`[GET /organizations] RBAC: Expected userData.resources to be an array, but got:`, typeof userData.resources);
+        resources = [];
+      }
+
+      // Validate resource structure
+      const validResources = resources.filter(resource => {
+        if (!resource.resourceId) {
+          this.logger.warn(`[GET /organizations] RBAC: Resource missing resourceId for user ${userId}:`, resource);
+          return false;
+        }
+        return true;
+      });
+
+      // Log the full response from RBAC API
+      this.logger.log(`[GET /organizations] RBAC: Complete RBAC API response for user ${userId}:`, JSON.stringify(userData, null, 2));
+      this.logger.log(`[GET /organizations] RBAC: User ${userId} has access to ${validResources.length} resources:`, validResources.map(r => `ID: ${r.resourceId}, Role: ${r.role}`).join('; '));
+
+      this.logger.debug(`[GET /organizations] RBAC: Retrieved ${validResources.length} valid resources for user ${userId}`);
+
+      const result = {
+        resources: validResources,
+        totalCount: validResources.length,
       };
+
+      this.logger.log(`[GET /organizations] RBAC: Returning UserResourcesResponse:`, JSON.stringify(result, null, 2));
+
+      return result;
     } catch (error) {
-      this.logger.error(`Failed to fetch user resources for userId: ${userId}`, error);
+      this.logger.error(`[GET /organizations] RBAC: Failed to fetch user resources for userId: ${userId}`, error);
+      this.logger.error(`[GET /organizations] RBAC: Error details:`, {
+        message: (error as Error).message,
+        stack: (error as Error).stack,
+        response: (error as any)?.response?.data,
+        status: (error as any)?.response?.status,
+      });
       throw error;
     }
   }

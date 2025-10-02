@@ -330,6 +330,9 @@ export class OrganizationRepository {
     category?: string;
     tax_classification?: string;
   }): Promise<Organization[]> {
+    console.log(`[GET /organizations] REPOSITORY: Executing listBasic query`);
+    console.log(`[GET /organizations] REPOSITORY: Filters applied:`, JSON.stringify(filters));
+
     const where = {
       deleted_at: null,
 
@@ -339,12 +342,64 @@ export class OrganizationRepository {
         tax_classification: filters.tax_classification as any,
       }),
     };
-    return this.prisma.organization.findMany({
+
+    console.log(`[GET /organizations] REPOSITORY: Prisma where clause:`, JSON.stringify(where, null, 2));
+
+    const startTime = Date.now();
+    const result = await this.prisma.organization.findMany({
       where,
       include: {
         status: true,
       },
     });
+    const endTime = Date.now();
+
+    console.log(`[GET /organizations] REPOSITORY: Query executed in ${endTime - startTime}ms`);
+    console.log(`[GET /organizations] REPOSITORY: Found ${result.length} organizations`);
+    console.log(`[GET /organizations] REPOSITORY: Organization IDs returned:`, result.map(org => org.id).join(', '));
+
+    return result;
+  }
+
+  async listBasicWithIds(
+    filters?: {
+      category?: string;
+      tax_classification?: string;
+    },
+    ids?: string[],
+  ): Promise<Organization[]> {
+    console.log(`[GET /organizations] REPOSITORY: Executing listBasicWithIds query`);
+    console.log(`[GET /organizations] REPOSITORY: Filters applied:`, JSON.stringify(filters));
+    console.log(`[GET /organizations] REPOSITORY: Organization IDs to filter by:`, ids);
+
+    const where = {
+      deleted_at: null,
+
+      ...(ids && ids.length > 0 && { id: { in: ids } }),
+
+      ...(filters?.category && { category: filters.category as any }),
+
+      ...(filters?.tax_classification && {
+        tax_classification: filters.tax_classification as any,
+      }),
+    };
+
+    console.log(`[GET /organizations] REPOSITORY: Prisma where clause:`, JSON.stringify(where, null, 2));
+
+    const startTime = Date.now();
+    const result = await this.prisma.organization.findMany({
+      where,
+      include: {
+        status: true,
+      },
+    });
+    const endTime = Date.now();
+
+    console.log(`[GET /organizations] REPOSITORY: Query executed in ${endTime - startTime}ms`);
+    console.log(`[GET /organizations] REPOSITORY: Found ${result.length} organizations after ID filtering`);
+    console.log(`[GET /organizations] REPOSITORY: Organization IDs returned:`, result.map(org => org.id).join(', '));
+
+    return result;
   }
 
   async getStatusByOrgId(id: string) {

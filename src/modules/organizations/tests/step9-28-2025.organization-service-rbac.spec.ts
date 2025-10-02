@@ -6,6 +6,7 @@ import { of, throwError } from 'rxjs';
 import { OrganizationService } from '../services/organization.service';
 import { OrganizationRepository } from '../repositories/organization.repository';
 import { OrganizationSyncService } from '../../../common/services/organization-sync.service';
+import { RbacUtilityService } from '../../../common/services/rbac-utility.service';
 import { CreateOrganizationRequestDto } from '../dto/organization-request.dto';
 import { Category, TaxClassification } from '@prisma/client';
 
@@ -14,6 +15,7 @@ describe('OrganizationService', () => {
   let mockRepo: jest.Mocked<OrganizationRepository>;
   let mockHttpService: jest.Mocked<HttpService>;
   let mockSyncService: jest.Mocked<OrganizationSyncService>;
+  let mockRbacUtilityService: jest.Mocked<RbacUtilityService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,6 +25,8 @@ describe('OrganizationService', () => {
           provide: OrganizationRepository,
           useValue: {
             create: jest.fn(),
+            listBasic: jest.fn(),
+            listBasicWithIds: jest.fn(),
           },
         },
         {
@@ -37,6 +41,12 @@ describe('OrganizationService', () => {
             syncOrganizationFromRegistration: jest.fn(),
           },
         },
+        {
+          provide: RbacUtilityService,
+          useValue: {
+            getUserResources: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -44,6 +54,7 @@ describe('OrganizationService', () => {
     mockRepo = module.get(OrganizationRepository);
     mockHttpService = module.get(HttpService);
     mockSyncService = module.get(OrganizationSyncService);
+    mockRbacUtilityService = module.get(RbacUtilityService);
   });
 
   it('should be defined', () => {
@@ -90,6 +101,7 @@ describe('OrganizationService', () => {
       const userId = 'user-123';
       const jwtToken = 'mock-jwt-token';
       const expectedRbacPayload = {
+        id: 'org-123',
         name: 'John Doe',
         description: 'Organization John Doe (001234567890)',
       };
@@ -177,6 +189,167 @@ describe('OrganizationService', () => {
       expect(result).toEqual(mockCreatedOrg); // Should still return the created org
 
       consoleSpy.mockRestore();
+    });
+  });
+
+  describe('list', () => {
+    const mockFilters = { category: 'NON_INDIVIDUAL' };
+    const mockUserId = 'user-123';
+    const mockJwtToken = 'mock-jwt-token';
+
+    beforeEach(() => {
+      mockRepo.listBasic.mockClear();
+      mockRepo.listBasicWithIds.mockClear();
+      (mockRbacUtilityService.getUserResources as jest.Mock).mockClear();
+    });
+
+    it('should return all organizations for super admin user', async () => {
+      const mockOrgs = [
+        {
+          id: 'org-1',
+          name: 'Org 1',
+          category: Category.NON_INDIVIDUAL,
+          tax_classification: TaxClassification.VAT,
+          tin: null,
+          subcategory: null,
+          registration_date: null,
+          address: null,
+          created_at: new Date(),
+          updated_at: new Date(),
+          deleted_at: null,
+        },
+      ];
+
+      mockRepo.listBasic.mockResolvedValue(mockOrgs);
+
+      const result = await service.list(mockFilters, mockUserId, true, mockJwtToken);
+
+      expect(mockRepo.listBasic).toHaveBeenCalledWith(mockFilters);
+      expect(mockRepo.listBasic).toHaveBeenCalledTimes(1);
+      expect(mockRbacUtilityService.getUserResources).not.toHaveBeenCalled();
+      expect(result).toEqual(mockOrgs);
+    });
+
+    it('should return all organizations in test environment for non-super admin', async () => {
+      // Set NODE_ENV to test
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'test';
+
+      const mockOrgs = [
+        {
+          id: 'org-1',
+          name: 'Org 1',
+          category: Category.NON_INDIVIDUAL,
+          tax_classification: TaxClassification.VAT,
+          tin: null,
+          subcategory: null,
+          registration_date: null,
+          address: null,
+          created_at: new Date(),
+          updated_at: new Date(),
+          deleted_at: null,
+        },
+      ];
+
+      mockRepo.listBasic.mockResolvedValue(mockOrgs);
+
+      const result = await service.list(mockFilters, mockUserId, false, mockJwtToken);
+
+      expect(mockRepo.listBasic).toHaveBeenCalledWith(mockFilters);
+      expect(mockRepo.listBasic).toHaveBeenCalledTimes(1);
+      expect(mockRbacUtilityService.getUserResources).not.toHaveBeenCalled();
+      expect(result).toEqual(mockOrgs);
+
+      // Restore original env
+      process.env.NODE_ENV = originalEnv;
+    });
+
+    it('should filter organizations by user accessible resources for non-super admin', async () => {
+      // Set NODE_ENV to non-test to enable RBAC filtering
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
+
+      const mockUserResources = {
+        resources: [
+          { resourceId: 'org-1', role: 'editor' },
+          { resourceId: 'org-2', role: 'viewer' },
+        ],
+        totalCount: 2,
+      };
+
+      const mockFilteredOrgs = [
+        {
+          id: 'org-1',
+          name: 'Org 1',
+          category: Category.NON_INDIVIDUAL,
+          tax_classification: TaxClassification.VAT,
+          tin: null,
+          subcategory: null,
+          registration_date: null,
+          address: null,
+          created_at: new Date(),
+          updated_at: new Date(),
+          deleted_at: null,
+        },
+      ];
+
+      (mockRbacUtilityService.getUserResources as jest.Mock).mockResolvedValue(mockUserResources);
+      mockRepo.listBasicWithIds.mockResolvedValue(mockFilteredOrgs);
+
+      const result = await service.list(mockFilters, mockUserId, false, mockJwtToken);
+
+      expect(mockRbacUtilityService.getUserResources).toHaveBeenCalledWith(mockUserId, mockJwtToken);
+      expect(mockRepo.listBasicWithIds).toHaveBeenCalledWith(mockFilters, ['org-1', 'org-2']);
+      expect(result).toEqual(mockFilteredOrgs);
+
+      // Restore original env
+      process.env.NODE_ENV = originalEnv;
+    });
+
+    it('should return empty array when user has no accessible resources', async () => {
+      // Set NODE_ENV to non-test to enable RBAC filtering
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
+
+      const mockUserResources = {
+        resources: [],
+        totalCount: 0,
+      };
+
+      (mockRbacUtilityService.getUserResources as jest.Mock).mockResolvedValue(mockUserResources);
+
+      const result = await service.list(mockFilters, mockUserId, false, mockJwtToken);
+
+      expect(mockRbacUtilityService.getUserResources).toHaveBeenCalledWith(mockUserId, mockJwtToken);
+      expect(mockRepo.listBasicWithIds).not.toHaveBeenCalled();
+      expect(result).toEqual([]);
+
+      // Restore original env
+      process.env.NODE_ENV = originalEnv;
+    });
+
+    it('should return empty array and log warning when RBAC API fails', async () => {
+      // Set NODE_ENV to non-test to enable RBAC filtering
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
+
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      (mockRbacUtilityService.getUserResources as jest.Mock).mockRejectedValue(new Error('RBAC API unavailable'));
+
+      const result = await service.list(mockFilters, mockUserId, false, mockJwtToken);
+
+      expect(mockRbacUtilityService.getUserResources).toHaveBeenCalledWith(mockUserId, mockJwtToken);
+      expect(mockRepo.listBasicWithIds).not.toHaveBeenCalled();
+      expect(consoleSpy).toHaveBeenCalledWith(
+        `[GET /organizations] SERVICE: Failed to fetch permissions for user ${mockUserId}:`,
+        'RBAC API unavailable',
+      );
+      expect(result).toEqual([]);
+
+      consoleSpy.mockRestore();
+      // Restore original env
+      process.env.NODE_ENV = originalEnv;
     });
   });
 

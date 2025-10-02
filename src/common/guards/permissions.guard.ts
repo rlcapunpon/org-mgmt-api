@@ -16,7 +16,10 @@ export class PermissionsGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const user = request.user;
-    if (!user) return false;
+    if (!user) {
+      console.log(`403 Forbidden: No user found in request for permission '${requiredPermission}'`);
+      return false;
+    }
 
     // Super admin bypass - support both isSuperAdmin boolean and role string
     if (
@@ -58,6 +61,9 @@ export class PermissionsGuard implements CanActivate {
       });
       if (hasMatchingPermission) return true;
     }
+
+    // Log 403 Forbidden with details
+    console.log(`403 Forbidden: User ${user.userId} denied access to '${requiredPermission}' (resolved to '${permissionToCheck}'). User permissions: [${user.permissions?.join(', ') || 'none'}]`);
 
     return false;
   }

@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { OrganizationService } from './organization.service';
 import { OrganizationRepository } from '../repositories/organization.repository';
 import { OrganizationSyncService } from '../../../common/services/organization-sync.service';
+import { RbacUtilityService } from '../../../common/services/rbac-utility.service';
 import { UpdateOrganizationRegistrationRequestDto } from '../dto/organization-request.dto';
 import { TaxClassification } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
@@ -46,6 +47,12 @@ describe('OrganizationService - Registration Sync', () => {
         {
           provide: HttpService,
           useValue: mockHttpService,
+        },
+        {
+          provide: RbacUtilityService,
+          useValue: {
+            getUserResources: jest.fn(),
+          },
         },
       ],
     }).compile();

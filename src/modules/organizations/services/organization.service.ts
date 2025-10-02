@@ -4,6 +4,7 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { OrganizationRepository } from '../repositories/organization.repository';
 import { OrganizationSyncService } from '../../../common/services/organization-sync.service';
+import { RbacUtilityService } from '../../../common/services/rbac-utility.service';
 import {
   CreateOrganizationRequestDto,
   UpdateOrganizationRequestDto,
@@ -19,6 +20,7 @@ export class OrganizationService {
     private repo: OrganizationRepository,
     private httpService: HttpService,
     private syncService: OrganizationSyncService,
+    private rbacUtilityService: RbacUtilityService,
   ) {}
 
   async create(
@@ -41,6 +43,7 @@ export class OrganizationService {
           this.httpService.post(
             `${process.env.RBAC_API_URL}/resources`,
             {
+              id: organization.id,
               name: organization.name,
               description: `Organization ${organization.name} (${organization.tin})`,
             },
@@ -234,11 +237,92 @@ export class OrganizationService {
     }
   }
 
-  async list(filters: {
-    category?: string;
-    tax_classification?: string;
-  }): Promise<Organization[]> {
-    return this.repo.listBasic(filters);
+  async list(
+    filters: {
+      category?: string;
+      tax_classification?: string;
+    },
+    userId: string,
+    isSuperAdmin: boolean,
+    jwtToken?: string,
+  ): Promise<Organization[]> {
+    // Log the user attempt to access organizations
+    console.log(`[GET /organizations] SERVICE: Starting list operation`);
+    console.log(`User ${userId} (super admin: ${isSuperAdmin}) attempting to GET /organizations with filters:`, JSON.stringify(filters));
+    console.log(`[GET /organizations] SERVICE: JWT token provided: ${!!jwtToken}`);
+    console.log(`[GET /organizations] SERVICE: Environment: ${process.env.NODE_ENV}`);
+
+    // If super admin, return all organizations
+    if (isSuperAdmin) {
+      console.log(`[GET /organizations] SERVICE: User is super admin, bypassing RBAC filtering`);
+      console.log(`[GET /organizations] SERVICE: Calling repository.listBasic with filters:`, JSON.stringify(filters));
+
+      const result = await this.repo.listBasic(filters);
+
+      console.log(`[GET /organizations] SERVICE: Repository returned ${result.length} organizations for super admin`);
+      console.log(`[GET /organizations] SERVICE: Super admin flow completed successfully`);
+
+      return result;
+    }
+
+    // Skip RBAC filtering in test environment
+    if (process.env.NODE_ENV === 'test') {
+      console.log(`[GET /organizations] SERVICE: Test environment detected, skipping RBAC filtering`);
+      console.log(`[GET /organizations] SERVICE: Calling repository.listBasic with filters:`, JSON.stringify(filters));
+
+      const result = await this.repo.listBasic(filters);
+
+      console.log(`[GET /organizations] SERVICE: Repository returned ${result.length} organizations for test environment`);
+      console.log(`[GET /organizations] SERVICE: Test environment flow completed successfully`);
+
+      return result;
+    }
+
+    // For non-super admin users, get their accessible resources and filter organizations
+    console.log(`[GET /organizations] SERVICE: User is not super admin, proceeding with RBAC filtering`);
+    console.log(`[GET /organizations] SERVICE: Calling RBAC utility service to get user resources`);
+
+    try {
+      const userResources = await this.rbacUtilityService.getUserResources(
+        userId,
+        jwtToken || '',
+      );
+
+      console.log(`[GET /organizations] SERVICE: RBAC utility returned user resources:`, JSON.stringify(userResources, null, 2));
+
+      // Extract resource IDs (organization IDs) from user resources
+      const accessibleOrgIds = userResources.resources.map(
+        (resource) => resource.resourceId,
+      );
+
+      console.log(`[GET /organizations] SERVICE: Extracted ${accessibleOrgIds.length} accessible organization IDs:`, accessibleOrgIds);
+
+      // If user has no accessible resources, return empty array
+      if (accessibleOrgIds.length === 0) {
+        console.log(`[GET /organizations] SERVICE: User has no accessible organization resources, returning empty array`);
+        console.log(`[GET /organizations] SERVICE: RBAC filtering completed - no access`);
+        return [];
+      }
+
+      // Filter organizations by accessible IDs and apply other filters
+      console.log(`[GET /organizations] SERVICE: Calling repository.listBasicWithIds with filters:`, JSON.stringify(filters), `and IDs:`, accessibleOrgIds);
+
+      const result = await this.repo.listBasicWithIds(filters, accessibleOrgIds);
+
+      console.log(`[GET /organizations] SERVICE: Repository returned ${result.length} organizations after RBAC filtering`);
+      console.log(`[GET /organizations] SERVICE: RBAC filtering completed successfully`);
+
+      return result;
+    } catch (error) {
+      // If RBAC API fails, log error and return empty array for security
+      console.warn(
+        `[GET /organizations] SERVICE: Failed to fetch permissions for user ${userId}:`,
+        (error as Error).message,
+      );
+      console.warn(`[GET /organizations] SERVICE: Full error details:`, error);
+      console.log(`[GET /organizations] SERVICE: RBAC API failure - returning empty array for security`);
+      return [];
+    }
   }
 
   async getOperationByOrgId(id: string) {

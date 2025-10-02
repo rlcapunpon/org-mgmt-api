@@ -173,8 +173,25 @@ export class OrganizationController {
       tax_classification?: string;
       subcategory?: string;
     },
+    @Req() req: Request,
   ) {
-    return this.service.list(query);
+    const user = req.user as { userId: string; isSuperAdmin: boolean };
+    const authHeader = req.headers.authorization;
+    const jwtToken = authHeader?.startsWith('Bearer ')
+      ? authHeader.substring(7)
+      : undefined;
+
+    console.log(`[GET /organizations] CONTROLLER: Request received`);
+    console.log(`[GET /organizations] CONTROLLER: User ID: ${user.userId}, Is Super Admin: ${user.isSuperAdmin}`);
+    console.log(`[GET /organizations] CONTROLLER: Query filters:`, JSON.stringify(query));
+    console.log(`[GET /organizations] CONTROLLER: JWT token present: ${!!jwtToken}`);
+
+    const result = await this.service.list(query, user.userId, user.isSuperAdmin, jwtToken);
+
+    console.log(`[GET /organizations] CONTROLLER: Response contains ${Array.isArray(result) ? result.length : 'non-array'} organizations`);
+    console.log(`[GET /organizations] CONTROLLER: Request completed successfully`);
+
+    return result;
   }
 
   @Get(':id/operation')
