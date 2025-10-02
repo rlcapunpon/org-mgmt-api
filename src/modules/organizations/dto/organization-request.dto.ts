@@ -827,12 +827,12 @@ export class UpdateOrganizationRegistrationRequestDto {
   zip_code?: string;
 
   @ApiPropertyOptional({
-    description: '12-digit TIN',
-    example: '001234567890',
+    description: '9 or 12-digit TIN',
+    example: '123456789000',
   })
   @IsOptional()
   @IsString()
-  @Length(12, 12)
+  @Length(9, 12)
   tin?: string;
 
   @ApiPropertyOptional({

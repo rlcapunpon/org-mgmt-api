@@ -5,6 +5,7 @@ import { AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
 import { OrganizationService } from '../services/organization.service';
 import { OrganizationRepository } from '../repositories/organization.repository';
+import { OrganizationSyncService } from '../../../common/services/organization-sync.service';
 import { CreateOrganizationRequestDto } from '../dto/organization-request.dto';
 import { Category, TaxClassification } from '@prisma/client';
 
@@ -12,6 +13,7 @@ describe('OrganizationService', () => {
   let service: OrganizationService;
   let mockRepo: jest.Mocked<OrganizationRepository>;
   let mockHttpService: jest.Mocked<HttpService>;
+  let mockSyncService: jest.Mocked<OrganizationSyncService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -29,12 +31,19 @@ describe('OrganizationService', () => {
             post: jest.fn(),
           },
         },
+        {
+          provide: OrganizationSyncService,
+          useValue: {
+            syncOrganizationFromRegistration: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<OrganizationService>(OrganizationService);
     mockRepo = module.get(OrganizationRepository);
     mockHttpService = module.get(HttpService);
+    mockSyncService = module.get(OrganizationSyncService);
   });
 
   it('should be defined', () => {

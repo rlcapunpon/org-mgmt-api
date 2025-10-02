@@ -3,6 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { OrganizationRepository } from '../repositories/organization.repository';
+import { OrganizationSyncService } from '../../../common/services/organization-sync.service';
 import {
   CreateOrganizationRequestDto,
   UpdateOrganizationRequestDto,
@@ -17,6 +18,7 @@ export class OrganizationService {
   constructor(
     private repo: OrganizationRepository,
     private httpService: HttpService,
+    private syncService: OrganizationSyncService,
   ) {}
 
   async create(
@@ -306,7 +308,18 @@ export class OrganizationService {
     data: UpdateOrganizationRegistrationRequestDto,
   ) {
     try {
-      return await this.repo.updateRegistration(id, data);
+      // Update the registration
+      const result = await this.repo.updateRegistration(id, data);
+
+      // Sync Organization table fields with registration data
+      if (data.tin !== undefined || data.tax_type !== undefined) {
+        await this.syncService.syncOrganizationFromRegistration(id, {
+          tin: data.tin,
+          tax_type: data.tax_type,
+        });
+      }
+
+      return result;
     } catch (error) {
       if ((error as { code?: string }).code === 'P2025') {
         // Record not found
