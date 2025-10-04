@@ -243,4 +243,107 @@ export class RbacUtilityService {
       throw error;
     }
   }
+
+  /**
+   * Get all available roles from the RBAC API
+   * @param token - JWT token for authentication
+   * @returns Promise<AvailableRole[]> - List of available roles
+   */
+  async getAvailableRoles(token: string): Promise<any[]> {
+    try {
+      const rbacApiUrl = process.env.RBAC_API_URL || 'http://localhost:3000/api';
+      const url = `${rbacApiUrl}/roles/available`;
+
+      this.logger.debug(`Getting available roles from ${url}`);
+
+      const response = await firstValueFrom(
+        this.httpService.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+      );
+
+      this.logger.debug(`Retrieved ${response.data.length} available roles`);
+      return response.data;
+    } catch (error) {
+      this.logger.error('Failed to get available roles', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Assign a role to a user for a specific resource
+   * @param userId - The user ID to assign the role to
+   * @param roleId - The role ID to assign
+   * @param resourceId - The resource ID
+   * @param token - JWT token for authentication
+   * @returns Promise<any> - Assignment result
+   */
+  async assignRole(userId: string, roleId: string, resourceId: string, token: string): Promise<any> {
+    try {
+      const rbacApiUrl = process.env.RBAC_API_URL || 'http://localhost:3000/api';
+      const url = `${rbacApiUrl}/resources/assign-role`;
+
+      const requestBody = {
+        userId,
+        roleId,
+        resourceId,
+      };
+
+      this.logger.debug(`Assigning role ${roleId} to user ${userId} for resource ${resourceId}`);
+
+      const response = await firstValueFrom(
+        this.httpService.post(url, requestBody, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        })
+      );
+
+      this.logger.debug(`Successfully assigned role to user ${userId}`);
+      return response.data;
+    } catch (error) {
+      this.logger.error(`Failed to assign role to user ${userId}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Revoke a role from a user for a specific resource
+   * @param userId - The user ID to revoke the role from
+   * @param roleId - The role ID to revoke
+   * @param resourceId - The resource ID
+   * @param token - JWT token for authentication
+   * @returns Promise<void> - Revocation result
+   */
+  async revokeRole(userId: string, roleId: string, resourceId: string, token: string): Promise<void> {
+    try {
+      const rbacApiUrl = process.env.RBAC_API_URL || 'http://localhost:3000/api';
+      const url = `${rbacApiUrl}/resources/revoke-role`;
+
+      const requestBody = {
+        userId,
+        roleId,
+        resourceId,
+      };
+
+      this.logger.debug(`Revoking role ${roleId} from user ${userId} for resource ${resourceId}`);
+
+      await firstValueFrom(
+        this.httpService.post(url, requestBody, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        })
+      );
+
+      this.logger.debug(`Successfully revoked role from user ${userId}`);
+    } catch (error) {
+      this.logger.error(`Failed to revoke role from user ${userId}`, error);
+      throw error;
+    }
+  }
 }

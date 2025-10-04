@@ -54,13 +54,15 @@ export class OrganizationOwnerController {
   async assignOwner(
     @Param('orgId') orgId: string,
     @Body() dto: AssignOrganizationOwnerRequestDto,
+    @Req() req: Request,
   ) {
     // Validate that the orgId in param matches the one in body
     if (dto.org_id !== orgId) {
       throw new Error('Organization ID mismatch');
     }
 
-    return await this.service.assignOwner(dto);
+    const token = req.headers.authorization?.replace('Bearer ', '') || '';
+    return await this.service.assignOwner(dto, token);
   }
 
   @Get(':orgId/owners')
@@ -100,8 +102,10 @@ export class OrganizationOwnerController {
   async removeOwner(
     @Param('orgId') orgId: string,
     @Param('userId') userId: string,
+    @Req() req: Request,
   ) {
-    return await this.service.removeOwner(orgId, userId);
+    const token = req.headers.authorization?.replace('Bearer ', '') || '';
+    return await this.service.removeOwner(orgId, userId, token);
   }
 
   @Delete('owners/:id')

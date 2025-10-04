@@ -8,23 +8,17 @@ import { signPayload } from '../../../test-utils/token';
 import { OrganizationOwnerService } from '../services/organization-owner.service';
 import { PrismaService } from '../../../database/prisma.service';
 import { NotFoundException, ConflictException } from '@nestjs/common';
+import { RbacUtilityService } from '../../../common/services/rbac-utility.service';
 
 describe('Organization Owner Controller (e2e)', () => {
   let app: INestApplication;
-  let mockService: jest.Mocked<OrganizationOwnerService>;
+  let mockPrismaService: jest.Mocked<PrismaService>;
+  let mockRbacService: jest.Mocked<RbacUtilityService>;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideProvider(OrganizationOwnerService)
-      .useValue({
-        assignOwner: jest.fn(),
-        getOwnersByOrgId: jest.fn(),
-        removeOwner: jest.fn(),
-        removeOwnerById: jest.fn(),
-        checkOwnership: jest.fn(),
-      })
       .overrideProvider(PrismaService)
       .useValue({
         $connect: jest.fn(),
@@ -36,11 +30,18 @@ describe('Organization Owner Controller (e2e)', () => {
           delete: jest.fn(),
         },
       })
+      .overrideProvider(RbacUtilityService)
+      .useValue({
+        getAvailableRoles: jest.fn(),
+        assignRole: jest.fn(),
+        revokeRole: jest.fn(),
+      })
       .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    mockService = moduleFixture.get(OrganizationOwnerService);
+    mockPrismaService = moduleFixture.get(PrismaService);
+    mockRbacService = moduleFixture.get(RbacUtilityService);
   });
 
   afterEach(async () => {
@@ -59,6 +60,7 @@ describe('Organization Owner Controller (e2e)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:create'],
           isSuperAdmin: false,
           role: 'User',
@@ -77,6 +79,7 @@ describe('Organization Owner Controller (e2e)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:create'],
           isSuperAdmin: true,
           role: 'Super Admin',
@@ -92,7 +95,12 @@ describe('Organization Owner Controller (e2e)', () => {
         last_update: new Date(),
       };
 
-      mockService.assignOwner.mockResolvedValue(mockOwner);
+      (mockPrismaService.organizationOwner.create as jest.Mock).mockResolvedValue(mockOwner);
+      (mockPrismaService.organizationOwner.findUnique as jest.Mock).mockResolvedValue(null); // No existing owner
+      mockRbacService.getAvailableRoles.mockResolvedValue([
+        { id: 'superadmin-role-id', name: 'SUPERADMIN', description: 'Super Admin Role' }
+      ]);
+      mockRbacService.assignRole.mockResolvedValue({ message: 'Role assigned successfully' });
 
       const res = await request(app.getHttpServer())
         .post('/organizations/test-org-id/owners')
@@ -105,12 +113,15 @@ describe('Organization Owner Controller (e2e)', () => {
         org_id: 'test-org-id',
         user_id: 'test-user-id',
       });
+      expect(mockRbacService.getAvailableRoles).toHaveBeenCalledWith(token);
+      expect(mockRbacService.assignRole).toHaveBeenCalledWith('test-user-id', 'superadmin-role-id', 'test-org-id', token);
     });
 
     it('should return 409 for duplicate owner assignment', async () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:create'],
           isSuperAdmin: true,
           role: 'Super Admin',
@@ -118,9 +129,15 @@ describe('Organization Owner Controller (e2e)', () => {
         process.env.JWT_SECRET!,
       );
 
-      mockService.assignOwner.mockRejectedValue(
-        new ConflictException('User is already an owner'),
-      );
+      const mockOwner = {
+        id: 'owner-1',
+        org_id: 'test-org-id',
+        user_id: 'test-user-id',
+        assigned_date: new Date(),
+        last_update: new Date(),
+      };
+
+      (mockPrismaService.organizationOwner.findUnique as jest.Mock).mockResolvedValue(mockOwner); // Existing owner found
 
       const res = await request(app.getHttpServer())
         .post('/organizations/test-org-id/owners')
@@ -143,6 +160,7 @@ describe('Organization Owner Controller (e2e)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:read'],
           isSuperAdmin: false,
           role: 'User',
@@ -160,6 +178,7 @@ describe('Organization Owner Controller (e2e)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:read'],
           isSuperAdmin: true,
           role: 'Super Admin',
@@ -184,7 +203,7 @@ describe('Organization Owner Controller (e2e)', () => {
         },
       ];
 
-      mockService.getOwnersByOrgId.mockResolvedValue(mockOwners);
+      (mockPrismaService.organizationOwner.findMany as jest.Mock).mockResolvedValue(mockOwners);
 
       const res = await request(app.getHttpServer())
         .get('/organizations/test-org-id/owners')
@@ -213,6 +232,7 @@ describe('Organization Owner Controller (e2e)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:delete'],
           isSuperAdmin: false,
           role: 'User',
@@ -230,6 +250,7 @@ describe('Organization Owner Controller (e2e)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:delete'],
           isSuperAdmin: true,
           role: 'Super Admin',
@@ -245,7 +266,11 @@ describe('Organization Owner Controller (e2e)', () => {
         last_update: new Date(),
       };
 
-      mockService.removeOwner.mockResolvedValue(mockRemovedOwner);
+      (mockPrismaService.organizationOwner.delete as jest.Mock).mockResolvedValue(mockRemovedOwner);
+      mockRbacService.getAvailableRoles.mockResolvedValue([
+        { id: 'superadmin-role-id', name: 'SUPERADMIN', description: 'Super Admin Role' }
+      ]);
+      mockRbacService.revokeRole.mockResolvedValue();
 
       const res = await request(app.getHttpServer())
         .delete('/organizations/test-org-id/owners/test-user-id')
@@ -257,12 +282,15 @@ describe('Organization Owner Controller (e2e)', () => {
         org_id: 'test-org-id',
         user_id: 'test-user-id',
       });
+      expect(mockRbacService.getAvailableRoles).toHaveBeenCalledWith(token);
+      expect(mockRbacService.revokeRole).toHaveBeenCalledWith('test-user-id', 'superadmin-role-id', 'test-org-id', token);
     });
 
     it('should return 404 for non-existent owner', async () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:delete'],
           isSuperAdmin: true,
           role: 'Super Admin',
@@ -270,9 +298,7 @@ describe('Organization Owner Controller (e2e)', () => {
         process.env.JWT_SECRET!,
       );
 
-      mockService.removeOwner.mockRejectedValue(
-        new NotFoundException('Owner assignment not found'),
-      );
+      (mockPrismaService.organizationOwner.delete as jest.Mock).mockRejectedValue({ code: 'P2025' });
 
       const res = await request(app.getHttpServer())
         .delete('/organizations/test-org-id/owners/non-existent-user')
@@ -294,6 +320,7 @@ describe('Organization Owner Controller (e2e)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:delete'],
           isSuperAdmin: false,
           role: 'User',
@@ -311,6 +338,7 @@ describe('Organization Owner Controller (e2e)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:delete'],
           isSuperAdmin: true,
           role: 'Super Admin',
@@ -326,7 +354,7 @@ describe('Organization Owner Controller (e2e)', () => {
         last_update: new Date(),
       };
 
-      mockService.removeOwnerById.mockResolvedValue(mockRemovedOwner);
+      (mockPrismaService.organizationOwner.delete as jest.Mock).mockResolvedValue(mockRemovedOwner);
 
       const res = await request(app.getHttpServer())
         .delete('/organizations/owners/owner-1')
@@ -353,6 +381,7 @@ describe('Organization Owner Controller (e2e)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:read'],
           isSuperAdmin: true,
           role: 'Super Admin',
@@ -376,6 +405,7 @@ describe('Organization Owner Controller (e2e)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:read'],
           isSuperAdmin: false,
           role: 'User',
@@ -383,10 +413,12 @@ describe('Organization Owner Controller (e2e)', () => {
         process.env.JWT_SECRET!,
       );
 
-      mockService.checkOwnership.mockResolvedValue({
-        is_owner: true,
+      (mockPrismaService.organizationOwner.findUnique as jest.Mock).mockResolvedValue({
+        id: 'owner-1',
         org_id: 'test-org-id',
         user_id: 'u1',
+        assigned_date: new Date(),
+        last_update: new Date(),
       });
 
       const res = await request(app.getHttpServer())
@@ -405,6 +437,7 @@ describe('Organization Owner Controller (e2e)', () => {
       const token = signPayload(
         {
           userId: 'u1',
+          username: 'testuser',
           permissions: ['resource:read'],
           isSuperAdmin: false,
           role: 'User',
@@ -412,11 +445,7 @@ describe('Organization Owner Controller (e2e)', () => {
         process.env.JWT_SECRET!,
       );
 
-      mockService.checkOwnership.mockResolvedValue({
-        is_owner: false,
-        org_id: 'test-org-id',
-        user_id: 'u1',
-      });
+      (mockPrismaService.organizationOwner.findUnique as jest.Mock).mockResolvedValue(null);
 
       const res = await request(app.getHttpServer())
         .get('/organizations/test-org-id/ownership')

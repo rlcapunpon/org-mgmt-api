@@ -6,13 +6,18 @@ import {
 import { OrganizationOwnerRepository } from '../repositories/organization-owner.repository';
 import { AssignOrganizationOwnerRequestDto } from '../dto/organization-owner.dto';
 import { OrganizationOwner } from '@prisma/client';
+import { RbacUtilityService } from '../../../common/services/rbac-utility.service';
 
 @Injectable()
 export class OrganizationOwnerService {
-  constructor(private repo: OrganizationOwnerRepository) {}
+  constructor(
+    private repo: OrganizationOwnerRepository,
+    private rbacUtilityService: RbacUtilityService,
+  ) {}
 
   async assignOwner(
     data: AssignOrganizationOwnerRequestDto,
+    jwtToken?: string,
   ): Promise<OrganizationOwner> {
     try {
       // Check if user is already an owner
@@ -23,7 +28,32 @@ export class OrganizationOwnerService {
         );
       }
 
-      return await this.repo.assignOwner(data);
+      const owner = await this.repo.assignOwner(data);
+
+      // Call RBAC API to assign SUPERADMIN role if JWT token is provided
+      if (jwtToken) {
+        try {
+          // Get available roles to find SUPERADMIN roleId
+          const availableRoles = await this.rbacUtilityService.getAvailableRoles(jwtToken);
+          const superAdminRole = availableRoles.find((role: any) => role.name === 'SUPERADMIN');
+
+          if (superAdminRole) {
+            await this.rbacUtilityService.assignRole(
+              data.user_id,
+              superAdminRole.id,
+              data.org_id,
+              jwtToken,
+            );
+          } else {
+            console.warn('SUPERADMIN role not found in available roles');
+          }
+        } catch (error) {
+          // Log the error but don't fail the owner assignment
+          console.error('Failed to assign SUPERADMIN role in RBAC API:', error);
+        }
+      }
+
+      return owner;
     } catch (error) {
       if ((error as { code?: string }).code === 'P2002') {
         // Unique constraint violation
@@ -53,9 +83,34 @@ export class OrganizationOwnerService {
     };
   }
 
-  async removeOwner(orgId: string, userId: string): Promise<OrganizationOwner> {
+  async removeOwner(orgId: string, userId: string, jwtToken?: string): Promise<OrganizationOwner> {
     try {
-      return await this.repo.removeOwner(orgId, userId);
+      const owner = await this.repo.removeOwner(orgId, userId);
+
+      // Call RBAC API to revoke SUPERADMIN role if JWT token is provided
+      if (jwtToken) {
+        try {
+          // Get available roles to find SUPERADMIN roleId
+          const availableRoles = await this.rbacUtilityService.getAvailableRoles(jwtToken);
+          const superAdminRole = availableRoles.find((role: any) => role.name === 'SUPERADMIN');
+
+          if (superAdminRole) {
+            await this.rbacUtilityService.revokeRole(
+              userId,
+              superAdminRole.id,
+              orgId,
+              jwtToken,
+            );
+          } else {
+            console.warn('SUPERADMIN role not found in available roles');
+          }
+        } catch (error) {
+          // Log the error but don't fail the owner removal
+          console.error('Failed to revoke SUPERADMIN role in RBAC API:', error);
+        }
+      }
+
+      return owner;
     } catch (error) {
       if ((error as { code?: string }).code === 'P2025') {
         // Record not found

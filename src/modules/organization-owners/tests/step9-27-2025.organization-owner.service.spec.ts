@@ -2,7 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OrganizationOwnerService } from '../services/organization-owner.service';
 import { OrganizationOwnerRepository } from '../repositories/organization-owner.repository';
 import { AssignOrganizationOwnerRequestDto } from '../dto/organization-owner.dto';
-import { NotFoundException, ConflictException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
+import { RbacUtilityService } from '../../../common/services/rbac-utility.service';
 
 describe('OrganizationOwnerService', () => {
   let service: OrganizationOwnerService;
@@ -22,6 +23,14 @@ describe('OrganizationOwnerService', () => {
             removeOwnerById: jest.fn(),
             updateLastUpdate: jest.fn(),
             getOwnerById: jest.fn(),
+          },
+        },
+        {
+          provide: RbacUtilityService,
+          useValue: {
+            getAvailableRoles: jest.fn(),
+            assignRole: jest.fn(),
+            revokeRole: jest.fn(),
           },
         },
       ],
